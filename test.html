@@ -3,113 +3,7 @@
 <head>
     <meta charset="utf-8">
     <script src="lib/d3.v4.js"></script>
-    <script>
-    function load_plot_2d() {
-        var width = 700;
-        var height = 500;
-        var svg = d3.select('#plot_2d')
-            .append('svg')
-                .attr('width', width)
-                .attr('height', height);
-
-        var data = [
-            {id: 0, x: 2.5, y: 3},
-            {id: 1, x: 1, y: 0.5},
-            {id: 2, x: 3, y: 1.5},
-            {id: 3, x: 2, y: 3.5},
-            {id: 4, x: 1.5, y: 2},
-        ];
-        var xrangemin = 0;
-        var xrangemax = 5;
-        var yrangemin = 0;
-        var yrangemax = 5;
-        function update1(data) {
-            var points = svg.selectAll('.point')
-                .data(data, function key(d) {return d.id;});
-
-            // Update
-            points
-              .transition()
-                .duration(200)
-                .attr('cx', function (d) {return (d.x - xrangemin)/xrangemax * width;})
-                .attr('cy', function (d) {return (d.y - yrangemin)/yrangemax * height;});
-
-            // Enter
-            points.enter().append('circle')
-                .attr('class', 'point')
-                .attr('id', function (d) {return 'id'+d.id;})
-                .attr('cx', function (d) {return (d.x - xrangemin)/xrangemax * width;})
-                .attr('cy', function (d) {return (d.y - yrangemin)/yrangemax * height;})
-                .attr('r', 0)
-                .style('fill-opacity', 0)
-              .transition()
-                .duration(200)
-                .attr('r', 15)
-                .style('fill-opacity', 1)
-
-            // Exit
-            points.exit()
-              .transition()
-                .duration(200)
-                .attr('r', 0)
-                .style('fill-opacity', 0)
-                .remove();
-        }
-
-        function update2(data) {
-            var points = svg.selectAll('.arrow')
-                .data(data, function key(d) {return d.id;});
-
-            // Update
-            points
-              .transition()
-                .duration(200)
-                .attr('x1', function (d) {return (d.x - xrangemin)/xrangemax * width;})
-                .attr('y1', function (d) {return (d.y - yrangemin)/yrangemax * height;})
-                .attr('x2', function (d) {return d.x*5+(d.x - xrangemin)/xrangemax * width;})
-                .attr('y2', function (d) {return d.y*5+(d.y - yrangemin)/yrangemax * height;})
-
-            // Enter
-            points.enter().append('line')
-                .attr('class', 'arrow')
-                .attr('x1', function (d) {return (d.x - xrangemin)/xrangemax * width;})
-                .attr('y1', function (d) {return (d.y - yrangemin)/yrangemax * height;})
-                .attr('x2', function (d) {return d.x*5+(d.x - xrangemin)/xrangemax * width;})
-                .attr('y2', function (d) {return d.y*5+(d.y - yrangemin)/yrangemax * height;})
-                .attr('stroke', 'black')
-                .attr('stroke-width', 10)
-                .attr('marker-end', 'url(#triangle)')
-                .style('fill-opacity', 0)
-              .transition()
-                .duration(200)
-                .attr('r', 15)
-                .style('fill-opacity', 1)
-
-            // Exit
-            points.exit()
-              .transition()
-                .duration(200)
-                .attr('r', 0)
-                .style('fill-opacity', 0)
-                .remove();
-        }
-
-
-        var update = update2;
-        update(data);
-
-        window.setTimeout(function () {
-            var data2 = [
-                {id: 3, x: 4, y: 4.5},
-                {id: 0, x: 2.5, y: 2},
-                {id: 4, x: 3.5, y: 1.5},
-                {id: 1, x: 0.5, y: 1.0},
-                {id: 5, x: 1, y: 3.0},
-            ];
-            update(data2);
-        }, 1000);
-    }
-    </script>
+    <script src="main.js"></script>
 </head>
 <body>
 
@@ -119,19 +13,8 @@
     </p>
 
     <div id="plot_2d"></div>
-
-    <svg>
-        <marker id="triangle"
-          viewBox="0 0 10 10" refX="0" refY="5"
-          markerUnits="strokeWidth"
-          markerWidth="4" markerHeight="3"
-          orient="auto">
-          <path d="M 0 0 L 10 5 L 0 10 z" />
-        </marker>
-    </svg>
-
     <script>
-    load_plot_2d();
+        load_plot_2d('#plot_2d');
     </script>
 
 </body>
