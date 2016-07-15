@@ -23,27 +23,79 @@
         var xrangemax = 5;
         var yrangemin = 0;
         var yrangemax = 5;
-        function update(data) {
+        function update1(data) {
             var points = svg.selectAll('.point')
                 .data(data, function key(d) {return d.id;});
 
-            points.enter().append('circle')
-                .attr('class', 'point')
-                .attr('r', 15)
-                .attr('cx', function (d) {return (d.x - xrangemin)/xrangemax * width;})
-                .attr('cy', function (d) {return (d.y - yrangemin)/yrangemax * height;})
-              .merge(points)
+            // Update
+            points
               .transition()
-                .duration(1000)
+                .duration(200)
                 .attr('cx', function (d) {return (d.x - xrangemin)/xrangemax * width;})
                 .attr('cy', function (d) {return (d.y - yrangemin)/yrangemax * height;});
 
+            // Enter
+            points.enter().append('circle')
+                .attr('class', 'point')
+                .attr('id', function (d) {return 'id'+d.id;})
+                .attr('cx', function (d) {return (d.x - xrangemin)/xrangemax * width;})
+                .attr('cy', function (d) {return (d.y - yrangemin)/yrangemax * height;})
+                .attr('r', 0)
+                .style('fill-opacity', 0)
+              .transition()
+                .duration(200)
+                .attr('r', 15)
+                .style('fill-opacity', 1)
+
+            // Exit
             points.exit()
               .transition()
-                .duration(500)
+                .duration(200)
+                .attr('r', 0)
                 .style('fill-opacity', 0)
                 .remove();
         }
+
+        function update2(data) {
+            var points = svg.selectAll('.arrow')
+                .data(data, function key(d) {return d.id;});
+
+            // Update
+            points
+              .transition()
+                .duration(200)
+                .attr('x1', function (d) {return (d.x - xrangemin)/xrangemax * width;})
+                .attr('y1', function (d) {return (d.y - yrangemin)/yrangemax * height;})
+                .attr('x2', function (d) {return d.x*5+(d.x - xrangemin)/xrangemax * width;})
+                .attr('y2', function (d) {return d.y*5+(d.y - yrangemin)/yrangemax * height;})
+
+            // Enter
+            points.enter().append('line')
+                .attr('class', 'arrow')
+                .attr('x1', function (d) {return (d.x - xrangemin)/xrangemax * width;})
+                .attr('y1', function (d) {return (d.y - yrangemin)/yrangemax * height;})
+                .attr('x2', function (d) {return d.x*5+(d.x - xrangemin)/xrangemax * width;})
+                .attr('y2', function (d) {return d.y*5+(d.y - yrangemin)/yrangemax * height;})
+                .attr('stroke', 'black')
+                .attr('stroke-width', 10)
+                .attr('marker-end', 'url(#triangle)')
+                .style('fill-opacity', 0)
+              .transition()
+                .duration(200)
+                .attr('r', 15)
+                .style('fill-opacity', 1)
+
+            // Exit
+            points.exit()
+              .transition()
+                .duration(200)
+                .attr('r', 0)
+                .style('fill-opacity', 0)
+                .remove();
+        }
+
+
+        var update = update2;
         update(data);
 
         window.setTimeout(function () {
@@ -52,6 +104,7 @@
                 {id: 0, x: 2.5, y: 2},
                 {id: 4, x: 3.5, y: 1.5},
                 {id: 1, x: 0.5, y: 1.0},
+                {id: 5, x: 1, y: 3.0},
             ];
             update(data2);
         }, 1000);
@@ -66,6 +119,16 @@
     </p>
 
     <div id="plot_2d"></div>
+
+    <svg>
+        <marker id="triangle"
+          viewBox="0 0 10 10" refX="0" refY="5"
+          markerUnits="strokeWidth"
+          markerWidth="4" markerHeight="3"
+          orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" />
+        </marker>
+    </svg>
 
     <script>
     load_plot_2d();
