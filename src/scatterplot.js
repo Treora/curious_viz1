@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-const pointRadius = 15
+const pointRadius = 5
 const updateDuration = 200
 const enterDuration = 200
 const exitDuration = 200
@@ -19,6 +19,11 @@ export default function scatterPlot({container, ...props}) {
         else
             height = svg.attr('height')
 
+        const marginX = pointRadius
+        const marginY = pointRadius
+        const plotWidth = width - 2*marginX
+        const plotHeight = height - 2*marginY
+
         if (xmin === undefined)
             xmin = _.minBy(data, 'x').x
         if (xmax === undefined)
@@ -35,8 +40,8 @@ export default function scatterPlot({container, ...props}) {
 
         function setPosition(selection) {
             selection
-                .attr('cx', d => (d.x - xmin)/(xmax-xmin) * width)
-                .attr('cy', d => (d.y - ymin)/(ymax-ymin) * height)
+                .attr('cx', d => marginX + (d.x - xmin)/(xmax-xmin) * plotWidth)
+                .attr('cy', d => marginY + (d.y - ymin)/(ymax-ymin) * plotHeight)
         }
 
         // Update

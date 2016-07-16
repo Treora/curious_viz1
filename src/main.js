@@ -1,4 +1,5 @@
 import scatterPlot from './scatterplot'
+import dataset from './irisdata'
 
 function load_plot_2d(container) {
     const width = 700;
@@ -11,8 +12,7 @@ function load_plot_2d(container) {
         {id: 4, x: 1.5, y: 2},
     ];
 
-    const update = scatterPlot({container, width, height, data})
-    window.update = update
+    let update = scatterPlot({container, width, height, data: dataset})
 }
 
 window.load_plot_2d = load_plot_2d
