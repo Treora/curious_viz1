@@ -2,9 +2,12 @@ import _ from 'lodash'
 
 const pointRadius = 5
 const expandedSymbolRadius = 50
-const updateDuration = 1000
-const enterDuration = 1000
-const exitDuration = 1000
+const updateDuration = 500
+const enterDuration = 500
+const drawLeavesDuration = 500
+const hideLeavesAverageDelay = 1500
+const hideLeavesDuration = 500
+const exitDuration = 500
 
 export default function scatterPlot({container, ...props}) {
     const svg = d3.select(container).append('svg')
@@ -79,9 +82,11 @@ export default function scatterPlot({container, ...props}) {
         function drawSymbol(selection) {
             const budRadius = pointRadius
             function drawLeaves(selection) {
+                selection.raise()
                 // Insert the group for leaves behind the bud
-                const leavesGroup = selection.insert('g', ':first-child')
-                    //.attr('transform', d => `rotate(${360*Math.random()})`)
+                const leavesGroup = selection.select('.symbol').insert('g', ':first-child')
+                    .attr('class', 'leaves')
+                    .attr('transform', d => `rotate(${60*(-1+2*Math.random())})`)
                 // Amount (of the leaf template) hidden behind the bud
                 const leafOverlap = 3
                 // Maximum size of a leaf to fit in the requested symbol size
@@ -105,8 +110,7 @@ export default function scatterPlot({container, ...props}) {
                             + `translate(${-leafOverlap}, 0)`
                         ))
                       .transition()
-                        .delay(enterDuration*0.6)
-                        .duration(enterDuration*0.4)
+                        .duration(drawLeavesDuration)
                         .attr('transform', d => (
                               `rotate(${angle})`
                             + `translate(${budRadius}, 0)`
@@ -116,30 +120,48 @@ export default function scatterPlot({container, ...props}) {
                 }
             }
 
+            function hideLeaves(selection) {
+                selection.select('.leaves')
+                  .transition()
+                    .delay((0.5+Math.random())*hideLeavesAverageDelay)
+                    .duration(hideLeavesDuration)
+                    .attr('transform', 'scale(0)')
+                    .remove()
+            }
+
             selection
+              .append('g')
+                .attr('class', 'symbol')
               .append('circle')
                 .attr('r', 0)
                 .style('fill-opacity', 0)
                 .style('fill', 'purple')
               .transition()
-                .duration(enterDuration*0.4)
+                .duration(enterDuration)
                 .attr('r', budRadius)
                 .style('fill-opacity', 1)
+            selection.on('mouseover', function () {
+                const point = d3.select(this)
+                if (point.select('.leaves').empty())
+                    point.call(drawLeaves)
+            })
+            selection.on('mouseout', function () {
+                d3.select(this).call(hideLeaves)
+            })
 
-            selection.call(drawLeaves)
+            //selection.call(drawLeaves)
         }
 
         function removeSymbol(selection) {
-            selection
+            selection.select('.symbol')
               .transition()
                 .duration(exitDuration)
-              .select('circle')
-                .attr('r', 0)
+                .attr('transform', 'scale(0)')
                 .style('fill-opacity', 0)
             selection
               .transition()
-              .duration(exitDuration)
-              .remove()
+                .delay(exitDuration)
+                .remove()
         }
 
         // Update

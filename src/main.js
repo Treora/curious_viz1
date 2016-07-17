@@ -13,7 +13,7 @@ function load_plot_2d(container) {
     ];
 
     let update = scatterPlot({container, width, height, data: dataset})
-    //setTimeout(()=>update({data: []}), 1000)
+    //setTimeout(()=>update({data: []}), 3000)
 }
 
 window.load_plot_2d = load_plot_2d
