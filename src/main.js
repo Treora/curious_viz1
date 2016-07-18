@@ -1,4 +1,4 @@
-import scatterPlot from './scatterplot'
+import flowerPlot from './flowerplot'
 import dataset from './irisdata'
 
 function load_plot_2d(container) {
@@ -12,7 +12,7 @@ function load_plot_2d(container) {
         {id: 4, x: 1.5, y: 2},
     ];
 
-    let update = scatterPlot({container, width, height, data: dataset})
+    let update = flowerPlot({container, width, height, data: dataset})
     //setTimeout(()=>update({data: []}), 3000)
 }
 
