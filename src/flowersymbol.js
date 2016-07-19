@@ -1,4 +1,3 @@
-
 export default function defineSymbol(svg, symbolProps) {
     const leafTemplateLength = 23
     symbolProps = {leafTemplateLength, ...symbolProps}
@@ -45,7 +44,6 @@ function drawSymbol(selection, {
 }) {
 
     function drawLeaves(selection) {
-        selection.raise()
         // Insert the group for leaves behind the bud
         const leavesGroup = selection.select('.symbol').insert('g', ':first-child')
             .attr('class', 'leaves')
@@ -108,8 +106,10 @@ function drawSymbol(selection, {
     // Mousing over the bud reveals the leaves
     selection.on('mouseover', function () {
         const point = d3.select(this)
-        if (point.select('.leaves').empty())
+        if (point.select('.leaves').empty()) {
+            point.raise()
             point.call(drawLeaves)
+        }
     })
     selection.on('mouseout', function () {
         d3.select(this).call(hideLeaves)

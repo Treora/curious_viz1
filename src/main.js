@@ -2,7 +2,7 @@ import flowerPlot from './flowerplot'
 import dataset from './irisdata'
 
 function load_plot_2d(container) {
-    const width = 700;
+    const width = 500;
     const height = 500;
     const data = [
         {id: 0, x: 2.5, y: 3},
@@ -13,7 +13,7 @@ function load_plot_2d(container) {
     ];
 
     let update = flowerPlot({container, width, height, data: dataset})
-    //setTimeout(()=>update({data: []}), 3000)
+    //setTimeout(()=>update({data}), 1000)
 }
 
 window.load_plot_2d = load_plot_2d

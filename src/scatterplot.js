@@ -57,8 +57,11 @@ export default function update({
         .attr('class', 'point')
         .call(setPosition)
         .call(symbol.draw, {xmax, ymax})
+        // .on('mouseover', function (d) {
+        // })
 
     // Exit
     points.exit()
         .call(symbol.remove)
+
 }

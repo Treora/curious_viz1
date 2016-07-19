@@ -17,6 +17,7 @@ export default function flowerPlot({container, ...props}) {
         }
     )
 
-    const update = scatterPlot({svg, symbol, updateDuration: 500, ...props})
+    const update = (props) => scatterPlot({svg, symbol, updateDuration: 500, ...props})
+    update(props)
     return update
 }
