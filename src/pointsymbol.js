@@ -1,4 +1,4 @@
-export default function defineSymbol(svg, symbolProps) {
+export default function defineSymbol(symbolProps) {
     return {
         props: symbolProps,
         draw: (selection, args) =>
@@ -8,7 +8,7 @@ export default function defineSymbol(svg, symbolProps) {
     }
 }
 
-function drawSymbol(selection, {enterDuration, symbolRadius}) {
+function drawSymbol(selection, {enterDuration=0, symbolRadius=5}) {
     selection
       .append('g')
         .attr('class', 'symbol')
@@ -22,7 +22,7 @@ function drawSymbol(selection, {enterDuration, symbolRadius}) {
         .style('fill-opacity', 1)
 }
 
-function removeSymbol(selection, {exitDuration}) {
+function removeSymbol(selection, {exitDuration=0}) {
     selection.select('.symbol')
       .transition()
         .duration(exitDuration)

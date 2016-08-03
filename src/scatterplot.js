@@ -1,70 +1,77 @@
 import _ from 'lodash'
+import pointSymbol from './pointsymbol'
 
-export default function update({
-    svg,
-    width, height,
-    margin,
-    symbol,
-    updateDuration,
-    xmin, xmax, ymin, ymax,
-    data,
-}) {
-    if (width !== undefined)
-        svg.attr('width', width)
-    else
-        width = svg.attr('width')
+export default function scatterPlot(config) {
+    let {
+        width, height,
+        symbol=pointSymbol(),
+        updateDuration,
+        xmin=0, xmax=10, ymin=0, ymax=10,
+    } = config
 
-    if (height !== undefined)
-        svg.attr('height', height)
-    else
-        height = svg.attr('height')
+    const xScale = d3.scaleLinear()
+    const yScale = d3.scaleLinear()
 
-    if (margin === undefined)
-        margin = symbol.props.expandedSymbolRadius || symbol.props.symbolRadius
-    const marginX = margin
-    const marginY = margin
-    const plotWidth = width - 2*marginX
-    const plotHeight = height - 2*marginY
+    function plot(selection) {
+        selection.each(function (data) { // 'each' = for each chart
 
-    if (xmin === undefined)
-        xmin = (_.minBy(data, 'x') || {x: 0}).x
-    if (xmax === undefined)
-        xmax = (_.maxBy(data, 'x') || {x: 1}).x
-    if (ymin === undefined)
-        ymin = (_.minBy(data, 'y') || {y: 0}).y
-    if (ymax === undefined)
-        ymax = (_.maxBy(data, 'y') || {y: 1}).y
+            const container = d3.select(this)
 
-    let points = svg.selectAll('.point')
-    if (data !== undefined) {
-        points = points.data(data, d => d.id)
+            if (container.select('.scatterPlotSvg').empty()) {
+                const svg = container
+                  .append('svg')
+                    .attr('class', 'scatterPlotSvg')
+                    .call(symbol.init || _.noop)
+
+                const plotGroup = svg.append('g')
+                    .attr('class', 'scatterPlotGroup')
+                // TODO add axes, move plot for margins
+            }
+
+            const svg = container.select('svg')
+                .attr("width", width)
+                .attr("height", height)
+
+            const plotGroup = svg.select('.scatterPlotGroup')
+            let points = plotGroup.selectAll('.point').data(data, d => d.id)
+
+            xScale.domain(d3.extent(data, d=>d.x))
+                .range([0, width])
+            yScale.domain(d3.extent(data, d=>d.y))
+                .range([height, 0])
+
+            const setPosition = points => points.attr('transform',
+                d => `translate(${xScale(d.x)}, ${yScale(d.y)})`
+            )
+
+            // Update
+            points
+              .transition()
+                .duration(updateDuration)
+                .call(setPosition)
+
+            // Enter
+            points.enter().append('g')
+                .attr('class', 'point')
+                .call(setPosition)
+                .call(symbol.draw, {xmax, ymax})
+                // .on('mouseover', function (d) {
+                // TODO highlight?
+                // })
+
+            // Exit
+            points.exit()
+                .call(symbol.remove)
+
+        })
     }
+    //
+    // plot.width = w => {
+    //     if (w !== undefined)
+    //         width = w
+    //     else
+    //         return width
+    // }
 
-    function setPosition(selection) {
-        selection
-            .attr('transform', d => {
-                const x = marginX + (d.x - xmin)/(xmax-xmin) * plotWidth
-                const y = marginY + (d.y - ymin)/(ymax-ymin) * plotHeight
-                return `translate(${x}, ${y})`
-            })
-    }
-
-    // Update
-    points
-      .transition()
-        .duration(updateDuration)
-        .call(setPosition)
-
-    // Enter
-    points.enter().append('g')
-        .attr('class', 'point')
-        .call(setPosition)
-        .call(symbol.draw, {xmax, ymax})
-        // .on('mouseover', function (d) {
-        // })
-
-    // Exit
-    points.exit()
-        .call(symbol.remove)
-
+    return plot
 }

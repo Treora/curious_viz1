@@ -1,18 +1,20 @@
-export default function defineSymbol(svg, {
-    arrowLength=15, arrowHeadlength=3, ...otherSymbolProps
+export default function defineSymbol({
+    arrowLength=15,
+    arrowHeadlength=3,
+    ...otherSymbolProps
 }) {
     let symbolProps = {
         arrowLength,
         arrowHeadlength,
-        symbolRadius: 10+3,
+        symbolRadius: arrowLength+3,
         ...otherSymbolProps,
     }
     return {
         props: symbolProps,
         draw: (selection, args) =>
-            drawSymbol(selection, {...symbolProps, ...args}),
+            drawSymbol(selection, {...args, ...symbolProps}),
         remove: (selection, args) =>
-            removeSymbol(selection, {...symbolProps, ...args}),
+            removeSymbol(selection, {...args, ...symbolProps}),
     }
 }
 

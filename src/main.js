@@ -3,23 +3,26 @@ import gaussian from 'gaussian'
 
 import flowerPlot from './flowerplot'
 import arrowPlot from './arrowplot'
-//import dataset from './irisdata'
-import dataset from './gaussianbananas'
+import dataset from './irisdata'
+//import dataset from './gaussianbananas'
 
-function load_plot_2d(container) {
+function load_plot_2d(containerElement) {
+    const container = d3.select(containerElement)
+
     const width = 350;
     const height = 350;
     const plotconfig = {
-        container, width, height,
+        width, height,
         margin: 40,
         // xmin: 10,
         // xmax: 25,
         // ymin: -3,
         // ymax: 12,
-        xmin: 0,
-        xmax: 12,
-        ymin: 0,
-        ymax: 12,
+
+        // xmin: 0,
+        // xmax: 12,
+        // ymin: 0,
+        // ymax: 12,
     }
 
     const testdata = [
@@ -29,9 +32,10 @@ function load_plot_2d(container) {
         {id: 3, x: 2, y: 5},
         {id: 4, x: 1.5, y: 2},
     ];
-    //const dataset = testdata
+    // const dataset = testdata
 
-    const update_data = flowerPlot({...plotconfig, data: dataset})
+    const plotData = flowerPlot(plotconfig)
+    container.select('#plot_2d_data').datum(dataset).call(plotData)
 
     const noiseMean = 0;
     const noiseStddev = 1.3;
@@ -40,11 +44,13 @@ function load_plot_2d(container) {
     const sampleNoise = () => noiseDistribution.ppf(Math.random())
     const noise = _.map(dataset, d => ({...d, dx: sampleNoise(), dy: sampleNoise()}))
 
-    const update_noise = arrowPlot({...plotconfig, data: noise})
+    const plotNoise = arrowPlot(plotconfig)
+    container.select('#plot_2d_noise').datum(noise).call(plotNoise)
 
     const noisy = _.map(noise, d => ({...d, x: d.x+d.dx, y: d.y+d.dy, dx: undefined, dy: undefined}))
 
-    const update_noisy = flowerPlot({...plotconfig, data: noisy})
+    const plotNoisy = flowerPlot(plotconfig)
+    container.select('#plot_2d_noisy').datum(noisy).call(plotNoisy)
 
     function optimalDenoise({noisySample, dataset, noiseDistribution}) {
         const pNoise = dataset.map(datum => (
@@ -66,9 +72,12 @@ function load_plot_2d(container) {
         dx: denoised[i].x - noisySample.x,
         dy: denoised[i].y - noisySample.y,
     }))
-    const update_denoise = arrowPlot({...plotconfig, data: denoise})
+    const plotDenoise = arrowPlot(plotconfig)
+    container.select('#plot_2d_denoise').datum(denoise).call(plotDenoise)
 
-    const update_denoised = flowerPlot({...plotconfig, data: denoised})
+
+    const plotDenoised = flowerPlot(plotconfig)
+    container.select('#plot_2d_denoised').datum(denoised).call(plotDenoised)
 
 }
 

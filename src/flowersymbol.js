@@ -1,7 +1,17 @@
-export default function defineSymbol(svg, symbolProps) {
-    const leafTemplateLength = 23
-    symbolProps = {leafTemplateLength, ...symbolProps}
+export default function defineSymbol(symbolProps) {
+    return {
+        props: symbolProps,
+        init: initSymbol,
+        draw: (selection, args) =>
+            drawSymbol(selection, {...args, ...symbolProps}),
+        remove: (selection, args) =>
+            removeSymbol(selection, {...args, ...symbolProps}),
+    }
+}
 
+const leafTemplateLength = 23
+
+function initSymbol(svg) {
     // Sepal leaf template (size ~23x13)
     const sepalLeaf = svg.append('defs').append('g')
         .attr('id', 'sepal')
@@ -27,19 +37,16 @@ export default function defineSymbol(svg, symbolProps) {
         .attr('stroke', '#aa0099')
         .attr('stroke-width', '1')
         .attr('stroke-linecap', 'round')
-
-    return {
-        props: symbolProps,
-        draw: (selection, args) =>
-            drawSymbol(selection, {...symbolProps, ...args}),
-        remove: (selection, args) =>
-            removeSymbol(selection, {...symbolProps, ...args}),
-    }
 }
 
 function drawSymbol(selection, {
-    symbolRadius, expandedSymbolRadius, leafTemplateLength,
-    enterDuration, drawLeavesDuration, hideLeavesDuration, hideLeavesAverageDelay,
+    symbolRadius = 4,
+    expandedSymbolRadius = 30,
+    opacity = 0.6,
+    enterDuration = 500,
+    drawLeavesDuration = 500,
+    hideLeavesAverageDelay = 1500,
+    hideLeavesDuration = 500,
     xmax, ymax,
 }) {
 
@@ -83,10 +90,14 @@ function drawSymbol(selection, {
     }
 
     function hideLeaves(selection) {
-        selection.select('.bud').style('fill-opacity', 0.6)
+        const delay = (0.5+Math.random())*hideLeavesAverageDelay
+        selection.select('.bud')
+          .transition()
+            .delay(delay)
+            .style('fill-opacity', opacity)
         selection.select('.leaves')
           .transition()
-            .delay((0.5+Math.random())*hideLeavesAverageDelay)
+            .delay(delay)
             .duration(hideLeavesDuration)
             .attr('transform', 'scale(0)')
             .remove()
@@ -104,7 +115,7 @@ function drawSymbol(selection, {
       .transition()
         .duration(enterDuration)
         .attr('r', symbolRadius)
-        .style('fill-opacity', 0.6)
+        .style('fill-opacity', opacity)
 
     selection.select('.bud').append('title').text(d=>d.title)
 
@@ -122,7 +133,7 @@ function drawSymbol(selection, {
 
 }
 
-function removeSymbol(selection, {exitDuration}) {
+function removeSymbol(selection, {exitDuration=500}) {
     selection.select('.symbol')
       .transition()
         .duration(exitDuration)
