@@ -4,13 +4,21 @@ import pointSymbol from './pointsymbol'
 export default function scatterPlot(config) {
     let {
         width, height,
+        margin=10,
         symbol=pointSymbol(),
         updateDuration,
         xmin=0, xmax=10, ymin=0, ymax=10,
     } = config
 
+    if (typeof margin === 'number') {
+        margin = {top: margin, right: margin, bottom: margin, left: margin}
+    }
+
     const xScale = d3.scaleLinear()
     const yScale = d3.scaleLinear()
+
+    const xAxis = d3.axisBottom(xScale).ticks(3).tickSizeOuter(0)
+    const yAxis = d3.axisLeft(yScale).ticks(3).tickSizeOuter(0)
 
     function plot(selection) {
         selection.each(function (data) { // 'each' = for each chart
@@ -25,7 +33,10 @@ export default function scatterPlot(config) {
 
                 const plotGroup = svg.append('g')
                     .attr('class', 'scatterPlotGroup')
-                // TODO add axes, move plot for margins
+                    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+                plotGroup.append('g').attr('class', 'xAxis')
+                plotGroup.append('g').attr('class', 'yAxis')
             }
 
             const svg = container.select('svg')
@@ -35,10 +46,25 @@ export default function scatterPlot(config) {
             const plotGroup = svg.select('.scatterPlotGroup')
             let points = plotGroup.selectAll('.point').data(data, d => d.id)
 
-            xScale.domain(d3.extent(data, d=>d.x))
-                .range([0, width])
-            yScale.domain(d3.extent(data, d=>d.y))
-                .range([height, 0])
+            const plotWidth = width - margin.left - margin.right
+            const plotHeight = height - margin.top - margin.bottom
+
+            xScale
+                .domain(d3.extent(data, d=>d.x))
+                .nice()
+                .range([0, plotWidth])
+            yScale
+                .domain(d3.extent(data, d=>d.y))
+                .nice()
+                .range([plotHeight, 0])
+
+            plotGroup.select('.xAxis')
+                .attr('transform', `translate(0, ${yScale.range()[0]})`)
+                .call(xAxis)
+
+            plotGroup.select('.yAxis')
+                .attr('transform', `translate(0, ${xScale.range()[0]})`)
+                .call(yAxis)
 
             const setPosition = points => points.attr('transform',
                 d => `translate(${xScale(d.x)}, ${yScale(d.y)})`
