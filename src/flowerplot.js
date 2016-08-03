@@ -7,8 +7,8 @@ export default function flowerPlot({container, ...props}) {
     const symbol = flowerSymbol(
         svg,
         {
-            symbolRadius: 5,
-            expandedSymbolRadius: 50,
+            symbolRadius: 4,
+            expandedSymbolRadius: 30,
             enterDuration: 500,
             exitDuration: 500,
             drawLeavesDuration: 500,

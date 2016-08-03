@@ -3,6 +3,7 @@ import _ from 'lodash'
 export default function update({
     svg,
     width, height,
+    margin,
     symbol,
     updateDuration,
     xmin, xmax, ymin, ymax,
@@ -18,8 +19,10 @@ export default function update({
     else
         height = svg.attr('height')
 
-    const marginX = symbol.props.expandedSymbolRadius
-    const marginY = marginX
+    if (margin === undefined)
+        margin = symbol.props.expandedSymbolRadius || symbol.props.symbolRadius
+    const marginX = margin
+    const marginY = margin
     const plotWidth = width - 2*marginX
     const plotHeight = height - 2*marginY
 

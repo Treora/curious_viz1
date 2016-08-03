@@ -44,6 +44,7 @@ function drawSymbol(selection, {
 }) {
 
     function drawLeaves(selection) {
+        selection.select('.bud').style('fill-opacity', 1)
         // Insert the group for leaves behind the bud
         const leavesGroup = selection.select('.symbol').insert('g', ':first-child')
             .attr('class', 'leaves')
@@ -61,7 +62,7 @@ function drawSymbol(selection, {
             // Set the angle
             const angle = 360/3 * (leafNr%3) + (leafNr<3 ? 360/6 : 0)
             // Scale the sepals' and petals' areas by the data x or y values.
-            const leafRelativeArea = leafNr<3 ? d => d.x/xymax : d => d.y/xymax
+            const leafRelativeArea = d => Math.max(0, leafNr<3 ? d.x/xymax : d.y/xymax)
             leavesGroup.append('use')
                 .attr('xlink:xlink:href', leafUrl)
                 .attr('transform', (
@@ -82,6 +83,7 @@ function drawSymbol(selection, {
     }
 
     function hideLeaves(selection) {
+        selection.select('.bud').style('fill-opacity', 0.6)
         selection.select('.leaves')
           .transition()
             .delay((0.5+Math.random())*hideLeavesAverageDelay)
@@ -95,13 +97,16 @@ function drawSymbol(selection, {
       .append('g')
         .attr('class', 'symbol')
       .append('circle')
+        .attr('class', 'bud')
         .attr('r', 0)
         .style('fill-opacity', 0)
         .style('fill', 'purple')
       .transition()
         .duration(enterDuration)
         .attr('r', symbolRadius)
-        .style('fill-opacity', 1)
+        .style('fill-opacity', 0.6)
+
+    selection.select('.bud').append('title').text(d=>d.title)
 
     // Mousing over the bud reveals the leaves
     selection.on('mouseover', function () {

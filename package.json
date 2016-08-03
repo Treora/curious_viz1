@@ -10,7 +10,9 @@
   "author": "Gerben",
   "license": "CC0-1.0",
   "dependencies": {
-    "lodash": "^4.13.1"
+    "gaussian": "^1.1.0",
+    "lodash": "^4.13.1",
+    "random-seed": "^0.3.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",

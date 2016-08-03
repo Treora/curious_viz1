@@ -1,4 +1,12 @@
-export default function defineSymbol(svg, symbolProps) {
+export default function defineSymbol(svg, {
+    arrowLength=15, arrowHeadlength=3, ...otherSymbolProps
+}) {
+    let symbolProps = {
+        arrowLength,
+        arrowHeadlength,
+        symbolRadius: 10+3,
+        ...otherSymbolProps,
+    }
     return {
         props: symbolProps,
         draw: (selection, args) =>
@@ -8,15 +16,18 @@ export default function defineSymbol(svg, symbolProps) {
     }
 }
 
-function drawSymbol(selection, {enterDuration, symbolRadius, arrowLength=15, arrowHeadlength=3}) {
-    const l = arrowHeadlength
+function drawSymbol(selection, {enterDuration, arrowLength, arrowHeadlength}) {
     selection
       .append('g')
         .attr('class', 'symbol')
       .append('path')
-        .attr('transform', d=>`rotate(${d.angle || 0})`)
-        .attr('d', d => `m 0 0 l ${arrowLength} 0 l -${l} -${l} m ${l} ${l} l -${l} ${l}`)
-        .attr('stroke-width', '3')
+        .attr('transform', d=>`rotate(${angle(d)})`)
+        .attr('d', d => {
+            const length = arrowLength * norm(d)
+            const h = Math.min(arrowHeadlength, length/3) // limit head/shaft ratio
+            return `m 0 0 l ${length} 0 l -${h} -${h} m ${h} ${h} l -${h} ${h}`
+        })
+        .attr('stroke-width', '2')
         .attr('stroke', 'black')
         .attr('fill', 'none')
         .attr('stroke-linecap', 'round')
@@ -25,7 +36,8 @@ function drawSymbol(selection, {enterDuration, symbolRadius, arrowLength=15, arr
         .attr('opacity', 0)
       .transition()
         .duration(enterDuration)
-        .attr('opacity', 1)
+        .attr('opacity', 0.6)
+    selection.select('.symbol').append('title').text(d=>d.title)
 }
 
 function removeSymbol(selection, {exitDuration}) {
@@ -38,4 +50,18 @@ function removeSymbol(selection, {exitDuration}) {
       .transition()
         .delay(exitDuration)
         .remove()
+}
+
+function angle(d) {
+    if (d.angle !== undefined)
+        return d.angle
+    else
+        return Math.atan2(d.dy, d.dx) * 180/Math.PI
+}
+
+function norm(d) {
+    if (d.length !== undefined)
+        return d.length
+    else
+        return Math.sqrt(Math.pow(d.dx,2) + Math.pow(d.dy,2))
 }
