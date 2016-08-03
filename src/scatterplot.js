@@ -4,7 +4,7 @@ import pointSymbol from './pointsymbol'
 export default function scatterPlot(config) {
     let {
         width, height,
-        margin=10,
+        margin=20,
         symbol=pointSymbol(),
         updateDuration,
         xDomain, yDomain,
@@ -33,7 +33,6 @@ export default function scatterPlot(config) {
 
                 const plotGroup = svg.append('g')
                     .attr('class', 'scatterPlotGroup')
-                    .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
                 plotGroup.append('g').attr('class', 'xAxis')
                 plotGroup.append('g').attr('class', 'yAxis')
@@ -44,6 +43,8 @@ export default function scatterPlot(config) {
                 .attr("height", height)
 
             const plotGroup = svg.select('.scatterPlotGroup')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
             let points = plotGroup.selectAll('.point').data(data, d => d.id)
 
             const plotWidth = width - margin.left - margin.right

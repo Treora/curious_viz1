@@ -9,15 +9,17 @@ import dataset from './irisdata'
 function load_plot_2d(containerElement) {
     const container = d3.select(containerElement)
 
-    const width = 350;
+    const noiseStddev = 1.3;
+
+    const xDomain = extendDomainBy(noiseStddev)(d3.extent(dataset, d=>d.x))
+    const yDomain = extendDomainBy(noiseStddev)(d3.extent(dataset, d=>d.y))
+
+    const width = 450;
     const height = 350;
     const plotconfig = {
         width, height,
         margin: 40,
-        // xDomain: [10, 25],
-        // yDomain: [-3, 12],
-        // xDomain: [0, 12],
-        // yDomain: [0, 12],
+        xDomain, yDomain,
     }
 
     const testdata = [
@@ -33,7 +35,6 @@ function load_plot_2d(containerElement) {
     container.select('#plot_2d_data').datum(dataset).call(plotData)
 
     const noiseMean = 0;
-    const noiseStddev = 1.3;
     const noiseVariance = Math.pow(noiseStddev, 2);
     const noiseDistribution = gaussian(noiseMean, noiseVariance)
     const sampleNoise = () => noiseDistribution.ppf(Math.random())
@@ -77,3 +78,10 @@ function load_plot_2d(containerElement) {
 }
 
 window.load_plot_2d = load_plot_2d
+
+
+// Utils
+
+const extendDomainBy = margin => domain => [
+    domain[0] - margin, domain[1] + margin
+]
