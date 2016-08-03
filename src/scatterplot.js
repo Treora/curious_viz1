@@ -7,7 +7,7 @@ export default function scatterPlot(config) {
         margin=10,
         symbol=pointSymbol(),
         updateDuration,
-        xmin=0, xmax=10, ymin=0, ymax=10,
+        xDomain, yDomain,
     } = config
 
     if (typeof margin === 'number') {
@@ -49,12 +49,17 @@ export default function scatterPlot(config) {
             const plotWidth = width - margin.left - margin.right
             const plotHeight = height - margin.top - margin.bottom
 
+            if (xDomain === undefined)
+                xDomain = d3.extent(data, d=>d.x)
+            if (yDomain === undefined)
+                yDomain = d3.extent(data, d=>d.y)
+
             xScale
-                .domain(d3.extent(data, d=>d.x))
+                .domain(xDomain)
                 .nice()
                 .range([0, plotWidth])
             yScale
-                .domain(d3.extent(data, d=>d.y))
+                .domain(yDomain)
                 .nice()
                 .range([plotHeight, 0])
 
@@ -80,7 +85,7 @@ export default function scatterPlot(config) {
             points.enter().append('g')
                 .attr('class', 'point')
                 .call(setPosition)
-                .call(symbol.draw, {xmax, ymax})
+                .call(symbol.draw, {xScale, yScale})
                 // .on('mouseover', function (d) {
                 // TODO highlight?
                 // })

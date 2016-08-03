@@ -14,15 +14,10 @@ function load_plot_2d(containerElement) {
     const plotconfig = {
         width, height,
         margin: 40,
-        // xmin: 10,
-        // xmax: 25,
-        // ymin: -3,
-        // ymax: 12,
-
-        // xmin: 0,
-        // xmax: 12,
-        // ymin: 0,
-        // ymax: 12,
+        // xDomain: [10, 25],
+        // yDomain: [-3, 12],
+        // xDomain: [0, 12],
+        // yDomain: [0, 12],
     }
 
     const testdata = [

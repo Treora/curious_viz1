@@ -47,8 +47,10 @@ function drawSymbol(selection, {
     drawLeavesDuration = 500,
     hideLeavesAverageDelay = 1500,
     hideLeavesDuration = 500,
-    xmax, ymax,
+    xScale, yScale,
 }) {
+    const xmax = xScale.domain()[1]
+    const ymax = yScale.domain()[1]
 
     function drawLeaves(selection) {
         selection.select('.bud').style('fill-opacity', 1)
