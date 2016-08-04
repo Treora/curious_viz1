@@ -4,22 +4,19 @@ import pointSymbol from './pointsymbol'
 export default function scatterPlot(config) {
     let {
         width, height,
-        keepAspectRatio,
+        keepAspectRatio=false,
         margin=20,
         symbol=pointSymbol(),
-        updateDuration,
+        updateDuration=200,
         xDomain, yDomain,
+        approxTickCount=3,
     } = config
-
-    if (typeof margin === 'number') {
-        margin = {top: margin, right: margin, bottom: margin, left: margin}
-    }
 
     const xScale = d3.scaleLinear()
     const yScale = d3.scaleLinear()
 
-    const xAxis = d3.axisBottom(xScale).ticks(3).tickSizeOuter(0)
-    const yAxis = d3.axisLeft(yScale).ticks(3).tickSizeOuter(0)
+    const xAxis = d3.axisBottom(xScale)
+    const yAxis = d3.axisLeft(yScale)
 
     function plot(selection) {
         selection.each(function (data) { // 'each' = for each chart
@@ -39,38 +36,51 @@ export default function scatterPlot(config) {
                 plotGroup.append('g').attr('class', 'yAxis')
             }
 
+            // Set plot width & height, or fit to fill the container.
             const svg = container.select('svg')
             if (width !== undefined) {
                 svg.attr('width', width)
-            }
-            else {
+            } else {
                 svg.attr('width', '100%')
-                width = svg.node().parentElement.clientWidth
+                width = container.node().clientWidth
             }
             if (height !== undefined) {
                 svg.attr('height', height)
-            }
-            else {
+            } else {
                 svg.attr('height', '100%')
-                height = svg.node().parentElement.clientHeight
+                height = container.node().clientHeight
             }
 
+            // Move the whole plot to create margins around it
+            if (typeof margin === 'number') {
+                margin = {top: margin, right: margin, bottom: margin, left: margin}
+            }
             const plotGroup = svg.select('.scatterPlotGroup')
                 .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
-            let points = plotGroup.selectAll('.point').data(data, d => d.id)
-
-            if (xDomain === undefined)
+            // Set the plotted domain to the data minima and maxima.
+            if (xDomain === undefined) {
+                xScale.domain(xDomain).nice()
                 xDomain = d3.extent(data, d=>d.x)
-            if (yDomain === undefined)
+            } else {
+                xScale.domain(xDomain)
+            }
+            if (yDomain === undefined) {
                 yDomain = d3.extent(data, d=>d.y)
+                yScale.domain(yDomain).nice()
+            } else {
+                yScale.domain(yDomain)
+            }
 
+            // Compute the svg-coord range where the plot will be drawn
             let plotWidth = width - margin.left - margin.right
             let plotHeight = height - margin.top - margin.bottom
-
             if (keepAspectRatio) {
-                const xSpan = xDomain[1]-xDomain[0]
-                const ySpan = yDomain[1]-yDomain[0]
+                // Do not try to use the full svg size, but rather
+                // ensure that a data unit has equal size on both the
+                // x and y axes (so a square remains square).
+                const xSpan = xScale.domain()[1]-xScale.domain()[0]
+                const ySpan = yScale.domain()[1]-yScale.domain()[0]
                 const xRatio = plotWidth/xSpan
                 const yRatio = plotHeight/ySpan
                 if (xRatio < yRatio)
@@ -78,37 +88,34 @@ export default function scatterPlot(config) {
                 else
                     plotWidth = yRatio * xSpan
             }
+            xScale.range([0, plotWidth])
+            yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
-
-            xScale
-                .domain(xDomain)
-                .nice()
-                .range([0, plotWidth])
-            yScale
-                .domain(yDomain)
-                .nice()
-                .range([plotHeight, 0])
-
-
+            // Draw the axes
+            xAxis
+                .ticks(approxTickCount)
+                .tickSizeOuter(0) // (no extra tick at end of axis)
+            yAxis
+                .ticks(approxTickCount)
+                .tickSizeOuter(0)
             plotGroup.select('.xAxis')
                 .attr('transform', `translate(0, ${yScale.range()[0]})`)
                 .call(xAxis)
-
             plotGroup.select('.yAxis')
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
                 .call(yAxis)
 
+            // Finally, draw the symbols.
+            let points = plotGroup.selectAll('.point').data(data, d => d.id)
             const setPosition = points => points.attr('transform',
                 d => `translate(${xScale(d.x)}, ${yScale(d.y)})`
             )
-
-            // Update
+            // Update: moving existing points to their right location.
             points
               .transition()
                 .duration(updateDuration)
                 .call(setPosition)
-
-            // Enter
+            // Enter: draw symbols for newly added data points.
             points.enter().append('g')
                 .attr('class', 'point')
                 .call(setPosition)
@@ -116,8 +123,7 @@ export default function scatterPlot(config) {
                 // .on('mouseover', function (d) {
                 // TODO highlight?
                 // })
-
-            // Exit
+            // Exit: remove symbols of removed data points.
             points.exit()
                 .call(symbol.remove)
 
@@ -130,6 +136,7 @@ export default function scatterPlot(config) {
     //     else
     //         return width
     // }
+    // TODO make getters and setters
 
     return plot
 }
