@@ -14,11 +14,11 @@ function load_plot_2d(containerElement) {
     const xDomain = extendDomainBy(noiseStddev)(d3.extent(dataset, d=>d.x))
     const yDomain = extendDomainBy(noiseStddev)(d3.extent(dataset, d=>d.y))
 
-    const width = 450;
-    const height = 350;
     const plotconfig = {
-        width, height,
+        // width: 400,
+        // height: 300,
         margin: 40,
+        keepAspectRatio: true,
         xDomain, yDomain,
     }
 

@@ -5,21 +5,23 @@
     <script src="lib/d3.v4.js"></script>
     <script src="build/main.js"></script>
     <style>
-    svg {
-        border: 1px black solid;
-        margin: 10px;
+    .plotContainer {
+        width: 500px;
+        height: 400px;
         /*position: absolute;*/
+        /*overflow: hidden;*/
+        /*border: 1px black solid;*/
     }
     </style>
 </head>
 <body>
 
     <div id='plot_2d'>
-        <div id='plot_2d_data'></div>
-        <div id='plot_2d_noise'></div>
-        <div id='plot_2d_noisy'></div>
-        <div id='plot_2d_denoise'></div>
-        <div id='plot_2d_denoised'></div>
+        <div id='plot_2d_data' class='plotContainer'></div>
+        <div id='plot_2d_noise' class='plotContainer'></div>
+        <div id='plot_2d_noisy' class='plotContainer'></div>
+        <div id='plot_2d_denoise' class='plotContainer'></div>
+        <div id='plot_2d_denoised' class='plotContainer'></div>
     </div>
     <script>
         load_plot_2d('#plot_2d');

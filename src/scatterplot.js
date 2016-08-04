@@ -4,6 +4,7 @@ import pointSymbol from './pointsymbol'
 export default function scatterPlot(config) {
     let {
         width, height,
+        keepAspectRatio,
         margin=20,
         symbol=pointSymbol(),
         updateDuration,
@@ -39,21 +40,45 @@ export default function scatterPlot(config) {
             }
 
             const svg = container.select('svg')
-                .attr("width", width)
-                .attr("height", height)
+            if (width !== undefined) {
+                svg.attr('width', width)
+            }
+            else {
+                svg.attr('width', '100%')
+                width = svg.node().parentElement.clientWidth
+            }
+            if (height !== undefined) {
+                svg.attr('height', height)
+            }
+            else {
+                svg.attr('height', '100%')
+                height = svg.node().parentElement.clientHeight
+            }
 
             const plotGroup = svg.select('.scatterPlotGroup')
                 .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
             let points = plotGroup.selectAll('.point').data(data, d => d.id)
 
-            const plotWidth = width - margin.left - margin.right
-            const plotHeight = height - margin.top - margin.bottom
-
             if (xDomain === undefined)
                 xDomain = d3.extent(data, d=>d.x)
             if (yDomain === undefined)
                 yDomain = d3.extent(data, d=>d.y)
+
+            let plotWidth = width - margin.left - margin.right
+            let plotHeight = height - margin.top - margin.bottom
+
+            if (keepAspectRatio) {
+                const xSpan = xDomain[1]-xDomain[0]
+                const ySpan = yDomain[1]-yDomain[0]
+                const xRatio = plotWidth/xSpan
+                const yRatio = plotHeight/ySpan
+                if (xRatio < yRatio)
+                    plotHeight = xRatio * ySpan
+                else
+                    plotWidth = yRatio * xSpan
+            }
+
 
             xScale
                 .domain(xDomain)
@@ -63,6 +88,7 @@ export default function scatterPlot(config) {
                 .domain(yDomain)
                 .nice()
                 .range([plotHeight, 0])
+
 
             plotGroup.select('.xAxis')
                 .attr('transform', `translate(0, ${yScale.range()[0]})`)
