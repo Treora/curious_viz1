@@ -7,7 +7,7 @@ export default function scatterPlot(config) {
         keepAspectRatio=false,
         margin=20,
         symbol=pointSymbol(),
-        updateDuration=200,
+        updateDuration=500,
         xDomain, yDomain,
         approxTickCount=3,
     } = config
@@ -112,6 +112,7 @@ export default function scatterPlot(config) {
             )
             // Update: moving existing points to their right location.
             points
+              .call(symbol.draw, {xScale, yScale, updateDuration})
               .transition()
                 .duration(updateDuration)
                 .call(setPosition)
@@ -119,7 +120,7 @@ export default function scatterPlot(config) {
             points.enter().append('g')
                 .attr('class', 'point')
                 .call(setPosition)
-                .call(symbol.draw, {xScale, yScale})
+                .call(symbol.draw, {xScale, yScale, updateDuration})
                 // .on('mouseover', function (d) {
                 // TODO highlight?
                 // })

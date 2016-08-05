@@ -1,3 +1,6 @@
+import { selectEnter } from './utils'
+
+
 export default function defineSymbol(symbolProps) {
     return {
         props: symbolProps,
@@ -8,28 +11,30 @@ export default function defineSymbol(symbolProps) {
     }
 }
 
-function drawSymbol(selection, {enterDuration=0, symbolRadius=5}) {
-    selection
-      .append('g')
-        .attr('class', 'symbol')
+function drawSymbol(selection, {
+    enterDuration=500,
+    symbolRadius=5,
+    opacity=0.5,
+    color='blue',
+}) {
+    selectEnter(selection, '.symbol')
       .append('circle')
+        .attr('class', 'symbol')
         .attr('r', 0)
-        .style('fill-opacity', 0)
-        .style('fill', 'purple')
+        .style('fill-opacity', opacity)
+        .style('fill', color)
+    selection.select('.symbol')
       .transition()
         .duration(enterDuration)
         .attr('r', symbolRadius)
-        .style('fill-opacity', 1)
+        .style('fill-opacity', opacity)
+        .style('fill', color)
 }
 
-function removeSymbol(selection, {exitDuration=0}) {
+function removeSymbol(selection, {exitDuration=500}) {
     selection.select('.symbol')
       .transition()
         .duration(exitDuration)
-        .attr('transform', 'scale(0)')
-        .style('fill-opacity', 0)
-    selection
-      .transition()
-        .delay(exitDuration)
+        .attr('r', 0)
         .remove()
 }

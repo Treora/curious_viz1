@@ -1,3 +1,6 @@
+import { selectEnter } from './utils'
+
+
 export default function defineSymbol(symbolProps) {
     return {
         props: symbolProps,
@@ -55,7 +58,7 @@ function drawSymbol(selection, {
     function drawLeaves(selection) {
         selection.select('.bud').style('fill-opacity', 1)
         // Insert the group for leaves behind the bud
-        const leavesGroup = selection.select('.symbol').insert('g', ':first-child')
+        const leavesGroup = selection.insert('g', ':first-child')
             .attr('class', 'leaves')
             .attr('transform', d => `rotate(${60*(-1+2*Math.random())})`)
         // Amount (of the leaf template) hidden behind the bud
@@ -106,7 +109,7 @@ function drawSymbol(selection, {
     }
 
     // Draw bud
-    selection
+    selectEnter(selection, '.bud')
       .append('g')
         .attr('class', 'symbol')
       .append('circle')
@@ -114,24 +117,28 @@ function drawSymbol(selection, {
         .attr('r', 0)
         .style('fill-opacity', 0)
         .style('fill', 'purple')
+        // Mousing over the bud reveals the leaves
+        .on('mouseover', function () {
+            const point = d3.select(this.parentNode)
+            if (point.select('.leaves').empty()) {
+                point.raise()
+                point.call(drawLeaves)
+            }
+        })
+        .on('mouseout', function () {
+            d3.select(this.parentNode).call(hideLeaves)
+        })
+
+    const bud = selection.select('.bud')
+    bud
       .transition()
         .duration(enterDuration)
         .attr('r', symbolRadius)
         .style('fill-opacity', opacity)
 
-    selection.select('.bud').append('title').text(d=>d.title)
-
-    // Mousing over the bud reveals the leaves
-    selection.on('mouseover', function () {
-        const point = d3.select(this)
-        if (point.select('.leaves').empty()) {
-            point.raise()
-            point.call(drawLeaves)
-        }
-    })
-    selection.on('mouseout', function () {
-        d3.select(this).call(hideLeaves)
-    })
+    // Add an item title (tooltip) if any is defined
+    bud
+        .append('title').text(d=>d.title)
 
 }
 

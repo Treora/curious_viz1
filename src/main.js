@@ -1,11 +1,12 @@
 import _ from 'lodash'
 import gaussian from 'gaussian'
+import { extendDomainBy } from './utils'
 
-import flowerPlot from './flowerplot'
-import arrowPlot from './arrowplot'
+import scatterPlot from './scatterplot'
+import flowerSymbol from './flowersymbol'
+import arrowSymbol from './arrowsymbol'
 import originalData from './irisdata'
 //import originalData from './gaussianbananas'
-
 
 function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     const pNoise = originalData.map(datum => (
@@ -17,6 +18,16 @@ function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     const den = _.mean(pNoise)
     return {x: numX/den, y: numY/den}
 }
+
+// Substract coordinates for drawing arrows from sourceData to targetData
+function compareData(sourceData, targetData) {
+    return sourceData.map((d, i) => ({
+        ...d,
+        dx: targetData[i].x - d.x,
+        dy: targetData[i].y - d.y,
+    }))
+}
+
 
 const noiseStdDev = 1.3;
 const noiseMean = 0;
@@ -33,16 +44,22 @@ function drawPlot2d() {
     const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
     const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
 
-    // Config shared by the 2d plots
-    const plotconfig = {
+    // Configure the flower and arrow plots.
+    const sharedPlotConfig = {
         // width: 400,
         // height: 300,
         margin: 40,
         keepAspectRatio: true,
         xDomain, yDomain,
     }
-    const drawFlowers = flowerPlot(plotconfig)
-    const drawArrows = arrowPlot(plotconfig)
+    const drawFlowers = scatterPlot({
+        ...sharedPlotConfig,
+        symbol: flowerSymbol(),
+    })
+    const drawArrows = scatterPlot({
+        ...sharedPlotConfig,
+        symbol: arrowSymbol(),
+    })
 
     // Apply gaussian noise to the data points.
     const noisyData = originalData.map(d => ({
@@ -80,18 +97,3 @@ function drawPlot2d() {
 }
 
 window.drawPlot2d = drawPlot2d
-
-
-// Utils
-
-function compareData(sourceData, targetData) {
-    return sourceData.map((d, i) => ({
-        ...d,
-        dx: targetData[i].x - d.x,
-        dy: targetData[i].y - d.y,
-    }))
-}
-
-const extendDomainBy = (domain, margin) => [
-    domain[0] - margin, domain[1] + margin
-]
