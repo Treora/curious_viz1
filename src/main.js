@@ -5,8 +5,8 @@ import { extendDomainBy } from './utils'
 import scatterPlot from './scatterplot'
 import flowerSymbol from './flowersymbol'
 import arrowSymbol from './arrowsymbol'
-import originalData from './irisdata'
-//import originalData from './gaussianbananas'
+import irisData from './irisdata'
+import bananaData from './gaussianbananas'
 
 function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     const pNoise = originalData.map(datum => (
@@ -38,6 +38,9 @@ const sampleNoise = () => noiseDistribution.ppf(Math.random())
 
 function drawPlot2d() {
     const container = d3.select('#plot_2d')
+
+    const originalData = irisData
+    // const originalData = Math.random()>0.5 ? irisData : bananaData
 
     // We want all plots to have exactly the same size and scale.
     // Set the domain to the original data plus one stddev of noise

@@ -1,5 +1,7 @@
 import _ from 'lodash'
+
 import pointSymbol from './pointsymbol'
+import { selectEnter } from './utils'
 
 export default function scatterPlot(config) {
     let {
@@ -23,40 +25,20 @@ export default function scatterPlot(config) {
 
             const container = d3.select(this)
 
-            if (container.select('.scatterPlotSvg').empty()) {
-                const svg = container
-                  .append('svg')
-                    .attr('class', 'scatterPlotSvg')
-                    .call(symbol.init || _.noop)
-
-                const plotGroup = svg.append('g')
-                    .attr('class', 'scatterPlotGroup')
-
-                plotGroup.append('g').attr('class', 'xAxis')
-                plotGroup.append('g').attr('class', 'yAxis')
-            }
-
             // Set plot width & height, or fit to fill the container.
-            const svg = container.select('svg')
-            if (width !== undefined) {
-                svg.attr('width', width)
-            } else {
-                svg.attr('width', '100%')
-                width = container.node().clientWidth
-            }
-            if (height !== undefined) {
-                svg.attr('height', height)
-            } else {
-                svg.attr('height', '100%')
-                height = container.node().clientHeight
-            }
+            const svgWidth = (width !== undefined) ? width : '100%'
+            const svgHeight = (height !== undefined) ? height : '100%'
 
-            // Move the whole plot to create margins around it
             if (typeof margin === 'number') {
                 margin = {top: margin, right: margin, bottom: margin, left: margin}
             }
-            const plotGroup = svg.select('.scatterPlotGroup')
-                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+            let plotWidth =
+                (svgWidth==='100%' ? container.node().clientWidth : width)
+                - margin.left - margin.right
+            let plotHeight =
+                (svgHeight==='100%' ? container.node().clientHeight: height)
+                - margin.top - margin.bottom
 
             // Set the plotted domain to the data minima and maxima.
             if (xDomain === undefined) {
@@ -73,8 +55,6 @@ export default function scatterPlot(config) {
             }
 
             // Compute the svg-coord range where the plot will be drawn
-            let plotWidth = width - margin.left - margin.right
-            let plotHeight = height - margin.top - margin.bottom
             if (keepAspectRatio) {
                 // Do not try to use the full svg size, but rather
                 // ensure that a data unit has equal size on both the
@@ -91,6 +71,31 @@ export default function scatterPlot(config) {
             xScale.range([0, plotWidth])
             yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
+            // Create basic structure if not existent
+            {
+                const svg = selectEnter(container, '.scatterPlotSvg')
+                    .append('svg')
+                        .attr('class', 'scatterPlotSvg')
+                        .call(symbol.init || _.noop)
+
+                const plotGroup = svg.append('g')
+                    .attr('class', 'scatterPlotGroup')
+
+                plotGroup.append('g').attr('class', 'xAxis')
+                    .attr('transform', `translate(0, ${yScale.range()[0]})`)
+                plotGroup.append('g').attr('class', 'yAxis')
+                    .attr('transform', `translate(0, ${xScale.range()[0]})`)
+            }
+
+            // Update all configurable stuff
+            const svg = container.select('svg')
+            svg.attr('height', svgHeight)
+            svg.attr('width', svgWidth)
+
+            // Move the whole plot to create margins around it
+            const plotGroup = svg.select('.scatterPlotGroup')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
             // Draw the axes
             xAxis
                 .ticks(approxTickCount)
@@ -99,9 +104,13 @@ export default function scatterPlot(config) {
                 .ticks(approxTickCount)
                 .tickSizeOuter(0)
             plotGroup.select('.xAxis')
+              .transition()
+                .duration(updateDuration)
                 .attr('transform', `translate(0, ${yScale.range()[0]})`)
                 .call(xAxis)
             plotGroup.select('.yAxis')
+              .transition()
+                .duration(updateDuration)
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
                 .call(yAxis)
 
