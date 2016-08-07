@@ -137,9 +137,8 @@ function drawSymbol(selection, {
         .style('fill-opacity', opacity)
 
     // Add an item title (tooltip) if any is defined
-    bud
-        .append('title').text(d=>d.title)
-
+    selectEnter(bud, 'title').append('title')
+    bud.select('title').text(d=>d.title)
 }
 
 function removeSymbol(selection, {exitDuration=500}) {

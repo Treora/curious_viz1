@@ -7,7 +7,7 @@ export default function scatterPlot(config) {
     let {
         width, height,
         keepAspectRatio=false,
-        margin=20,
+        margin={top: 0, right: 0, bottom: 20, left: 20},
         symbol=pointSymbol(),
         updateDuration=500,
         xDomain, yDomain,
@@ -25,9 +25,16 @@ export default function scatterPlot(config) {
 
             const container = d3.select(this)
 
-            // Set plot width & height, or fit to fill the container.
+            // Add SVG element if needed and set its size
             const svgWidth = (width !== undefined) ? width : '100%'
             const svgHeight = (height !== undefined) ? height : '100%'
+            selectEnter(container, '.scatterPlotSvg')
+              .append('svg')
+                .attr('class', 'scatterPlotSvg')
+                .call(symbol.init || _.noop)
+            const svg = container.select('svg')
+            svg.attr('height', svgHeight)
+            svg.attr('width', svgWidth)
 
             if (typeof margin === 'number') {
                 margin = {top: margin, right: margin, bottom: margin, left: margin}
@@ -71,26 +78,14 @@ export default function scatterPlot(config) {
             xScale.range([0, plotWidth])
             yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
-            // Create basic structure if not existent
-            {
-                const svg = selectEnter(container, '.scatterPlotSvg')
-                    .append('svg')
-                        .attr('class', 'scatterPlotSvg')
-                        .call(symbol.init || _.noop)
-
-                const plotGroup = svg.append('g')
-                    .attr('class', 'scatterPlotGroup')
-
-                plotGroup.append('g').attr('class', 'xAxis')
-                    .attr('transform', `translate(0, ${yScale.range()[0]})`)
-                plotGroup.append('g').attr('class', 'yAxis')
-                    .attr('transform', `translate(0, ${xScale.range()[0]})`)
-            }
-
-            // Update all configurable stuff
-            const svg = container.select('svg')
-            svg.attr('height', svgHeight)
-            svg.attr('width', svgWidth)
+            // Add a group for the whole plot if not there yet
+            const plotGroupEnter = selectEnter(svg, '.scatterPlotGroup')
+              .append('g')
+                .attr('class', 'scatterPlotGroup')
+            plotGroupEnter.append('g').attr('class', 'xAxis')
+                .attr('transform', `translate(0, ${yScale.range()[0]})`)
+            plotGroupEnter.append('g').attr('class', 'yAxis')
+                .attr('transform', `translate(0, ${xScale.range()[0]})`)
 
             // Move the whole plot to create margins around it
             const plotGroup = svg.select('.scatterPlotGroup')

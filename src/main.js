@@ -51,7 +51,6 @@ function drawPlot2d() {
     const sharedPlotConfig = {
         // width: 400,
         // height: 300,
-        margin: 40,
         keepAspectRatio: true,
         xDomain, yDomain,
     }
