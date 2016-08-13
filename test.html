@@ -13,11 +13,24 @@
         /*overflow: hidden;*/
         /*border: 1px black solid;*/
     }
+
+    #plot_2d_denoise {
+        /*width: 500px;*/
+        /*height: 300px;*/
+    }
     </style>
 </head>
 <body>
 
     <div id='plot_2d'>
+        <form id="selectNoise">
+            <input name='noise' type='radio' value='0.1' onchange='drawPlot2d({dataStdDev: +this.value})'>0.5
+            <br>
+            <input name='noise' type='radio' value='0.2' onchange='drawPlot2d({dataStdDev: +this.value})' checked>1.0
+            <br>
+            <input name='noise' type='radio' value='0.5' onchange="drawPlot2d({dataStdDev: +this.value})">1.5
+            <br>
+        </form>
         <div id='plot_2d_data' class='plotContainer'></div>
         <div id='plot_2d_noise' class='plotContainer'></div>
         <div id='plot_2d_noisy' class='plotContainer'></div>
@@ -25,8 +38,9 @@
         <div id='plot_2d_denoised' class='plotContainer'></div>
     </div>
     <script>
-        drawPlot2d();
-        window.setInterval(() => drawPlot2d(), 3000);
+        drawPlot2d({dataStdDev: document.forms['selectNoise']['noise'].value || 0,
+        noiseStdDev: 1.0});
+        //window.setInterval(() => drawPlot2d({noiseStdDev: Math.random()+0.5}), 3000);
     </script>
 
 </body>

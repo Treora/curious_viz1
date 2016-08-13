@@ -7,7 +7,7 @@ export default function scatterPlot(config) {
     let {
         width, height,
         keepAspectRatio=false,
-        margin={top: 0, right: 0, bottom: 20, left: 20},
+        margin={top: 10, right: 10, bottom: 25, left: 25},
         symbol=pointSymbol(),
         updateDuration=500,
         xDomain, yDomain,
