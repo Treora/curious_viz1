@@ -7,8 +7,8 @@ function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
     const container = d3.select('#plot_1d')
 
     const drawDistribution = distributionPlot({
-        // xDomain: [-2, 2],
-        // yDomain: [0, 1],
+        xDomain: [-2, 2],
+        yDomain: [0, 1],
     })
     const drawFunction = functionPlot({
     })
@@ -19,13 +19,13 @@ function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
         pdf: x => 1,
     }
 
-    const normalDistribution = gaussian(0, 1)
-
-    const dataDistribution = normalDistribution
-    const noiseDistribution = uniformDistribution
-    const corruptedDistribution = normalDistribution
+    const dataMean = 0
+    const noiseMean = 0
+    const dataDistribution = gaussian(dataMean, dataStdDev)
+    const noiseDistribution = gaussian(noiseMean, noiseStdDev)
+    const corruptedDistribution = gaussian(dataMean+noiseMean, dataStdDev+noiseStdDev)
     const denoiseFunction = () => 1
-    const denoisedDistribution = normalDistribution
+    const denoisedDistribution = gaussian(0,1)
 
     container.select('#plot_1d_data')
         .datum(dataDistribution)

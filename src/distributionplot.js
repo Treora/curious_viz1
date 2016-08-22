@@ -12,6 +12,8 @@ export default function distributionPlot(config) {
         updateDuration=500,
         xDomain, yDomain,
         approxTickCount=3,
+        lineColor='blue',
+        lineOpacity=0.3,
         nSamples=100,
         random=Math.random,
     } = config
@@ -54,7 +56,6 @@ export default function distributionPlot(config) {
                     ? distribution.ppf(random())
                     : distribution.sample()
             ))
-
 
             // Determine the domain to plot from taken samples
             if (xDomain === undefined) {
@@ -125,6 +126,30 @@ export default function distributionPlot(config) {
             // Exit: remove symbols of removed data points.
             points.exit()
                 .call(symbol.remove)
+
+            // Draw line
+            if (lineOpacity > 0) {
+                const line = d3.line()
+                    .x(d => xScale(d))
+                    .y(d => yScale(distribution.pdf(d)))
+                    .curve(d3.curveMonotoneX)
+                selectEnter(plotGroup, '.line')
+                  .append('path')
+                    .attr('class', 'line')
+                    .attr('stroke', lineColor)
+                    .attr('fill', 'none')
+                    .attr('opacity', lineOpacity)
+                plotGroup.select('.line')
+                    .datum(samples)
+                  .transition()
+                    .duration(updateDuration)
+                    .attr('d', line)
+            }
+            else {
+                plotGroup.select('.line')
+                    .remove()
+            }
+
         })
     }
 
