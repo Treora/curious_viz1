@@ -49,8 +49,8 @@ export default function scatterPlot(config) {
 
             // Set the plotted domain to the data minima and maxima.
             if (xDomain === undefined) {
-                xScale.domain(xDomain).nice()
                 xDomain = d3.extent(data, d=>d.x)
+                xScale.domain(xDomain).nice()
             } else {
                 xScale.domain(xDomain)
             }
