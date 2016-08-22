@@ -21,27 +21,66 @@
     </style>
 </head>
 <body>
-
-    <div id='plot_2d'>
-        <form id="selectNoise">
-            <input name='noise' type='radio' value='0.1' onchange='drawPlot2d({dataStdDev: +this.value})'>0.5
+<!--
+    <div id="plot_2d">
+        <form id="plot_2d_selectStdDev">
+            <input name="stdDev" type="radio" value="0.1" onchange="draw2d()">0.1
             <br>
-            <input name='noise' type='radio' value='0.2' onchange='drawPlot2d({dataStdDev: +this.value})' checked>1.0
+            <input name="stdDev" type="radio" value="0.2" onchange="draw2d()" checked>0.2
             <br>
-            <input name='noise' type='radio' value='0.5' onchange="drawPlot2d({dataStdDev: +this.value})">1.5
+            <input name="stdDev" type="radio" value="0.5" onchange="draw2d()">0.5
             <br>
         </form>
-        <div id='plot_2d_data' class='plotContainer'></div>
-        <div id='plot_2d_noise' class='plotContainer'></div>
-        <div id='plot_2d_noisy' class='plotContainer'></div>
-        <div id='plot_2d_denoise' class='plotContainer'></div>
-        <div id='plot_2d_denoised' class='plotContainer'></div>
+        <div id="plot_2d_data" class="plotContainer"></div>
+        <div id="plot_2d_noise" class="plotContainer"></div>
+        <div id="plot_2d_noisy" class="plotContainer"></div>
+        <div id="plot_2d_denoise" class="plotContainer"></div>
+        <div id="plot_2d_denoised" class="plotContainer"></div>
     </div>
     <script>
-        drawPlot2d({dataStdDev: document.forms['selectNoise']['noise'].value || 0,
-        noiseStdDev: 1.0});
-        //window.setInterval(() => drawPlot2d({noiseStdDev: Math.random()+0.5}), 3000);
+        var draw2d = function () {
+            drawPlot2d({
+                dataStdDev: document.forms['plot_2d_selectStdDev']['stdDev'].value || 0.2,
+                noiseStdDev: 1.0,
+            });
+        };
+        draw2d();
     </script>
+-->
+
+    <div id="plot_1d">
+        <form id="plot_1d_selectStdDev">
+            <input name="stdDev" type="radio" value="0.1" onchange="draw1d()">0.1
+            <br>
+            <input name="stdDev" type="radio" value="0.2" onchange="draw1d()" checked>0.2
+            <br>
+            <input name="stdDev" type="radio" value="0.5" onchange="draw1d()">0.5
+            <br>
+        </form>
+        <form id="plot_1d_selectNoise">
+            <input name="noise" type="radio" value="0.1" onchange="draw1d()">0.1
+            <br>
+            <input name="noise" type="radio" value="0.2" onchange="draw1d()" checked>0.2
+            <br>
+            <input name="noise" type="radio" value="0.5" onchange="draw1d()">0.5
+            <br>
+        </form>
+        <div id="plot_1d_data" class="plotContainer"></div>
+        <div id="plot_1d_noise" class="plotContainer"></div>
+        <div id="plot_1d_noisy" class="plotContainer"></div>
+        <div id="plot_1d_denoise" class="plotContainer"></div>
+        <div id="plot_1d_denoised" class="plotContainer"></div>
+    </div>
+    <script>
+        var draw1d = function () {
+            drawPlot1d({
+                dataStdDev: document.forms['plot_1d_selectStdDev']['stdDev'].value || 0,
+                noiseStdDev: document.forms['plot_1d_selectNoise']['noise'].value || 0,
+            });
+        };
+        draw1d();
+    </script>
+
 
 </body>
 </html>

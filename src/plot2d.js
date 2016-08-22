@@ -28,9 +28,6 @@ function compareData(sourceData, targetData) {
     }))
 }
 
-// Maximum stdDev plot should expect (hardcoded for now)
-const maxNoiseStdDev = 1.5
-
 function drawPlot2d({dataset, dataStdDev=0.1, noiseStdDev=1.0}) {
 
     const container = d3.select('#plot_2d')
@@ -40,12 +37,14 @@ function drawPlot2d({dataset, dataStdDev=0.1, noiseStdDev=1.0}) {
     const sampleNoise = () => noiseDistribution.ppf(Math.random())
 
     const originalData = generateBananaData({stdDev: dataStdDev})
-    // const originalData = Math.random()>0.5 ? irisData : bananaData
 
-    // We want all plots to have exactly the same size and scale.
+    // Set the data domain so all plots have exactly the same size and scale.
     // Set the domain to the original data plus one stddev of noise
-    const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), maxNoiseStdDev)
-    const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), maxNoiseStdDev)
+    // const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
+    // const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
+    // ...or whatever, let's just hard-code the domain to keep axes static.
+    const xDomain = [0, 10]
+    const yDomain = [0, 12]
 
     // Configure the flower and arrow plots.
     const sharedPlotConfig = {
