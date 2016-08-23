@@ -1,21 +1,26 @@
 import _ from 'lodash'
+import linspace from 'linspace'
 
 import pointSymbol from './pointsymbol'
-import { selectEnter } from './utils'
+import { selectEnter, extendDomainByFactor } from './utils'
 
 export default function distributionPlot(config) {
     let {
         width, height,
-        // keepAspectRatio=false,
         margin={top: 10, right: 10, bottom: 25, left: 25},
-        symbol=pointSymbol({symbolRadius: 2}),
         updateDuration=500,
         xDomain, yDomain,
         approxTickCount=3,
+        random=Math.random,
+
         lineColor='blue',
         lineOpacity=0.3,
+        nLinePoints=100,
+
+        drawSamples=true,
+        symbol=pointSymbol({symbolRadius: 2}),
         nSamples=100,
-        random=Math.random,
+
     } = config
 
     const xScale = d3.scaleLinear()
@@ -34,21 +39,23 @@ export default function distributionPlot(config) {
             selectEnter(container, '.distributionPlotSvg')
               .append('svg')
                 .attr('class', 'distributionPlotSvg')
-                .call(symbol.init || _.noop)
+                .call((symbol && symbol.init) || _.noop)
             const svg = container.select('svg')
             svg.attr('height', svgHeight)
             svg.attr('width', svgWidth)
 
+            // Determine where to draw
             if (typeof margin === 'number') {
                 margin = {top: margin, right: margin, bottom: margin, left: margin}
             }
-
             let plotWidth =
                 (svgWidth==='100%' ? container.node().clientWidth : width)
                 - margin.left - margin.right
             let plotHeight =
                 (svgHeight==='100%' ? container.node().clientHeight: height)
                 - margin.top - margin.bottom
+            xScale.range([0, plotWidth])
+            yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
             // Take samples from the distribution
             const samples = _.sortBy(Array.from({length: nSamples}).map(() =>
@@ -59,19 +66,26 @@ export default function distributionPlot(config) {
 
             // Determine the domain to plot from taken samples
             if (xDomain === undefined) {
-                const domain = d3.extent(samples)
+                const domain = extendDomainByFactor(d3.extent(samples), 2)
                 xScale.domain(domain).nice()
             } else {
                 xScale.domain(xDomain)
             }
+
+            // Try to cover the whole domain adequately: compute pdf at regular
+            // intervals as well as at the samples
+            const linePoints = _.sortBy(_.concat(
+                linspace(...xScale.domain(), nLinePoints),
+                samples,
+            ))
+
+            // Determine the vertical domain (= the pdf's range)
             if (yDomain === undefined) {
-                const domain = d3.extent(samples, d => distribution.pdf(d))
-                yScale.domain([0, domain[1]]).nice()
+                const domain = d3.extent(linePoints, d => distribution.pdf(d))
+                yScale.domain([0, domain[1]*1.5]).nice()
             } else {
                 yScale.domain(yDomain)
             }
-            xScale.range([0, plotWidth])
-            yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
             // Add a group for the whole plot if not there yet
             const plotGroupEnter = selectEnter(svg, '.distributionPlotGroup')
@@ -105,29 +119,28 @@ export default function distributionPlot(config) {
                 .call(yAxis)
 
             // Draw the samples
-            let points = plotGroup.selectAll('.point').data(samples)
-            const setPosition = points => points.attr('transform',
-                d => `translate(${xScale(d)}, ${yScale(distribution.pdf(d))})`
-            )
-            // Update: moving existing points to their right location.
-            points
-              .call(symbol.draw, {xScale, yScale, updateDuration})
-              .transition()
-                .duration(updateDuration)
-                .call(setPosition)
-            // Enter: draw symbols for newly added data points.
-            points.enter().append('g')
-                .attr('class', 'point')
-                .call(setPosition)
-                .call(symbol.draw, {xScale, yScale, updateDuration})
-                // .on('mouseover', function (d) {
-                // TODO highlight?
-                // })
-            // Exit: remove symbols of removed data points.
-            points.exit()
-                .call(symbol.remove)
+            if (drawSamples) {
+                const points = plotGroup.selectAll('.point').data(samples)
+                const setPosition = points => points.attr('transform',
+                    d => `translate(${xScale(d)}, ${yScale(distribution.pdf(d))})`
+                )
+                // Update: moving existing points to their right location.
+                points
+                  .call(symbol.draw, {xScale, yScale, updateDuration})
+                  .transition()
+                    .duration(updateDuration)
+                    .call(setPosition)
+                // Enter: draw symbols for newly added data points.
+                points.enter().append('g')
+                    .attr('class', 'point')
+                    .call(setPosition)
+                    .call(symbol.draw, {xScale, yScale, updateDuration})
+                // Exit: remove symbols of removed data points.
+                points.exit()
+                    .call(symbol.remove)
+            }
 
-            // Draw line
+            // Draw the line
             if (lineOpacity > 0) {
                 const line = d3.line()
                     .x(d => xScale(d))
@@ -136,13 +149,15 @@ export default function distributionPlot(config) {
                 selectEnter(plotGroup, '.line')
                   .append('path')
                     .attr('class', 'line')
-                    .attr('stroke', lineColor)
                     .attr('fill', 'none')
+                    .attr('stroke', lineColor)
                     .attr('opacity', lineOpacity)
                 plotGroup.select('.line')
-                    .datum(samples)
+                    .datum(linePoints)
                   .transition()
                     .duration(updateDuration)
+                    .attr('stroke', lineColor)
+                    .attr('opacity', lineOpacity)
                     .attr('d', line)
             }
             else {

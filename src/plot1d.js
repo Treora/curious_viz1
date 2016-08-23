@@ -6,9 +6,10 @@ import functionPlot from './functionplot'
 function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
     const container = d3.select('#plot_1d')
 
+    const xDomain = [-2, 2]
     const drawDistribution = distributionPlot({
-        xDomain: [-2, 2],
-        yDomain: [0, 1],
+        xDomain,
+        // yDomain: [0, 1],
     })
     const drawFunction = functionPlot({
     })
@@ -33,7 +34,10 @@ function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
 
     container.select('#plot_1d_noise')
         .datum(noiseDistribution)
-        .call(drawDistribution)
+        .call(distributionPlot({
+            xDomain,
+            // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
+        }))
 
     container.select('#plot_1d_noisy')
         .datum(corruptedDistribution)

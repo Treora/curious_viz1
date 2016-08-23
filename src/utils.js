@@ -12,3 +12,11 @@ export function selectEnter(selection, selector) {
 export const extendDomainBy = (domain, margin) => [
     domain[0] - margin, domain[1] + margin
 ]
+
+export function extendDomainByFactor(domain, factor) {
+    const span = domain[1] - domain[0]
+    return [
+        domain[0] - span/2 * (factor-1),
+        domain[1] + span/2 * (factor-1)
+    ]
+}
