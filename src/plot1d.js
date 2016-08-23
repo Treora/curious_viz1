@@ -12,6 +12,7 @@ function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
         // yDomain: [0, 1],
     })
     const drawFunction = functionPlot({
+        // yDomain: [0, 2],
     })
 
     const uniformDistribution = {
@@ -25,7 +26,7 @@ function drawPlot1d({distribution, dataStdDev, noiseStdDev}) {
     const dataDistribution = gaussian(dataMean, dataStdDev)
     const noiseDistribution = gaussian(noiseMean, noiseStdDev)
     const corruptedDistribution = gaussian(dataMean+noiseMean, dataStdDev+noiseStdDev)
-    const denoiseFunction = () => 1
+    const denoiseFunction = () => () => Math.random()
     const denoisedDistribution = gaussian(0,1)
 
     container.select('#plot_1d_data')
