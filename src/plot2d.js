@@ -8,6 +8,7 @@ import arrowSymbol from './arrowsymbol'
 import irisData from './irisdata'
 import generateBananaData from './gaussianbananas'
 
+
 function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     const pNoise = originalData.map(datum => (
         noiseDistribution.pdf(noisySample.x - datum.x)
@@ -28,73 +29,102 @@ function compareData(sourceData, targetData) {
     }))
 }
 
-function drawPlot2d({dataset, dataStdDev=0.1, noiseStdDev=1.0}) {
 
-    const container = d3.select('#plot_2d')
+// Set the data domain so all plots have exactly the same size and scale.
+// Set the domain to the original data plus one stddev of noise
+// const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
+// const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
+// ...or whatever, let's just hard-code the domain to keep axes static.
+const xDomain = [0, 10]
+const yDomain = [0, 12]
+
+// Configure the flower and arrow plots.
+const sharedPlotConfig = {
+    // width: 400,
+    // height: 300,
+    keepAspectRatio: true,
+    xDomain, yDomain,
+}
+const drawFlowers = scatterPlot({
+    ...sharedPlotConfig,
+    symbol: flowerSymbol(),
+})
+const drawArrows = scatterPlot({
+    ...sharedPlotConfig,
+    symbol: arrowSymbol(),
+})
+
+let originalData, noisyData, noiseDistribution, denoisedData
+
+function updateAll(settings) {
+    updateData(settings)
+    updateAfterData(settings)
+}
+
+function updateData(settings) {
+    let { dataStdDev } = settings
+
+    originalData = generateBananaData({stdDev: dataStdDev})
+
+    d3.select('#plot_2d_data')
+        .datum(originalData)
+        .call(drawFlowers)
+
+}
+
+function updateAfterData(settings) {
+    updateNoise(settings)
+    updateAfterNoise(settings)
+}
+
+function updateNoise(settings) {
+    let { noiseStdDev } = settings
 
     const noiseVariance = Math.pow(noiseStdDev, 2);
-    const noiseDistribution = gaussian(0, noiseVariance)
+    noiseDistribution = gaussian(0, noiseVariance)
     const sampleNoise = () => noiseDistribution.ppf(Math.random())
 
-    const originalData = generateBananaData({stdDev: dataStdDev})
-
-    // Set the data domain so all plots have exactly the same size and scale.
-    // Set the domain to the original data plus one stddev of noise
-    // const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
-    // const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
-    // ...or whatever, let's just hard-code the domain to keep axes static.
-    const xDomain = [0, 10]
-    const yDomain = [0, 12]
-
-    // Configure the flower and arrow plots.
-    const sharedPlotConfig = {
-        // width: 400,
-        // height: 300,
-        keepAspectRatio: true,
-        xDomain, yDomain,
-    }
-    const drawFlowers = scatterPlot({
-        ...sharedPlotConfig,
-        symbol: flowerSymbol(),
-    })
-    const drawArrows = scatterPlot({
-        ...sharedPlotConfig,
-        symbol: arrowSymbol(),
-    })
-
     // Apply gaussian noise to the data points.
-    const noisyData = originalData.map(d => ({
+    noisyData = originalData.map(d => ({
         ...d,
         x: d.x + sampleNoise(),
         y: d.y + sampleNoise(),
     }))
 
+    d3.select('#plot_2d_noise')
+        .datum(compareData(originalData, noisyData))
+        .call(drawArrows)
+
+    return { noisyData, noiseDistribution }
+}
+
+function updateAfterNoise(settings) {
+    let { dataStdDev, noiseStdDev } = settings
+
     // Denoise the noisy data using optimal denoising function.
-    const denoisedData = noisyData.map(noisySample => ({
+    denoisedData = noisyData.map(noisySample => ({
         ...noisySample,
         ...optimalDenoise({noisySample, originalData, noiseDistribution}),
     }))
 
-    container.select('#plot_2d_data')
-        .datum(originalData)
-        .call(drawFlowers)
-
-    container.select('#plot_2d_noise')
-        .datum(compareData(originalData, noisyData))
-        .call(drawArrows)
-
-    container.select('#plot_2d_noisy')
+    d3.select('#plot_2d_noisy')
         .datum(noisyData)
         .call(drawFlowers)
 
-    container.select('#plot_2d_denoise')
+    d3.select('#plot_2d_denoise')
         .datum(compareData(noisyData, denoisedData))
         .call(drawArrows)
 
-    container.select('#plot_2d_denoised')
+    d3.select('#plot_2d_denoised')
         .datum(denoisedData)
         .call(drawFlowers)
 
 }
 
-window.drawPlot2d = drawPlot2d
+window.plot2d = {
+    updateAll,
+    updateData,
+    updateAfterData,
+    updateNoise,
+    updateAfterNoise,
+}
