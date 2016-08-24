@@ -50,20 +50,20 @@
 
     <div id="plot_1d">
         <form id="plot_1d_selectStdDev">
-            <input name="stdDev" type="radio" value="0.1" onchange="draw1d()">0.1
-            <br>
-            <input name="stdDev" type="radio" value="0.2" onchange="draw1d()" checked>0.2
-            <br>
-            <input name="stdDev" type="radio" value="0.5" onchange="draw1d()">0.5
-            <br>
+            <input name="stdDev" type="range"
+                value="0.3" min="0.1" max="0.5" step="0.1"
+                oninput="if (hasValueChanged(this)) plot1d.updateData(read1dSettings());"
+                onchange="plot1d.updateAfterData(read1dSettings());"
+                onkeyup="this.onchange();"
+            />
         </form>
         <form id="plot_1d_selectNoise">
-            <input name="noise" type="radio" value="0.1" onchange="draw1d()">0.1
-            <br>
-            <input name="noise" type="radio" value="0.2" onchange="draw1d()" checked>0.2
-            <br>
-            <input name="noise" type="radio" value="0.5" onchange="draw1d()">0.5
-            <br>
+            <input name="noise" type="range"
+                value="0.2" min="0.1" max="0.5" step="0.1"
+                oninput="if (hasValueChanged(this)) plot1d.updateNoise(read1dSettings())"
+                onchange="plot1d.updateAfterNoise(read1dSettings())"
+                onkeyup="this.onchange();"
+            />
         </form>
         <div id="plot_1d_data" class="plotContainer"></div>
         <div id="plot_1d_noise" class="plotContainer"></div>
@@ -72,13 +72,25 @@
         <div id="plot_1d_denoised" class="plotContainer"></div>
     </div>
     <script>
-        var draw1d = function () {
-            drawPlot1d({
-                dataStdDev: +document.forms['plot_1d_selectStdDev']['stdDev'].value || 0,
-                noiseStdDev: +document.forms['plot_1d_selectNoise']['noise'].value || 0,
-            });
-        };
-        draw1d();
+
+        function hasValueChanged(input) {
+            var changed = input.getAttribute('data-lastValue') !== input.value;
+            input.setAttribute('data-lastValue', input.value);
+            return changed;
+        }
+
+        function read1dSettings() {
+            var settings = {
+                dataMean: 0,
+                noiseMean: 0,
+                dataStdDev: +document.forms['plot_1d_selectStdDev']['stdDev'].value,
+                noiseStdDev: +document.forms['plot_1d_selectNoise']['noise'].value,
+            };
+            return settings
+        }
+
+        plot1d.updateAll(read1dSettings());
+
     </script>
 
 

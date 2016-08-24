@@ -168,5 +168,10 @@ export default function distributionPlot(config) {
         })
     }
 
+    // XXX: The settings of [xy]Scale change on every call of plot. Watch out
+    // when using the same distributionPlot() instance for multiple plots.
+    plot.xScale = xScale
+    plot.yScale = yScale
+
     return plot
 }
