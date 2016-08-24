@@ -35,7 +35,7 @@ function compareData(sourceData, targetData) {
 // const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
 // const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
 // ...or whatever, let's just hard-code the domain to keep axes static.
-const xDomain = [0, 10]
+const xDomain = [0, 12]
 const yDomain = [0, 12]
 
 // Configure the flower and arrow plots.
