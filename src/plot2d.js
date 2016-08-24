@@ -9,6 +9,14 @@ import irisData from './irisdata'
 import generateBananaData from './gaussianbananas'
 
 
+const getSettings = () => ({
+    dataMean: 0,
+    noiseMean: 0,
+    dataStdDev: +document.getElementById('plot_2d_selectStdDev').value,
+    noiseStdDev: 1.0,
+})
+
+
 function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     const pNoise = originalData.map(datum => (
         noiseDistribution.pdf(noisySample.x - datum.x)
@@ -56,13 +64,13 @@ const drawArrows = scatterPlot({
 
 let originalData, noisyData, noiseDistribution, denoisedData
 
-function updateAll(settings) {
-    updateData(settings)
-    updateAfterData(settings)
+function updateAll() {
+    updateData()
+    updateAfterData()
 }
 
-function updateData(settings) {
-    let { dataStdDev } = settings
+function updateData() {
+    let { dataStdDev } = getSettings()
 
     originalData = generateBananaData({stdDev: dataStdDev})
 
@@ -72,13 +80,13 @@ function updateData(settings) {
 
 }
 
-function updateAfterData(settings) {
-    updateNoise(settings)
-    updateAfterNoise(settings)
+function updateAfterData() {
+    updateNoise()
+    updateAfterNoise()
 }
 
-function updateNoise(settings) {
-    let { noiseStdDev } = settings
+function updateNoise() {
+    let { noiseStdDev } = getSettings()
 
     const noiseVariance = Math.pow(noiseStdDev, 2);
     noiseDistribution = gaussian(0, noiseVariance)
@@ -98,8 +106,8 @@ function updateNoise(settings) {
     return { noisyData, noiseDistribution }
 }
 
-function updateAfterNoise(settings) {
-    let { dataStdDev, noiseStdDev } = settings
+function updateAfterNoise() {
+    let { dataStdDev, noiseStdDev } = getSettings()
 
     // Denoise the noisy data using optimal denoising function.
     denoisedData = noisyData.map(noisySample => ({
