@@ -3,11 +3,9 @@ import gaussian from 'gaussian'
 import { extendDomainBy } from './utils'
 
 import scatterPlot from './scatterplot'
-import flowerSymbol from './flowersymbol'
 import arrowSymbol from './arrowsymbol'
-import irisData from './irisdata'
+import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
-
 
 const getSettings = () => ({
     dataMean: 0,
@@ -53,13 +51,12 @@ const sharedPlotConfig = {
     keepAspectRatio: true,
     xDomain, yDomain,
 }
-const drawFlowers = scatterPlot({
-    ...sharedPlotConfig,
-    symbol: flowerSymbol(),
-})
+
 const drawArrows = scatterPlot({
     ...sharedPlotConfig,
-    symbol: arrowSymbol(),
+    symbol: arrowSymbol({
+        opacity: 0.6,
+    }),
 })
 
 let originalData, noisyData, noiseDistribution, denoisedData
@@ -76,7 +73,12 @@ function updateData() {
 
     d3.select('#plot_2d_data')
         .datum(originalData)
-        .call(drawFlowers)
+        .call(scatterPlot({
+            ...sharedPlotConfig,
+            symbol: pointSymbol({
+                opacity: 0.3
+            })
+        }))
 
 }
 
@@ -116,16 +118,48 @@ function updateAfterNoise() {
     }))
 
     d3.select('#plot_2d_noisy')
+        .datum(originalData)
+        .call(scatterPlot({
+            ...sharedPlotConfig,
+            symbol: pointSymbol({
+                opacity: 0.3
+            })
+        }))
+setTimeout(()=>
+    d3.select('#plot_2d_noisy')
         .datum(noisyData)
-        .call(drawFlowers)
+        .call(scatterPlot({
+            ...sharedPlotConfig,
+            symbol: pointSymbol({
+                opacity: 0.3
+            }),
+            updateDuration: 1500,
+        }))
+, 500)
 
     d3.select('#plot_2d_denoise')
         .datum(compareData(noisyData, denoisedData))
         .call(drawArrows)
 
     d3.select('#plot_2d_denoised')
+        .datum(noisyData)
+        .call(scatterPlot({
+            ...sharedPlotConfig,
+            symbol: pointSymbol({
+                opacity: 0.2
+            })
+        }))
+setTimeout(()=>
+    d3.select('#plot_2d_denoised')
         .datum(denoisedData)
-        .call(drawFlowers)
+        .call(scatterPlot({
+            ...sharedPlotConfig,
+            symbol: pointSymbol({
+                opacity: 0.2
+            }),
+            updateDuration: 1000,
+        }))
+, 2000)
 
 }
 

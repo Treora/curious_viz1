@@ -1,30 +1,90 @@
 
+.plotConstellation {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    border: 1px black solid;
+    margin: auto;
+    margin-bottom: 200px;
+    overflow: hidden;
+}
+
 .plotContainer {
-    display: inline-block;
-    width: 200px;
-    height: 200px;
-    /*position: absolute;*/
+    /*display: inline-block;*/
+    position: absolute;
+    /*width: 200px;*/
+    /*height: 200px;*/
     /*overflow: hidden;*/
     /*border: 1px black solid;*/
 }
 
-.plotContainer[id$="_data"] {
+.plotContainer#plot_2d_data {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 75px;
 }
-.plotContainer[id$="_noise"] {
+.plotContainer#plot_2d_noise {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
 }
-.plotContainer[id$="_noisy"] {
+.plotContainer#plot_2d_noisy {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
+    /*display: none;*/
 }
-.plotContainer[id$="_denoise"] {
+.plotContainer#plot_2d_denoise {
     width: 300px;
     height: 300px;
+    top: 300px;
+    left: 250px;
 }
-.plotContainer[id$="_denoised"] {
+.plotContainer#plot_2d_denoised {
+    width: 300px;
+    height: 300px;
+    top: 300px;
+    left: 250px;
+    /*display: none;*/
+}
+#plot_2d_selectStdDevContainer {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    width: 200px;
+    top: 0px;
+    left: 100px;
+    /*border: 1px black solid;*/
+}
+#plot_2d_selectStdDevContainer > span {
+    /*width: 60px;*/
+    /*flex: none;*/
+}
+#plot_2d_selectStdDevContainer > .slider {
+    margin-left: 1em;
+    min-width: 50px;
+}
+
+.slider#plot_1d_selectStdDev {
+
+}
+.slider#plot_1d_selectNoise {
+
+}
+
+
+.slider {
+    display: flex;
+    /*width: 100%;*/
+    /*position: absolute;*/
 }
 
 /* Slider (generated with http://danielstern.ca/range.css) */
 input[type=range].slider {
   -webkit-appearance: none;
-  width: 150px;
   margin: 6px 0;
 }
 input[type=range].slider:focus {

@@ -12,10 +12,10 @@ export default function defineSymbol(symbolProps) {
 }
 
 function drawSymbol(selection, {
-    enterDuration=500,
     updateDuration=500,
     arrowHeadlength=3,
     color='black',
+    opacity=0.6,
     strokeWidth=2,
     xScale, yScale
 }) {
@@ -28,11 +28,11 @@ function drawSymbol(selection, {
     const symbol = selectEnter(selection, '.symbol')
       .append('g')
         .attr('class', 'symbol')
-        .attr('opacity', 0.1)
+        .attr('opacity', Math.min(0.1, opacity))
     symbol
       .transition()
         .duration(updateDuration)
-        .attr('opacity', 0.6)
+        .attr('opacity', opacity)
     selectEnter(symbol, '.arrowPath')
       .append('path')
         .attr('class', 'arrowPath')

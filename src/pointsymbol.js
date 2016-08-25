@@ -13,22 +13,27 @@ export default function defineSymbol(symbolProps) {
 
 function drawSymbol(selection, {
     enterDuration=500,
-    symbolRadius=5,
+    updateDuration=500,
+    symbolRadius=4,
     opacity=0.5,
     color='blue',
 }) {
+    selection.select('.symbol')
+      .transition()
+        .duration(updateDuration)
+        .attr('r', symbolRadius)
+        .style('fill-opacity', opacity)
+        .style('fill', color)
+
     selectEnter(selection, '.symbol')
       .append('circle')
         .attr('class', 'symbol')
         .attr('r', 0)
         .style('fill-opacity', opacity)
         .style('fill', color)
-    selection.select('.symbol')
       .transition()
         .duration(enterDuration)
         .attr('r', symbolRadius)
-        .style('fill-opacity', opacity)
-        .style('fill', color)
 }
 
 function removeSymbol(selection, {exitDuration=500}) {
