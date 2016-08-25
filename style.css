@@ -10,10 +10,10 @@
 }
 
 .plotContainer {
-    /*display: inline-block;*/
-    position: absolute;
-    /*width: 200px;*/
-    /*height: 200px;*/
+    display: inline-block;
+    /*position: absolute;*/
+    width: 250px;
+    height: 250px;
     /*overflow: hidden;*/
     /*border: 1px black solid;*/
 }

@@ -3,14 +3,19 @@ import gaussian from 'gaussian'
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 
-const xDomain = [-2, 2]
+const sq = x => Math.pow(x, 2)
 
-const getSettings = () => ({
-    dataMean: 0,
-    noiseMean: 0,
-    dataStdDev: +document.getElementById('plot_1d_selectStdDev').value,
-    noiseStdDev: +document.getElementById('plot_1d_selectNoise').value,
-})
+const xDomain = [-4, 4]
+
+const getSettings = () => {
+    const stdDevInput = document.getElementById('plot_1d_selectStdDev')
+    const noiseInput = document.getElementById('plot_1d_selectNoise')
+    return {
+        dataMean: 0,
+        dataStdDev: +stdDevInput.value || stdDevInput.defaultValue,
+        noiseStdDev: +noiseInput.value || noiseInput.defaultValue,
+    }
+}
 
 function updateAll() {
     updateData()
@@ -20,7 +25,7 @@ function updateAll() {
 function updateData() {
     let { dataMean, dataStdDev } = getSettings()
 
-    const dataDistribution = gaussian(dataMean, dataStdDev)
+    const dataDistribution = gaussian(dataMean, sq(dataStdDev))
     d3.select('#plot_1d_data')
         .datum(dataDistribution)
         .call(distributionPlot({
@@ -34,9 +39,9 @@ function updateAfterData() {
 }
 
 function updateNoise() {
-    let { noiseMean, noiseStdDev } = getSettings()
+    let { noiseStdDev } = getSettings()
 
-    const noiseDistribution = gaussian(noiseMean, noiseStdDev)
+    const noiseDistribution = gaussian(0, sq(noiseStdDev))
 
     d3.select('#plot_1d_noise')
         .datum(noiseDistribution)
@@ -48,15 +53,21 @@ function updateNoise() {
 }
 
 function updateAfterNoise() {
-    let { dataMean, noiseMean, dataStdDev, noiseStdDev } = getSettings()
+    let { dataMean, dataStdDev, noiseStdDev } = getSettings()
 
-    const corruptedDistribution = gaussian(dataMean+noiseMean, dataStdDev+noiseStdDev)
-    const denoiseFunction = () => () => Math.random()
-    const denoisedDistribution = gaussian(0,1)
+    const corruptedStdDev = Math.sqrt(sq(dataStdDev) + sq(noiseStdDev))
+    const corruptedDistribution = gaussian(dataMean, sq(corruptedStdDev))
+
+    const v = sq(dataStdDev) / sq(corruptedStdDev)
+    const denoiseFunction = noisyValue => v * noisyValue + (1-v) * dataMean
+
+    const denoisedStdDev = corruptedStdDev * v
+    const denoisedDistribution = gaussian(dataMean, sq(denoisedStdDev))
 
     const plotCorruptedDistribution = distributionPlot({
         xDomain,
     })
+
     const plotDenoisedDistribution = distributionPlot({
         xDomain,
     })
@@ -70,7 +81,7 @@ function updateAfterNoise() {
         .call(plotDenoisedDistribution)
 
     d3.select('#plot_1d_denoise')
-        .datum(denoiseFunction)
+        .datum(() => denoiseFunction)
         .call(functionPlot({
         xDomain: plotCorruptedDistribution.xScale.domain(),
         yDomain: plotDenoisedDistribution.xScale.domain(),
