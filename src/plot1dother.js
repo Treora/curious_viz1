@@ -32,8 +32,13 @@ export default function init(containerId, plotDatas) {
 
     const sharedPlotConfig = {
         // xDomain: [-4, 4],
-        yDomain: [0, undefined],
+        yDomain: [0, 0.8],
     }
+
+    const plotOriginalDistribution = functionPlot({
+        ...sharedPlotConfig,
+        updateDuration: 0,
+    })
 
     function updateAll() {
         updateData();
@@ -46,10 +51,7 @@ export default function init(containerId, plotDatas) {
 
         container.select('.data')
             .datum({x: plotData.x, y: plotData.data})
-            .call(functionPlot({
-                ...sharedPlotConfig,
-                updateDuration: 0,
-            }))
+            .call(plotOriginalDistribution)
 
     }
 
@@ -59,6 +61,7 @@ export default function init(containerId, plotDatas) {
 
         const plotCorruptedDistribution = functionPlot({
             ...sharedPlotConfig,
+            yDomain: plotOriginalDistribution.yScale.domain(),
         })
 
         container.select('.noisy')
@@ -66,10 +69,20 @@ export default function init(containerId, plotDatas) {
             .call(plotCorruptedDistribution)
 
         container.select('.denoise')
+            .datum({x: plotData.x, y: plotData.x})
+            .call(functionPlot({
+            xDomain: plotCorruptedDistribution.xScale.domain(),
+            yDomain: plotOriginalDistribution.xScale.domain(),
+            id: 1,
+            lineOpacity: 0.2,
+            lineStyle: 'dashed',
+        }))
+
+        container.select('.denoise')
             .datum({x: plotData.x, y: plotData.denoise})
             .call(functionPlot({
             xDomain: plotCorruptedDistribution.xScale.domain(),
-            yDomain: plotCorruptedDistribution.xScale.domain(),
+            yDomain: plotOriginalDistribution.xScale.domain(),
         }))
 
     }

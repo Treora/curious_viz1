@@ -11,8 +11,10 @@ export default function functionPlot(config) {
         approxTickCount=3,
         lineColor='blue',
         lineOpacity=1,
+        lineStyle='solid',
         nLinePoints=100,
         yDomainDetectionExtendFactor=1.5,
+        id=0,
     } = config
 
     const xScale = d3.scaleLinear()
@@ -121,23 +123,32 @@ export default function functionPlot(config) {
                 .call(yAxis)
 
             // Draw the line
+            const dasharrayValue =
+                (lineStyle === ':')
+                ? '1,10'
+                : (lineStyle === '--')
+                    ? '10,10'
+                    : undefined
+            const linecapValue = (lineStyle === ':') ? 'round' : undefined
             const line = d3.line()
                 .x(d => xScale(d.x))
                 .y(d => yScale(d.y))
                 .defined(d => isFinite(d.y))
                 .curve(d3.curveMonotoneX)
-            selectEnter(plotGroup, '.line')
+            selectEnter(plotGroup, '.line.id'+id)
               .append('path')
-                .attr('class', 'line')
+                .attr('class', 'line id'+id)
                 .attr('fill', 'none')
                 .attr('stroke', lineColor)
                 .attr('opacity', lineOpacity)
-            plotGroup.select('.line')
+            plotGroup.select('.line.id'+id)
                 .datum(linePoints)
               .transition()
                 .duration(updateDuration)
                 .attr('stroke', lineColor)
                 .attr('opacity', lineOpacity)
+                .attr('stroke-dasharray', dasharrayValue)
+                .attr('stroke-linecap', linecapValue)
                 .attr('d', line)
 
         })

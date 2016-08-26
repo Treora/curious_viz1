@@ -6,3 +6,6 @@ window.plot1dGaussian = plot1dGaussian
 
 import plot1dOther from './plot1dother'
 window.plot1dOther = plot1dOther
+
+import plot1dMultigauss from './plot1dmultigauss'
+window.plot1dMultigauss = plot1dMultigauss

@@ -9,6 +9,7 @@ const sq = x => Math.pow(x, 2)
 const sharedPlotConfig = {
     xDomain: [-4, 4],
     drawSamples: false,
+    lineOpacity: 1,
 }
 
 const getSettings = () => {
