@@ -5,6 +5,18 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <script src="lib/d3.v4.js"></script>
     <script src="build/main.js"></script>
+    <script>
+            function hasCurrentValueChanged(input) {
+                var changed = input.getAttribute('data-lastValue') !== input.value;
+                input.setAttribute('data-lastValue', input.value);
+                return changed;
+            }
+            function hasChosenValueChanged(input) {
+                var changed = input.getAttribute('data-lastChosenValue') !== input.value;
+                input.setAttribute('data-lastChosenValue', input.value);
+                return changed;
+            }
+    </script>
 </head>
 <body>
 
@@ -39,34 +51,20 @@
         <input id="plot_1d_selectStdDev" name="stdDev"
             type="range" class="slider"
             value="1.0" min="0.2" max="2.0" step="0.2"
-            oninput="if (hasCurrentValueChanged(this)) plot1d.updateData();"
-            onchange="if (hasChosenValueChanged(this)) plot1d.updateAfterData();"
+            oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateData();"
+            onchange="if (hasChosenValueChanged(this)) plot1dGaussian.updateAfterData();"
             onkeyup="this.onchange();"
         />
         <input id="plot_1d_selectNoise" name="noise"
             type="range" class="slider"
             value="1.0" min="0.2" max="1.0" step="0.2"
-            oninput="if (hasCurrentValueChanged(this)) plot1d.updateNoise();"
-            onchange="if (hasChosenValueChanged(this)) plot1d.updateAfterNoise();"
+            oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateNoise();"
+            onchange="if (hasChosenValueChanged(this)) plot1dGaussian.updateAfterNoise();"
             onkeyup="this.onchange();"
         />
     </div>
     <script>
-
-        function hasCurrentValueChanged(input) {
-            var changed = input.getAttribute('data-lastValue') !== input.value;
-            input.setAttribute('data-lastValue', input.value);
-            return changed;
-        }
-
-        function hasChosenValueChanged(input) {
-            var changed = input.getAttribute('data-lastChosenValue') !== input.value;
-            input.setAttribute('data-lastChosenValue', input.value);
-            return changed;
-        }
-
-        plot1d.updateAll();
-
+        plot1dGaussian.updateAll();
     </script>
 
 </body>

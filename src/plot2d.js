@@ -163,7 +163,7 @@ setTimeout(()=>
 
 }
 
-window.plot2d = {
+export default {
     updateAll,
     updateData,
     updateAfterData,

@@ -5,7 +5,11 @@ import functionPlot from './functionplot'
 
 const sq = x => Math.pow(x, 2)
 
-const xDomain = [-4, 4]
+
+const sharedPlotConfig = {
+    xDomain: [-4, 4],
+    drawSamples: false,
+}
 
 const getSettings = () => {
     const stdDevInput = document.getElementById('plot_1d_selectStdDev')
@@ -29,7 +33,7 @@ function updateData() {
     d3.select('#plot_1d_data')
         .datum(dataDistribution)
         .call(distributionPlot({
-            xDomain,
+            ...sharedPlotConfig,
         }))
 }
 
@@ -46,9 +50,8 @@ function updateNoise() {
     d3.select('#plot_1d_noise')
         .datum(noiseDistribution)
         .call(distributionPlot({
-            xDomain,
+            ...sharedPlotConfig,
             // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
-            drawSamples: false,
         }))
 }
 
@@ -65,11 +68,11 @@ function updateAfterNoise() {
     const denoisedDistribution = gaussian(dataMean, sq(denoisedStdDev))
 
     const plotCorruptedDistribution = distributionPlot({
-        xDomain,
+        ...sharedPlotConfig,
     })
 
     const plotDenoisedDistribution = distributionPlot({
-        xDomain,
+        ...sharedPlotConfig,
     })
 
     d3.select('#plot_1d_noisy')
@@ -89,7 +92,7 @@ function updateAfterNoise() {
 
 }
 
-window.plot1d = {
+export default {
     updateAll,
     updateData,
     updateAfterData,
