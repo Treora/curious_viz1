@@ -86,21 +86,20 @@ export default function functionPlot(config) {
                 if (minY===undefined) {
                     minY = yDomain[1] + (d3.min(linePoints, d => d.y)-yDomain[1]) * yDomainDetectionExtendFactor
                 }
-                console.log(maxY)
                 yScale.domain([minY, maxY])
             }
 
             // Add a group for the whole plot if not there yet
-            const plotGroupEnter = selectEnter(svg, '.distributionPlotGroup')
+            const plotGroupEnter = selectEnter(svg, '.functionPlotGroup')
               .append('g')
-                .attr('class', 'distributionPlotGroup')
+                .attr('class', 'functionPlotGroup')
             plotGroupEnter.append('g').attr('class', 'xAxis')
                 .attr('transform', `translate(0, ${yScale.range()[0]})`)
             plotGroupEnter.append('g').attr('class', 'yAxis')
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
 
             // Move the whole plot to create margins around it
-            const plotGroup = svg.select('.distributionPlotGroup')
+            const plotGroup = svg.select('.functionPlotGroup')
                 .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
             // Draw the axes
@@ -125,6 +124,7 @@ export default function functionPlot(config) {
             const line = d3.line()
                 .x(d => xScale(d.x))
                 .y(d => yScale(d.y))
+                .defined(d => isFinite(d.y))
                 .curve(d3.curveMonotoneX)
             selectEnter(plotGroup, '.line')
               .append('path')
