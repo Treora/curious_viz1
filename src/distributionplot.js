@@ -82,7 +82,7 @@ export default function distributionPlot(config) {
             // Determine the vertical domain (= the pdf's range)
             if (yDomain === undefined) {
                 const domain = d3.extent(linePoints, d => distribution.pdf(d))
-                yScale.domain([0, domain[1]*1.5]).nice()
+                yScale.domain([0, domain[1]*1.5])//.nice()
             } else {
                 yScale.domain(yDomain)
             }

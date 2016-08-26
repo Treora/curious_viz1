@@ -12,6 +12,7 @@ export default function functionPlot(config) {
         lineColor='blue',
         lineOpacity=1,
         nLinePoints=100,
+        yDomainDetectionExtendFactor=1.5,
     } = config
 
     const xScale = d3.scaleLinear()
@@ -21,7 +22,7 @@ export default function functionPlot(config) {
     const yAxis = d3.axisLeft(yScale)
 
     function plot(selection) {
-        selection.each(function (func) { // 'each' = for each chart
+        selection.each(function (funcOrData) { // 'each' = for each chart
             const container = d3.select(this)
 
             // Add SVG element if needed and set its size
@@ -47,23 +48,46 @@ export default function functionPlot(config) {
             xScale.range([0, plotWidth])
             yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
-            if (xDomain === undefined) {
-                xScale.domain([0,10])
-            } else {
-                xScale.domain(xDomain)
+            // Determine the data to draw
+            let linePoints
+            if (typeof funcOrData === 'function') {
+                if (xDomain === undefined) {
+                    xScale.domain([0,10])
+                } else {
+                    xScale.domain(xDomain)
+                }
+                linePoints = linspace(...xScale.domain(), nLinePoints)
+                    .map(point => ({x: point, y: funcOrData(point)}))
+            }
+            else {
+                if (xDomain === undefined) {
+                    xScale.domain(d3.extent(funcOrData.x))
+                } else {
+                    xScale.domain(xDomain)
+                }
+                linePoints = _.zipWith(funcOrData.x, funcOrData.y, (x, y) => ({x, y}))
             }
 
-            const linePoints = linspace(...xScale.domain(), nLinePoints)
-
             // Determine the vertical domain (= the function's range)
-            if (yDomain === undefined) {
+            if (yDomain === undefined
+                || (yDomain[0]===undefined && yDomain[1]===undefined)
+            ) {
                 const domain = extendDomainByFactor(
-                    d3.extent(linePoints, d => func(d)),
-                    1.5
+                    d3.extent(linePoints, d => d.y),
+                    yDomainDetectionExtendFactor
                 )
                 yScale.domain(domain).nice()
             } else {
-                yScale.domain(yDomain)
+                // If either min or max is undefined, determine it from the data
+                let minY = yDomain[0], maxY = yDomain[1]
+                if (maxY===undefined) {
+                    maxY = yDomain[0] + (d3.max(linePoints, d => d.y)-yDomain[0]) * yDomainDetectionExtendFactor
+                }
+                if (minY===undefined) {
+                    minY = yDomain[1] + (d3.min(linePoints, d => d.y)-yDomain[1]) * yDomainDetectionExtendFactor
+                }
+                console.log(maxY)
+                yScale.domain([minY, maxY])
             }
 
             // Add a group for the whole plot if not there yet
@@ -99,8 +123,8 @@ export default function functionPlot(config) {
 
             // Draw the line
             const line = d3.line()
-                .x(d => xScale(d))
-                .y(d => yScale(func(d)))
+                .x(d => xScale(d.x))
+                .y(d => yScale(d.y))
                 .curve(d3.curveMonotoneX)
             selectEnter(plotGroup, '.line')
               .append('path')
@@ -118,6 +142,11 @@ export default function functionPlot(config) {
 
         })
     }
+
+    // XXX: The settings of [xy]Scale change on every call of plot. Watch out
+    // when using the same functionPlot() instance for multiple plots.
+    plot.xScale = xScale
+    plot.yScale = yScale
 
     return plot
 }

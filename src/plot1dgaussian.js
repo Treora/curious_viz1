@@ -12,12 +12,12 @@ const sharedPlotConfig = {
 }
 
 const getSettings = () => {
-    const stdDevInput = document.getElementById('plot_1d_selectStdDev')
-    const noiseInput = document.getElementById('plot_1d_selectNoise')
+    const stdDevInput = document.getElementById('plot_1d_gaussian_selectStdDev')
+    const noiseInput = document.getElementById('plot_1d_gaussian_selectNoise')
     return {
         dataMean: 0,
-        dataStdDev: +stdDevInput.value || stdDevInput.defaultValue,
-        noiseStdDev: +noiseInput.value || noiseInput.defaultValue,
+        dataStdDev: +stdDevInput.value || +stdDevInput.defaultValue,
+        noiseStdDev: +noiseInput.value || +noiseInput.defaultValue,
     }
 }
 
@@ -30,7 +30,7 @@ function updateData() {
     let { dataMean, dataStdDev } = getSettings()
 
     const dataDistribution = gaussian(dataMean, sq(dataStdDev))
-    d3.select('#plot_1d_data')
+    d3.select('#plot_1d_gaussian_data')
         .datum(dataDistribution)
         .call(distributionPlot({
             ...sharedPlotConfig,
@@ -47,7 +47,7 @@ function updateNoise() {
 
     const noiseDistribution = gaussian(0, sq(noiseStdDev))
 
-    d3.select('#plot_1d_noise')
+    d3.select('#plot_1d_gaussian_noise')
         .datum(noiseDistribution)
         .call(distributionPlot({
             ...sharedPlotConfig,
@@ -75,15 +75,15 @@ function updateAfterNoise() {
         ...sharedPlotConfig,
     })
 
-    d3.select('#plot_1d_noisy')
+    d3.select('#plot_1d_gaussian_noisy')
         .datum(corruptedDistribution)
         .call(plotCorruptedDistribution)
 
-    d3.select('#plot_1d_denoised')
+    d3.select('#plot_1d_gaussian_denoised')
         .datum(denoisedDistribution)
         .call(plotDenoisedDistribution)
 
-    d3.select('#plot_1d_denoise')
+    d3.select('#plot_1d_gaussian_denoise')
         .datum(() => denoiseFunction)
         .call(functionPlot({
         xDomain: plotCorruptedDistribution.xScale.domain(),

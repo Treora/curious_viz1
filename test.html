@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <script src="lib/d3.v4.js"></script>
     <script src="build/main.js"></script>
+    <script src="plotdata.js"></script>
     <script>
             function hasCurrentValueChanged(input) {
                 var changed = input.getAttribute('data-lastValue') !== input.value;
@@ -42,20 +43,20 @@
     </script>
 
 
-    <div id="plot_1d" class="plotConstellation">
-        <div id="plot_1d_data" class="plotContainer"></div>
-        <div id="plot_1d_noise" class="plotContainer"></div>
-        <div id="plot_1d_noisy" class="plotContainer"></div>
-        <div id="plot_1d_denoise" class="plotContainer"></div>
-        <div id="plot_1d_denoised" class="plotContainer"></div>
-        <input id="plot_1d_selectStdDev" name="stdDev"
+    <div id="plot_1d_gaussian" class="plotConstellation">
+        <div id="plot_1d_gaussian_data" class="plotContainer"></div>
+        <div id="plot_1d_gaussian_noise" class="plotContainer"></div>
+        <div id="plot_1d_gaussian_noisy" class="plotContainer"></div>
+        <div id="plot_1d_gaussian_denoise" class="plotContainer"></div>
+        <div id="plot_1d_gaussian_denoised" class="plotContainer"></div>
+        <input id="plot_1d_gaussian_selectStdDev" name="stdDev"
             type="range" class="slider"
             value="1.0" min="0.2" max="2.0" step="0.2"
             oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateData();"
             onchange="if (hasChosenValueChanged(this)) plot1dGaussian.updateAfterData();"
             onkeyup="this.onchange();"
         />
-        <input id="plot_1d_selectNoise" name="noise"
+        <input id="plot_1d_gaussian_selectNoise" name="noise"
             type="range" class="slider"
             value="1.0" min="0.2" max="1.0" step="0.2"
             oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateNoise();"
@@ -66,6 +67,19 @@
     <script>
         plot1dGaussian.updateAll();
     </script>
+
+    <div id="plot_1d_uniform" class="plotConstellation">
+    </div>
+    <script>
+        plot1dOther('#plot_1d_uniform', plotDatas.uniform);
+    </script>
+
+    <div id="plot_1d_exp" class="plotConstellation">
+    </div>
+    <script>
+        plot1dOther('#plot_1d_exp', plotDatas.exp);
+    </script>
+
 
 </body>
 </html>
