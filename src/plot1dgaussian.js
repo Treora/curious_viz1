@@ -35,6 +35,8 @@ function updateData() {
         .datum(dataDistribution)
         .call(distributionPlot({
             ...sharedPlotConfig,
+            xLabel: 'x',
+            yLabel: 'p(x)',
         }))
 }
 
@@ -52,6 +54,8 @@ function updateNoise() {
         .datum(noiseDistribution)
         .call(distributionPlot({
             ...sharedPlotConfig,
+            xLabel: 'n',
+            yLabel: 'p(n)',
             // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
         }))
 }
@@ -70,10 +74,14 @@ function updateAfterNoise() {
 
     const plotCorruptedDistribution = distributionPlot({
         ...sharedPlotConfig,
+        xLabel: 'x_tilde',
+        yLabel: 'p(x_tilde)',
     })
 
     const plotDenoisedDistribution = distributionPlot({
         ...sharedPlotConfig,
+        xLabel: 'x_hat',
+        yLabel: 'p(x_hat)',
     })
 
     d3.select('#plot_1d_gaussian_noisy')
@@ -87,8 +95,10 @@ function updateAfterNoise() {
     d3.select('#plot_1d_gaussian_denoise')
         .datum(() => denoiseFunction)
         .call(functionPlot({
-        xDomain: plotCorruptedDistribution.xScale.domain(),
-        yDomain: plotDenoisedDistribution.xScale.domain(),
+            xDomain: plotCorruptedDistribution.xScale.domain(),
+            yDomain: plotDenoisedDistribution.xScale.domain(),
+            xLabel: 'corrupted x',
+            yLabel: 'denoised x',
     }))
 
 }

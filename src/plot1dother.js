@@ -33,6 +33,8 @@ export default function init(containerId, plotDatas) {
     const sharedPlotConfig = {
         // xDomain: [-4, 4],
         yDomain: [0, 0.8],
+        xLabel: 'x1',
+        yLabel: 'x2',
     }
 
     const plotOriginalDistribution = functionPlot({
@@ -75,7 +77,7 @@ export default function init(containerId, plotDatas) {
             yDomain: plotOriginalDistribution.xScale.domain(),
             id: 1,
             lineOpacity: 0.2,
-            lineStyle: 'dashed',
+            lineStyle: '--',
         }))
 
         container.select('.denoise')
@@ -83,6 +85,8 @@ export default function init(containerId, plotDatas) {
             .call(functionPlot({
             xDomain: plotCorruptedDistribution.xScale.domain(),
             yDomain: plotOriginalDistribution.xScale.domain(),
+            xLabel: 'corrupted x',
+            yLabel: 'denoised x',
         }))
 
     }

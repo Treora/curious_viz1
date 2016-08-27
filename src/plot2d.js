@@ -50,6 +50,8 @@ const sharedPlotConfig = {
     // height: 300,
     keepAspectRatio: true,
     xDomain, yDomain,
+    xLabel: 'x1',
+    yLabel: 'x2',
 }
 
 const drawArrows = scatterPlot({

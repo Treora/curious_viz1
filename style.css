@@ -11,9 +11,10 @@
 
 .plotContainer {
     display: inline-block;
+    margin: 5px;
     /*position: absolute;*/
-    width: 250px;
-    height: 250px;
+    width: 240px;
+    height: 200px;
     /*overflow: hidden;*/
     /*border: 1px black solid;*/
 }

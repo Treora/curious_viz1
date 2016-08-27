@@ -12,6 +12,7 @@ export default function scatterPlot(config) {
         updateDuration=500,
         xDomain, yDomain,
         approxTickCount=3,
+        xLabel, yLabel,
     } = config
 
     const xScale = d3.scaleLinear()
@@ -108,6 +109,34 @@ export default function scatterPlot(config) {
                 .duration(updateDuration)
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
                 .call(yAxis)
+
+
+            // Set axes' labels
+            if (xLabel !== undefined) {
+                const xCenter = xScale.range()[0]+(xScale.range()[1]-xScale.range()[0])/2
+                selectEnter(plotGroup.select('.xAxis'), '.label')
+                  .append('text')
+                    .attr('class', 'label')
+                    .style("text-anchor", "middle")
+                    .style('fill', '#000')
+                plotGroup.select('.xAxis > .label')
+                    .attr('transform', `translate(${xCenter}, ${margin.bottom-3})`)
+                    .text(xLabel)
+            }
+            if (yLabel !== undefined) {
+                const yCenter = yScale.range()[0]+(yScale.range()[1]-yScale.range()[0])/2
+                selectEnter(plotGroup.select('.yAxis'), '.label')
+                  .append('text')
+                    .attr('class', 'label')
+                    .style("text-anchor", "middle")
+                    .style("dominant-baseline", "hanging")
+                    .style('fill', '#000')
+                plotGroup.select('.yAxis > .label')
+                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                        + `rotate(-90)`)
+                    .text(yLabel)
+            }
+
 
             // Finally, draw the symbols.
             let points = plotGroup.selectAll('.point').data(data, d => d.id)

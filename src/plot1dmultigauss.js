@@ -54,6 +54,8 @@ export default function init(containerId, plotDatas) {
     const sharedPlotConfig = {
         // xDomain: [-4, 4],
         yDomain: [0, 0.8],
+        xLabel: 'x',
+        yLabel: 'p(x)',
     }
 
     function updateAll() {
@@ -120,6 +122,8 @@ export default function init(containerId, plotDatas) {
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotCorruptedDistribution.xScale.domain(),
                 id: 0,
+                xLabel: 'corrupted x',
+                yLabel: 'denoised x',
             }))
 
     }

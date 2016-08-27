@@ -7,9 +7,10 @@ import { selectEnter, extendDomainByFactor } from './utils'
 export default function distributionPlot(config) {
     let {
         width, height,
-        margin={top: 10, right: 10, bottom: 25, left: 25},
+        margin={top: 10, right: 10, bottom: 30, left: 40},
         updateDuration=500,
         xDomain, yDomain,
+        xLabel, yLabel,
         approxTickCount=3,
         random=Math.random,
 
@@ -117,6 +118,33 @@ export default function distributionPlot(config) {
                 .duration(updateDuration)
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
                 .call(yAxis)
+
+
+            // Set axes' labels
+            if (xLabel !== undefined) {
+                const xCenter = xScale.range()[0]+(xScale.range()[1]-xScale.range()[0])/2
+                selectEnter(plotGroup.select('.xAxis'), '.label')
+                  .append('text')
+                    .attr('class', 'label')
+                    .style("text-anchor", "middle")
+                    .style('fill', '#000')
+                plotGroup.select('.xAxis > .label')
+                    .attr('transform', `translate(${xCenter}, ${margin.bottom-3})`)
+                    .text(xLabel)
+            }
+            if (yLabel !== undefined) {
+                const yCenter = yScale.range()[0]+(yScale.range()[1]-yScale.range()[0])/2
+                selectEnter(plotGroup.select('.yAxis'), '.label')
+                  .append('text')
+                    .attr('class', 'label')
+                    .style("text-anchor", "middle")
+                    .style("dominant-baseline", "hanging")
+                    .style('fill', '#000')
+                plotGroup.select('.yAxis > .label')
+                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                        + `rotate(-90)`)
+                    .text(yLabel)
+            }
 
             // Draw the samples
             if (drawSamples) {
