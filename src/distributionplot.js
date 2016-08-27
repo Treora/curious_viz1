@@ -76,7 +76,7 @@ export default function distributionPlot(config) {
             // intervals as well as at the samples
             const linePoints = _.sortBy(_.concat(
                 linspace(...xScale.domain(), nLinePoints),
-                samples,
+                samples.filter(sample => _.inRange(sample, ...xScale.domain())),
             ))
 
             // Determine the vertical domain (= the pdf's range)
