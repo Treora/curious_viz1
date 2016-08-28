@@ -13,15 +13,45 @@ export default function init(containerId, plotDatas) {
             .attr('class', 'plotContainer ' + subplots[i])
     }
     function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
-    container.append('input')
-    .attr('class', 'slider')
-    .attr('type', 'range')
-    .attr('min', 0)
-    .attr('max', plotDatas.length-1)
-    .attr('value', Math.round((plotDatas.length-1)/2))
-    .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
-    .on('change', onchange)
-    .on('keyup', onchange)
+    const slider = container.append('input')
+        .attr('class', 'slider')
+        .attr('type', 'range')
+        .attr('min', 0)
+        .attr('max', plotDatas.length-1)
+        .attr('value', Math.round((plotDatas.length-1)/2))
+        .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
+        .on('change', onchange)
+        .on('keyup', onchange)
+
+    // Dragging on data plot also controls the slider
+    container.select('.data')
+        .on('mousemove', function() {
+            const event = d3.event
+            if (event.buttons & 1) {
+                event.preventDefault()
+                const xNormalised = d3.mouse(this)[0] / this.offsetWidth
+                slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+                slider.node().dispatchEvent(new Event('input'))
+            }
+        })
+        .on('mouseup', function () {
+            d3.event.preventDefault()
+            slider.node().dispatchEvent(new Event('change'))
+        })
+    container.select('.data')
+        .on('touchmove', function() {
+            d3.event.preventDefault()
+            const touch = d3.touches(this)[0] // Take first touch
+            const xNormalised = touch[0] / this.offsetWidth
+            slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+            slider.node().dispatchEvent(new Event('input'))
+        })
+        .on('touchend', function () {
+            d3.event.preventDefault()
+            slider.node().dispatchEvent(new Event('change'))
+        });
+
+
 
     const getSettings = () => {
         const sliderInput = container.select('.slider').node()
