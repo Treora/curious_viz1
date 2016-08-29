@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <script src="lib/d3.v4.js"></script>
-    <script src="build/main.js"></script>
+    <script src="d3.v4.js"></script>
+    <script src="main.js"></script>
     <script src="plotdata.js"></script>
     <script>
             function hasCurrentValueChanged(input) {
@@ -21,6 +21,7 @@
 </head>
 <body>
 
+<h1>2d plot</h1>
     <div id="plot_2d" class="plotConstellation">
         <div id="plot_2d_data" class="plotContainer" draggable></div>
         <div id="plot_2d_noisy" class="plotContainer"></div>
@@ -42,7 +43,7 @@
         plot2d.updateAll();
     </script>
 
-
+<h1>1d gaussian</h1>
     <div id="plot_1d_gaussian" class="plotConstellation">
         <div id="plot_1d_gaussian_data" class="plotContainer data"></div>
         <!-- <div id="plot_1d_gaussian_noise" class="plotContainer noise"></div> -->
@@ -78,24 +79,29 @@
         plot1dGaussian.updateAll();
     </script>
 
+<h1>1d other distributions</h1>
+<h2>uniform</h2>
     <div id="plot_1d_uniform" class="plotConstellation plot1dOther">
     </div>
     <script>
         plot1dOther('#plot_1d_uniform', plotDatas.uniform);
     </script>
 
+<h2>exponential</h2>
     <div id="plot_1d_exp" class="plotConstellation plot1dOther">
     </div>
     <script>
         plot1dOther('#plot_1d_exp', plotDatas.exp);
     </script>
 
+<h2>laplace</h2>
     <div id="plot_1d_laplace" class="plotConstellation plot1dOther">
     </div>
     <script>
         plot1dOther('#plot_1d_laplace', plotDatas.laplace);
     </script>
 
+<h1>1d multigaussian</h1>
     <div id="plot_1d_multigauss" class="plotConstellation">
     </div>
     <script>

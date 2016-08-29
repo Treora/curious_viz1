@@ -2,7 +2,7 @@
 .plotConstellation {
     position: relative;
     width: 800px;
-    border: 1px lightgrey solid;
+    /*border: 1px lightgrey solid;*/
     margin: auto;
     margin-bottom: 200px;
     overflow: hidden;
@@ -24,7 +24,7 @@
 }
 
 .sliderText {
-    margin-right: 1em;
+    margin-right: 0.5em;
 }
 
 
@@ -71,9 +71,9 @@
     display: flex;
     align-items: center;
     position: absolute;
-    width: 200px;
+    width: 250px;
     top: 0px;
-    left: 100px;
+    left: 75px;
     /*border: 1px black solid;*/
 }
 #plot_2d_selectStdDevContainer > span {
