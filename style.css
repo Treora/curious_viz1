@@ -28,6 +28,65 @@
 }
 
 
+/* 2D plot */
+
+.plotConstellation#plotIris {
+    height: 600px;
+}
+
+.plotContainer#plotIris_data {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 75px;
+}
+.plotContainer#plotIris_noise {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
+}
+.plotContainer#plotIris_noisy {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
+    /*display: none;*/
+}
+.plotContainer#plotIris_denoise {
+    width: 300px;
+    height: 300px;
+    top: 300px;
+    left: 250px;
+}
+.plotContainer#plotIris_denoised {
+    width: 300px;
+    height: 300px;
+    top: 300px;
+    left: 250px;
+    /*display: none;*/
+}
+#plotIris_selectStdDevContainer {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    left: 75px;
+    /*border: 1px black solid;*/
+}
+#plotIris_selectStdDevContainer > span {
+    /*width: 60px;*/
+    /*flex: none;*/
+}
+#plotIris_selectStdDevContainer > .slider {
+    margin-left: 1em;
+    min-width: 50px;
+}
+
+
+
+
 
 /* 2D plot */
 
