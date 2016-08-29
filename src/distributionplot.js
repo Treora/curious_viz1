@@ -7,7 +7,7 @@ import { selectEnter, extendDomainByFactor } from './utils'
 export default function distributionPlot(config) {
     let {
         width, height,
-        margin={top: 10, right: 10, bottom: 30, left: 40},
+        margin={top: 10, right: 10, bottom: 35, left: 45},
         updateDuration=500,
         xDomain, yDomain,
         xLabel, yLabel,
@@ -141,7 +141,7 @@ export default function distributionPlot(config) {
                     .style("dominant-baseline", "hanging")
                     .style('fill', '#000')
                 plotGroup.select('.yAxis > .label')
-                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                    .attr('transform', `translate(${-margin.left+2}, ${yCenter})`
                         + `rotate(-90)`)
                     .text(yLabel)
             }

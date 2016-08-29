@@ -6,14 +6,19 @@ import functionPlot from './functionplot'
 const sq = x => Math.pow(x, 2)
 
 export default function init(containerId, plotDatas) {
-    const subplots = ['data', 'noisy', 'denoise']
     const container = d3.select(containerId)
+    const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
     function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
-    const slider = container.append('input')
+    const sliderContainer = container.append('div')
+        .attr('class', 'sliderContainer')
+    sliderContainer.append('span')
+        .attr('class', 'sliderText')
+        .html('data&nbsp;variance:')
+    const slider = sliderContainer.append('input')
         .attr('class', 'slider')
         .attr('type', 'range')
         .attr('min', 0)
@@ -24,21 +29,25 @@ export default function init(containerId, plotDatas) {
         .on('keyup', onchange)
 
     // Dragging on data plot also controls the slider
-    container.select('.data')
-        .on('mousemove', function() {
-            const event = d3.event
-            if (event.buttons & 1) {
+    const sliderControl = container.select('.data')
+    sliderControl
+        .on('mousedown', function () {
+            d3.event.preventDefault()
+            sliderControl.on('mousemove', function() {
+                const event = d3.event
+                if (event.buttons & 1) {
+                    event.preventDefault()
+                    const xNormalised = d3.mouse(this)[0] / this.offsetWidth
+                    slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+                    slider.node().dispatchEvent(new Event('input'))
+                }
+            })
+            window.onmouseup = event => {
                 event.preventDefault()
-                const xNormalised = d3.mouse(this)[0] / this.offsetWidth
-                slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
-                slider.node().dispatchEvent(new Event('input'))
+                slider.node().dispatchEvent(new Event('change'))
+                window.onmouseup = undefined
             }
         })
-        .on('mouseup', function () {
-            d3.event.preventDefault()
-            slider.node().dispatchEvent(new Event('change'))
-        })
-    container.select('.data')
         .on('touchmove', function() {
             d3.event.preventDefault()
             const touch = d3.touches(this)[0] // Take first touch
@@ -50,8 +59,6 @@ export default function init(containerId, plotDatas) {
             d3.event.preventDefault()
             slider.node().dispatchEvent(new Event('change'))
         });
-
-
 
     const getSettings = () => {
         const sliderInput = container.select('.slider').node()
@@ -103,20 +110,21 @@ export default function init(containerId, plotDatas) {
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.x})
             .call(functionPlot({
-            xDomain: plotCorruptedDistribution.xScale.domain(),
-            yDomain: plotOriginalDistribution.xScale.domain(),
-            id: 1,
-            lineOpacity: 0.2,
-            lineStyle: '--',
+                id: 1,
+                xDomain: plotCorruptedDistribution.xScale.domain(),
+                yDomain: plotOriginalDistribution.xScale.domain(),
+                lineOpacity: 0.2,
+                lineStyle: '--',
         }))
 
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.denoise})
             .call(functionPlot({
-            xDomain: plotCorruptedDistribution.xScale.domain(),
-            yDomain: plotOriginalDistribution.xScale.domain(),
-            xLabel: 'corrupted x',
-            yLabel: 'denoised x',
+                id: 0,
+                xDomain: plotCorruptedDistribution.xScale.domain(),
+                yDomain: plotOriginalDistribution.xScale.domain(),
+                xLabel: 'corrupted x',
+                yLabel: 'denoised x',
         }))
 
     }

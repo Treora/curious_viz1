@@ -13,7 +13,9 @@ export default function init(containerId, plotDatas) {
             .attr('class', 'plotContainer ' + subplots[i])
     }
     function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
-    container.append('input')
+    const sl0 = container.append('div').attr('class', 'sliderContainer w1')
+    sl0.append('span').attr('class', 'sliderText').html('mix&nbsp;ratio:')
+    const slider = sl0.append('input')
         .attr('class', 'slider w1')
         .attr('type', 'range')
         .attr('min', 0)
@@ -22,7 +24,9 @@ export default function init(containerId, plotDatas) {
         .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
         .on('change', onchange)
         .on('keyup', onchange)
-    container.append('input')
+    const sl1 = container.append('div').attr('class', 'sliderContainer sigma_1')
+    sl1.append('span').attr('class', 'sliderText').text('s2:')
+    sl1.append('input')
         .attr('class', 'slider sigma_1')
         .attr('type', 'range')
         .attr('min', 0)
@@ -31,7 +35,9 @@ export default function init(containerId, plotDatas) {
         .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
         .on('change', onchange)
         .on('keyup', onchange)
-    container.append('input')
+        const sl2 = container.append('div').attr('class', 'sliderContainer sigma_2')
+    sl2.append('span').attr('class', 'sliderText').text('s1:')
+    sl2.append('input')
         .attr('class', 'slider sigma_2')
         .attr('type', 'range')
         .attr('min', 0)
@@ -40,6 +46,39 @@ export default function init(containerId, plotDatas) {
         .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
         .on('change', onchange)
         .on('keyup', onchange)
+
+
+    // Dragging on data plot also controls the slider
+    const sliderControl = container.select('.data')
+    sliderControl
+        .on('mousedown', function () {
+            d3.event.preventDefault()
+            sliderControl.on('mousemove', function() {
+                const event = d3.event
+                if (event.buttons & 1) {
+                    event.preventDefault()
+                    const xNormalised = d3.mouse(this)[0] / this.offsetWidth
+                    slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+                    slider.node().dispatchEvent(new Event('input'))
+                }
+            })
+            window.onmouseup = event => {
+                event.preventDefault()
+                slider.node().dispatchEvent(new Event('change'))
+                window.onmouseup = undefined
+            }
+        })
+        .on('touchmove', function() {
+            d3.event.preventDefault()
+            const touch = d3.touches(this)[0] // Take first touch
+            const xNormalised = touch[0] / this.offsetWidth
+            slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+            slider.node().dispatchEvent(new Event('input'))
+        })
+        .on('touchend', function () {
+            d3.event.preventDefault()
+            slider.node().dispatchEvent(new Event('change'))
+        })
 
     const getSettings = () => {
         const w1 = +container.select('.slider.w1').node().value

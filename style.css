@@ -2,21 +2,37 @@
 .plotConstellation {
     position: relative;
     width: 800px;
-    height: 600px;
-    border: 1px black solid;
+    border: 1px lightgrey solid;
     margin: auto;
     margin-bottom: 200px;
     overflow: hidden;
+    font-family: sans-serif;
 }
 
 .plotContainer {
     display: inline-block;
     margin: 5px;
-    /*position: absolute;*/
     width: 240px;
     height: 200px;
-    /*overflow: hidden;*/
-    /*border: 1px black solid;*/
+    position: absolute;
+}
+
+.plotContainer .xAxis, .yAxis {
+}
+.plotContainer .label {
+    font-size: 12pt;
+}
+
+.sliderText {
+    margin-right: 1em;
+}
+
+
+
+/* 2D plot */
+
+.plotConstellation#plot_2d {
+    height: 600px;
 }
 
 .plotContainer#plot_2d_data {
@@ -69,21 +85,158 @@
     min-width: 50px;
 }
 
-.slider#plot_1d_selectStdDev {
 
+
+/* 1D Gaussian plot */
+
+.plotConstellation#plot_1d_gaussian {
+    height: 600px;
 }
-.slider#plot_1d_selectNoise {
 
+#plot_1d_gaussian .plotContainer {
 }
 
+#plot_1d_gaussian .plotContainer.data {
+    width: 250px;
+    height: 250px;
+    top: 0px;
+    left: 75px;
+    }
+#plot_1d_gaussian .plotContainer.noisy {
+    width: 250px;
+    height: 250px;
+    top: 0px;
+    left: 475px;
+}
+#plot_1d_gaussian .plotContainer.denoise {
+    width: 300px;
+    height: 300px;
+    top: 275px;
+    left: 425px;
+}
+#plot_1d_gaussian .plotContainer.denoised {
+    width: 250px;
+    height: 250px;
+    top: 300px;
+    left: 75px;
+}
+
+#plot_1d_gaussian_selectStdDevContainer {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    width: 250px;
+    top: 260px;
+    left: 75px;
+}
+
+#plot_1d_gaussian_selectNoiseContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 125px;
+    left: 345px;
+    width: 100px;
+}
 
 .slider {
-    display: flex;
-    /*width: 100%;*/
-    /*position: absolute;*/
+    width: 100%;
 }
 
-/* Slider (generated with http://danielstern.ca/range.css) */
+#plot_1d_gaussian_selectNoiseContainer > .slider {
+    width: 100%;
+}
+
+#plot_1d_gaussian_selectNoiseContainer > .sliderText {
+    margin-right: 0;
+}
+
+
+
+
+/* 1D other plots */
+.plotConstellation.plot1dOther {
+        height: 250px;
+}
+
+.plot1dOther .plotContainer {
+    position: absolute;
+    display: inline-block;
+    width: 240px;
+    height: 200px;
+}
+
+.plot1dOther .plotContainer.data {
+    top: 0;
+    left: 0;
+}
+
+.plot1dOther .plotContainer.noisy {
+    top: 0;
+    left: 250px;
+}
+
+.plot1dOther .plotContainer.denoise {
+    top: 0;
+    left: 500px;
+}
+
+.plot1dOther .sliderContainer {
+    width: 240px;
+    position: absolute;
+    top: 210px;
+    display: flex;
+    align-items: center;
+}
+
+
+
+/* Multigauss */
+
+.plotConstellation#plot_1d_multigauss {
+    height: 270px;
+}
+
+#plot_1d_multigauss .plotContainer.data {
+    top: 0;
+    left: 0;
+}
+
+#plot_1d_multigauss .plotContainer.noisy {
+    top: 0;
+    left: 250px;
+}
+
+#plot_1d_multigauss .plotContainer.denoise {
+    top: 0;
+    left: 500px;
+}
+
+#plot_1d_multigauss .sliderContainer {
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+#plot_1d_multigauss .sliderContainer.w1 {
+    width: 240px;
+    top: 210px;
+    left: 0px;
+}
+#plot_1d_multigauss .sliderContainer.sigma_2 {
+    width: 110px;
+    top: 240px;
+    left: 0px;
+}
+#plot_1d_multigauss .sliderContainer.sigma_1 {
+    width: 110px;
+    top: 240px;
+    left: 130px;
+}
+
+
+/* Slider design (generated with http://danielstern.ca/range.css) */
 input[type=range].slider {
   -webkit-appearance: none;
   margin: 6px 0;

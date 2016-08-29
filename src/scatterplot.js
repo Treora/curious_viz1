@@ -7,7 +7,7 @@ export default function scatterPlot(config) {
     let {
         width, height,
         keepAspectRatio=false,
-        margin={top: 10, right: 10, bottom: 25, left: 25},
+        margin={top: 10, right: 10, bottom: 35, left: 45},
         symbol=pointSymbol(),
         updateDuration=500,
         xDomain, yDomain,
@@ -132,7 +132,7 @@ export default function scatterPlot(config) {
                     .style("dominant-baseline", "hanging")
                     .style('fill', '#000')
                 plotGroup.select('.yAxis > .label')
-                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                    .attr('transform', `translate(${-margin.left+2}, ${yCenter})`
                         + `rotate(-90)`)
                     .text(yLabel)
             }

@@ -5,7 +5,7 @@ import { selectEnter, extendDomainByFactor } from './utils'
 export default function functionPlot(config) {
     let {
         width, height,
-        margin={top: 10, right: 10, bottom: 30, left: 40},
+        margin={top: 10, right: 10, bottom: 35, left: 45},
         updateDuration=500,
         xDomain, yDomain,
         xLabel, yLabel,
@@ -103,7 +103,7 @@ export default function functionPlot(config) {
 
             // Move the whole plot to create margins around it
             const plotGroup = svg.select('.functionPlotGroup')
-                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+                .attr('transform', `translate(${margin.left+2}, ${margin.top})`)
 
             // Draw the axes
             xAxis

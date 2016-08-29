@@ -50,14 +50,14 @@ function updateNoise() {
 
     const noiseDistribution = gaussian(0, sq(noiseStdDev))
 
-    d3.select('#plot_1d_gaussian_noise')
-        .datum(noiseDistribution)
-        .call(distributionPlot({
-            ...sharedPlotConfig,
-            xLabel: 'n',
-            yLabel: 'p(n)',
-            // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
-        }))
+    // d3.select('#plot_1d_gaussian_noise')
+    //     .datum(noiseDistribution)
+    //     .call(distributionPlot({
+    //         ...sharedPlotConfig,
+    //         xLabel: 'n',
+    //         yLabel: 'p(n)',
+    //         // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
+    //     }))
 }
 
 function updateAfterNoise() {
@@ -93,8 +93,19 @@ function updateAfterNoise() {
         .call(plotDenoisedDistribution)
 
     d3.select('#plot_1d_gaussian_denoise')
+        .datum(() => x=>x)
+        .call(functionPlot({
+            id: 1,
+            xDomain: plotCorruptedDistribution.xScale.domain(),
+            yDomain: plotDenoisedDistribution.xScale.domain(),
+            lineOpacity: 0.2,
+            lineStyle: '--',
+    }))
+
+    d3.select('#plot_1d_gaussian_denoise')
         .datum(() => denoiseFunction)
         .call(functionPlot({
+            id: 0,
             xDomain: plotCorruptedDistribution.xScale.domain(),
             yDomain: plotDenoisedDistribution.xScale.domain(),
             xLabel: 'corrupted x',
