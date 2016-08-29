@@ -12,7 +12,6 @@ export default function init(containerId, plotDatas) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
     const sliderContainer = container.append('div')
         .attr('class', 'sliderContainer')
     sliderContainer.append('span')
@@ -24,9 +23,7 @@ export default function init(containerId, plotDatas) {
         .attr('min', 0)
         .attr('max', plotDatas.length-1)
         .attr('value', Math.round((plotDatas.length-1)/2))
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateData() })
-        .on('change', onchange)
-        .on('keyup', onchange)
+        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
 
     // Dragging on data plot also controls the slider
     const sliderControl = container.select('.data')

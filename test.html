@@ -57,9 +57,7 @@
             <input id="plot_1d_gaussian_selectStdDev" name="stdDev"
                 type="range" class="slider"
                 value="1.0" min="0.2" max="2.0" step="0.2"
-                oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateData();"
-                onchange="if (hasChosenValueChanged(this)) plot1dGaussian.updateAfterData();"
-                onkeyup="this.onchange();"
+                oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateAll();"
             />
             </div>
             <div id="plot_1d_gaussian_selectNoiseContainer">
@@ -69,9 +67,7 @@
                 <input id="plot_1d_gaussian_selectNoise" name="noise"
                     type="range" class="slider"
                     value="1.0" min="0.2" max="1.0" step="0.2"
-                    oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateNoise();"
-                    onchange="if (hasChosenValueChanged(this)) plot1dGaussian.updateAfterNoise();"
-                    onkeyup="this.onchange();"
+                    oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateAfterData();"
                 />
             </div>
     </div>
