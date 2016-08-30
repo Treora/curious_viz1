@@ -35,13 +35,12 @@ export function addSlider({
 export function addSliderController({
     controller,
     slider,
-    direction='horizontal',
 }) {
 
     const coordsToValue = function ([x, y]) {
         const xNormalised = x / controller.node().offsetWidth
-        return slider.attr('min')
-            + (slider.attr('max')-slider.attr('min')) * xNormalised
+        return +slider.attr('min')
+            + (+slider.attr('max')-+slider.attr('min')) * xNormalised
     }
 
     controller
@@ -63,6 +62,7 @@ export function addSliderController({
                 event.stopPropagation()
                 slider.node().dispatchEvent(new Event('change'))
                 window.onmouseup = undefined
+                controller.on('mousemove', undefined)
             }
         })
         .on('touchmove', function() {

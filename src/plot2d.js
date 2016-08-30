@@ -16,7 +16,7 @@ export default function init(containerId) {
             .attr('class', 'plotContainer ' + subplots[i])
     }
 
-    function oninput() { if (hasCurrentValueChanged(this)) updateAll() }
+    function oninput() { if (hasCurrentValueChanged(this)) updateData() }
     function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
     const slider = addSlider({
         container,
