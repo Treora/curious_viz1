@@ -2,6 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
+import addSlider from './slider'
 
 const sq = x => Math.pow(x, 2)
 
@@ -12,34 +13,30 @@ export default function init(containerId, plotDatas) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const sl0 = container.append('div').attr('class', 'sliderContainer w1')
-    sl0.append('span').attr('class', 'sliderText').html('mix&nbsp;ratio:')
-    const slider = sl0.append('input')
-        .attr('class', 'slider w1')
-        .attr('type', 'range')
-        .attr('min', 0)
-        .attr('max', plotDatas.length-1)
-        .attr('value', Math.round((plotDatas.length-1)/2))
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
-    const sl1 = container.append('div').attr('class', 'sliderContainer sigma_1')
-    sl1.append('span').attr('class', 'sliderText').text('s2:')
-    sl1.append('input')
-        .attr('class', 'slider sigma_1')
-        .attr('type', 'range')
-        .attr('min', 0)
-        .attr('max', plotDatas[0].length-1)
-        .attr('value', Math.round((plotDatas[0].length-1)/2))
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
-        const sl2 = container.append('div').attr('class', 'sliderContainer sigma_2')
-    sl2.append('span').attr('class', 'sliderText').text('s1:')
-    sl2.append('input')
-        .attr('class', 'slider sigma_2')
-        .attr('type', 'range')
-        .attr('min', 0)
-        .attr('max', plotDatas[0][0].length-1)
-        .attr('value', Math.round((plotDatas[0][0].length-1)/2))
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
-
+    const slider = addSlider({
+        container,
+        name: 'w1',
+        label: 'mix&nbsp;ratio:',
+        min: 0, max: plotDatas.length-1,
+        value: Math.round((plotDatas.length-1)/2),
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+    })
+    addSlider({
+        container,
+        name: 'sigma_1',
+        label: 's2:',
+        min: 0, max: plotDatas[0].length-1,
+        value: Math.round((plotDatas[0].length-1)/2),
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+    })
+    addSlider({
+        container,
+        name: 'sigma_2',
+        label: 's1:',
+        min: 0, max: plotDatas[0][0].length-1,
+        value: Math.round((plotDatas[0][0].length-1)/2),
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+    })
 
     // Dragging on data plot also controls the slider
     const sliderControl = container.select('.data')

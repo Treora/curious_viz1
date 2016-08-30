@@ -2,6 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
+import addSlider from './slider'
 
 const sq = x => Math.pow(x, 2)
 
@@ -12,18 +13,14 @@ export default function init(containerId, plotDatas) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const sliderContainer = container.append('div')
-        .attr('class', 'sliderContainer')
-    sliderContainer.append('span')
-        .attr('class', 'sliderText')
-        .html('data&nbsp;variance:')
-    const slider = sliderContainer.append('input')
-        .attr('class', 'slider')
-        .attr('type', 'range')
-        .attr('min', 0)
-        .attr('max', plotDatas.length-1)
-        .attr('value', Math.round((plotDatas.length-1)/2))
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
+    const slider = addSlider({
+        container,
+        name: 'stdDev',
+        label: 'data&nbsp;variance',
+        min: 0, max: plotDatas.length-1,
+        value: Math.round((plotDatas.length-1)/2),
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+    })
 
     // Dragging on data plot also controls the slider
     const sliderControl = container.select('.data')

@@ -2,6 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
+import addSlider from './slider'
 
 const sq = x => Math.pow(x, 2)
 
@@ -12,34 +13,22 @@ export default function init(containerId) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const sliderContainer0 = container.append('div')
-        .attr('class', 'sliderContainer stdDev')
-    sliderContainer0.append('span')
-        .attr('class', 'sliderText')
-        .html('data&nbsp;variance:')
-    const slider = sliderContainer0.append('input')
-        .attr('class', 'slider stdDev')
-        .attr('type', 'range')
-        .attr('min', 0.2)
-        .attr('max', 1.8)
-        .attr('step', 0.4)
-        .attr('value', 1.0)
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
-    slider.node().value = 1.0
-    const sliderContainer1 = container.append('div')
-        .attr('class', 'sliderContainer noiseStdDev')
-    sliderContainer1.append('span')
-        .attr('class', 'sliderText')
-        .html('noise&nbsp;quantity')
-    const slider1 = sliderContainer1.append('input')
-        .attr('class', 'slider noiseStdDev')
-        .attr('type', 'range')
-        .attr('min', 0.2)
-        .attr('max', 1.8)
-        .attr('step', 0.4)
-        .attr('value', 1.0)
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAfterData() })
-    slider1.node().value = 1.0
+    const slider = addSlider({
+        container,
+        name: 'stdDev',
+        label: 'data&nbsp;variance',
+        min: 0.2, max: 1.8, step: 0.4,
+        value: 1.0,
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+    })
+    const slider1 = addSlider({
+        container,
+        name: 'noiseStdDev',
+        label: 'noise&nbsp;quantity',
+        min: 0.2, max: 1.8, step: 0.4,
+        value: 1.0,
+        oninput: function () { if (hasCurrentValueChanged(this)) updateAfterData() },
+    })
 
     // Dragging on data plot also controls the slider
     const sliderControl = container.select('.data')

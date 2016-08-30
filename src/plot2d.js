@@ -6,32 +6,27 @@ import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
+import addSlider from './slider'
 
 export default function init(containerId) {
     const container = d3.select(containerId)
-    const subplots = ['data', 'noisy', 'noise', 'denoise', 'denoised']
+    const subplots = ['data', 'noise', 'noisy', 'denoise', 'denoised']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const sliderContainer = container.append('div')
-        .attr('class', 'sliderContainer stdDev')
-    sliderContainer.append('span')
-        .attr('class', 'sliderText')
-        .html('data&nbsp;variance:')
-    function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
-    const slider = sliderContainer.append('input')
-        .attr('class', 'slider stdDev')
-        .attr('type', 'range')
-        .attr('min', 0.2)
-        .attr('max', 1.0)
-        .attr('step', 0.2)
-        .attr('value', 0.3)
-        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
-        .on('change', onchange)
-        .on('keyup', onchange)
-    slider.node().value = 0.3
 
+    function oninput() { if (hasCurrentValueChanged(this)) updateAll() }
+    function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
+    const slider = addSlider({
+        container,
+        name: 'stdDev',
+        label: 'data&nbsp;variance:',
+        min: 0.2, max: 1.0, step: 0.2,
+        value: 0.3,
+        oninput,
+        onchange,
+    })
 
     const getSettings = () => ({
         dataMean: 0,
@@ -72,8 +67,6 @@ export default function init(containerId) {
 
     // Configure the flower and arrow plots.
     const sharedPlotConfig = {
-        // width: 400,
-        // height: 300,
         keepAspectRatio: true,
         xDomain, yDomain,
         xLabel: 'x1',
@@ -87,7 +80,7 @@ export default function init(containerId) {
         }),
     })
 
-    let originalData, noisyData, noiseDistribution, denoisedData
+    let originalData
 
     function updateAll() {
         updateData()
@@ -107,23 +100,17 @@ export default function init(containerId) {
                     opacity: 0.3
                 })
             }))
-
     }
 
     function updateAfterData() {
-        updateNoise()
-        updateAfterNoise()
-    }
-
-    function updateNoise() {
         let { noiseStdDev } = getSettings()
 
         const noiseVariance = Math.pow(noiseStdDev, 2);
-        noiseDistribution = gaussian(0, noiseVariance)
+        const noiseDistribution = gaussian(0, noiseVariance)
         const sampleNoise = () => noiseDistribution.ppf(Math.random())
 
         // Apply gaussian noise to the data points.
-        noisyData = originalData.map(d => ({
+        const noisyData = originalData.map(d => ({
             ...d,
             x: d.x + sampleNoise(),
             y: d.y + sampleNoise(),
@@ -133,14 +120,8 @@ export default function init(containerId) {
             .datum(compareData(originalData, noisyData))
             .call(drawArrows)
 
-        return { noisyData, noiseDistribution }
-    }
-
-    function updateAfterNoise() {
-        let { dataStdDev, noiseStdDev } = getSettings()
-
         // Denoise the noisy data using optimal denoising function.
-        denoisedData = noisyData.map(noisySample => ({
+        const denoisedData = noisyData.map(noisySample => ({
             ...noisySample,
             ...optimalDenoise({noisySample, originalData, noiseDistribution}),
         }))
