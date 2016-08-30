@@ -5,119 +5,182 @@ import functionPlot from './functionplot'
 
 const sq = x => Math.pow(x, 2)
 
-
-const sharedPlotConfig = {
-    xDomain: [-4, 4],
-    drawSamples: false,
-    lineOpacity: 1,
-}
-
-const getSettings = () => {
-    const stdDevInput = document.getElementById('plot_1d_gaussian_selectStdDev')
-    const noiseInput = document.getElementById('plot_1d_gaussian_selectNoise')
-    return {
-        dataMean: 0,
-        dataStdDev: +stdDevInput.value || +stdDevInput.defaultValue,
-        noiseStdDev: +noiseInput.value || +noiseInput.defaultValue,
+export default function init(containerId) {
+    const container = d3.select(containerId)
+    const subplots = ['data', 'noisy', 'denoise', 'denoised']
+    for (let i in subplots) {
+        container.append('div')
+            .attr('class', 'plotContainer ' + subplots[i])
     }
-}
+    const sliderContainer0 = container.append('div')
+        .attr('class', 'sliderContainer stdDev')
+    sliderContainer0.append('span')
+        .attr('class', 'sliderText')
+        .html('data&nbsp;variance:')
+    const slider = sliderContainer0.append('input')
+        .attr('class', 'slider stdDev')
+        .attr('type', 'range')
+        .attr('min', 0.2)
+        .attr('max', 1.8)
+        .attr('step', 0.4)
+        .attr('value', 1.0)
+        .on('input', function () { if (hasCurrentValueChanged(this)) updateAll() })
+    slider.node().value = 1.0
+    const sliderContainer1 = container.append('div')
+        .attr('class', 'sliderContainer noiseStdDev')
+    sliderContainer1.append('span')
+        .attr('class', 'sliderText')
+        .html('noise&nbsp;quantity')
+    const slider1 = sliderContainer1.append('input')
+        .attr('class', 'slider noiseStdDev')
+        .attr('type', 'range')
+        .attr('min', 0.2)
+        .attr('max', 1.8)
+        .attr('step', 0.4)
+        .attr('value', 1.0)
+        .on('input', function () { if (hasCurrentValueChanged(this)) updateAfterData() })
+    slider1.node().value = 1.0
 
-function updateAll() {
-    updateData()
-    updateAfterData()
-}
+    // Dragging on data plot also controls the slider
+    const sliderControl = container.select('.data')
+    sliderControl
+        .on('mousedown', function () {
+            d3.event.preventDefault()
+            sliderControl.on('mousemove', function() {
+                const event = d3.event
+                if (event.buttons & 1) {
+                    event.preventDefault()
+                    const xNormalised = d3.mouse(this)[0] / this.offsetWidth
+                    slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+                    slider.node().dispatchEvent(new Event('input'))
+                }
+            })
+            window.onmouseup = event => {
+                event.preventDefault()
+                slider.node().dispatchEvent(new Event('change'))
+                window.onmouseup = undefined
+            }
+        })
+        .on('touchmove', function() {
+            d3.event.preventDefault()
+            const touch = d3.touches(this)[0] // Take first touch
+            const xNormalised = touch[0] / this.offsetWidth
+            slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
+            slider.node().dispatchEvent(new Event('input'))
+        })
+        .on('touchend', function () {
+            d3.event.preventDefault()
+            slider.node().dispatchEvent(new Event('change'))
+        });
 
-function updateData() {
-    let { dataMean, dataStdDev } = getSettings()
+    const sharedPlotConfig = {
+        xDomain: [-4, 4],
+        yDomain: [0, 1.2],
+        drawSamples: false,
+        lineOpacity: 1,
+    }
 
-    const dataDistribution = gaussian(dataMean, sq(dataStdDev))
-    d3.select('#plot_1d_gaussian_data')
-        .datum(dataDistribution)
-        .call(distributionPlot({
+    const getSettings = () => {
+        const stdDevInput = container.select('.slider.stdDev').node()
+        const noiseInput = container.select('.slider.noiseStdDev').node()
+        return {
+            dataMean: 0,
+            dataStdDev: +stdDevInput.value || +stdDevInput.defaultValue,
+            noiseStdDev: +noiseInput.value || +noiseInput.defaultValue,
+        }
+    }
+
+    function updateAll() {
+        updateData()
+        updateAfterData()
+    }
+    
+
+    function updateData() {
+        let { dataMean, dataStdDev } = getSettings()
+
+        const dataDistribution = gaussian(dataMean, sq(dataStdDev))
+        container.select('.data')
+            .datum(dataDistribution)
+            .call(distributionPlot({
+                ...sharedPlotConfig,
+                xLabel: 'x',
+                yLabel: 'p(x)',
+            }))
+    }
+
+    function updateAfterData() {
+        updateNoise()
+        updateAfterNoise()
+    }
+
+    function updateNoise() {
+        let { noiseStdDev } = getSettings()
+
+        const noiseDistribution = gaussian(0, sq(noiseStdDev))
+
+        // d3.select('#plot_1d_gaussian_noise')
+        //     .datum(noiseDistribution)
+        //     .call(distributionPlot({
+        //         ...sharedPlotConfig,
+        //         xLabel: 'n',
+        //         yLabel: 'p(n)',
+        //         // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
+        //     }))
+    }
+
+    function updateAfterNoise() {
+        let { dataMean, dataStdDev, noiseStdDev } = getSettings()
+
+        const corruptedStdDev = Math.sqrt(sq(dataStdDev) + sq(noiseStdDev))
+        const corruptedDistribution = gaussian(dataMean, sq(corruptedStdDev))
+
+        const v = sq(dataStdDev) / sq(corruptedStdDev)
+        const denoiseFunction = noisyValue => v * noisyValue + (1-v) * dataMean
+
+        const denoisedStdDev = corruptedStdDev * v
+        const denoisedDistribution = gaussian(dataMean, sq(denoisedStdDev))
+
+        const plotCorruptedDistribution = distributionPlot({
             ...sharedPlotConfig,
-            xLabel: 'x',
-            yLabel: 'p(x)',
+            xLabel: 'x_tilde',
+            yLabel: 'p(x_tilde)',
+        })
+
+        const plotDenoisedDistribution = distributionPlot({
+            ...sharedPlotConfig,
+            xLabel: 'x_hat',
+            yLabel: 'p(x_hat)',
+        })
+
+        container.select('.noisy')
+            .datum(corruptedDistribution)
+            .call(plotCorruptedDistribution)
+
+        container.select('.denoised')
+            .datum(denoisedDistribution)
+            .call(plotDenoisedDistribution)
+
+        container.select('.denoise')
+            .datum(() => x=>x)
+            .call(functionPlot({
+                id: 1,
+                xDomain: plotCorruptedDistribution.xScale.domain(),
+                yDomain: plotDenoisedDistribution.xScale.domain(),
+                lineOpacity: 0.2,
+                lineStyle: '--',
         }))
-}
+        container.select('.denoise')
+            .datum(() => denoiseFunction)
+            .call(functionPlot({
+                id: 0,
+                xDomain: plotCorruptedDistribution.xScale.domain(),
+                yDomain: plotDenoisedDistribution.xScale.domain(),
+                xLabel: 'corrupted x',
+                yLabel: 'denoised x',
+        }))
 
-function updateAfterData() {
-    updateNoise()
-    updateAfterNoise()
-}
+    }
 
-function updateNoise() {
-    let { noiseStdDev } = getSettings()
-
-    const noiseDistribution = gaussian(0, sq(noiseStdDev))
-
-    // d3.select('#plot_1d_gaussian_noise')
-    //     .datum(noiseDistribution)
-    //     .call(distributionPlot({
-    //         ...sharedPlotConfig,
-    //         xLabel: 'n',
-    //         yLabel: 'p(n)',
-    //         // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
-    //     }))
-}
-
-function updateAfterNoise() {
-    let { dataMean, dataStdDev, noiseStdDev } = getSettings()
-
-    const corruptedStdDev = Math.sqrt(sq(dataStdDev) + sq(noiseStdDev))
-    const corruptedDistribution = gaussian(dataMean, sq(corruptedStdDev))
-
-    const v = sq(dataStdDev) / sq(corruptedStdDev)
-    const denoiseFunction = noisyValue => v * noisyValue + (1-v) * dataMean
-
-    const denoisedStdDev = corruptedStdDev * v
-    const denoisedDistribution = gaussian(dataMean, sq(denoisedStdDev))
-
-    const plotCorruptedDistribution = distributionPlot({
-        ...sharedPlotConfig,
-        xLabel: 'x_tilde',
-        yLabel: 'p(x_tilde)',
-    })
-
-    const plotDenoisedDistribution = distributionPlot({
-        ...sharedPlotConfig,
-        xLabel: 'x_hat',
-        yLabel: 'p(x_hat)',
-    })
-
-    d3.select('#plot_1d_gaussian_noisy')
-        .datum(corruptedDistribution)
-        .call(plotCorruptedDistribution)
-
-    d3.select('#plot_1d_gaussian_denoised')
-        .datum(denoisedDistribution)
-        .call(plotDenoisedDistribution)
-
-    d3.select('#plot_1d_gaussian_denoise')
-        .datum(() => x=>x)
-        .call(functionPlot({
-            id: 1,
-            xDomain: plotCorruptedDistribution.xScale.domain(),
-            yDomain: plotDenoisedDistribution.xScale.domain(),
-            lineOpacity: 0.2,
-            lineStyle: '--',
-    }))
-
-    d3.select('#plot_1d_gaussian_denoise')
-        .datum(() => denoiseFunction)
-        .call(functionPlot({
-            id: 0,
-            xDomain: plotCorruptedDistribution.xScale.domain(),
-            yDomain: plotDenoisedDistribution.xScale.domain(),
-            xLabel: 'corrupted x',
-            yLabel: 'denoised x',
-    }))
-
-}
-
-export default {
-    updateAll,
-    updateData,
-    updateAfterData,
-    updateNoise,
-    updateAfterNoise,
+    updateAll()
 }

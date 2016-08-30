@@ -23,68 +23,14 @@
     font-size: 12pt;
 }
 
+
+.slider {
+    width: 100%;
+}
+
 .sliderText {
     margin-right: 0.5em;
 }
-
-
-/* 2D plot */
-
-.plotConstellation#plotIris {
-    height: 600px;
-}
-
-.plotContainer#plotIris_data {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 75px;
-}
-.plotContainer#plotIris_noise {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 475px;
-}
-.plotContainer#plotIris_noisy {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 475px;
-    /*display: none;*/
-}
-.plotContainer#plotIris_denoise {
-    width: 300px;
-    height: 300px;
-    top: 300px;
-    left: 250px;
-}
-.plotContainer#plotIris_denoised {
-    width: 300px;
-    height: 300px;
-    top: 300px;
-    left: 250px;
-    /*display: none;*/
-}
-#plotIris_selectStdDevContainer {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    width: 250px;
-    top: 0px;
-    left: 75px;
-    /*border: 1px black solid;*/
-}
-#plotIris_selectStdDevContainer > span {
-    /*width: 60px;*/
-    /*flex: none;*/
-}
-#plotIris_selectStdDevContainer > .slider {
-    margin-left: 1em;
-    min-width: 50px;
-}
-
-
 
 
 
@@ -180,7 +126,7 @@
     left: 75px;
 }
 
-#plot_1d_gaussian_selectStdDevContainer {
+#plot_1d_gaussian .sliderContainer.stdDev {
     display: flex;
     align-items: center;
     position: absolute;
@@ -189,7 +135,7 @@
     left: 75px;
 }
 
-#plot_1d_gaussian_selectNoiseContainer {
+#plot_1d_gaussian .sliderContainer.noiseStdDev {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -199,16 +145,8 @@
     width: 100px;
 }
 
-.slider {
-    width: 100%;
-}
-
-#plot_1d_gaussian_selectNoiseContainer > .slider {
-    width: 100%;
-}
-
-#plot_1d_gaussian_selectNoiseContainer > .sliderText {
-    margin-right: 0;
+#plot_1d_gaussian .sliderContainer.noiseStdDev .sliderText {
+    margin-right: 0px;
 }
 
 
@@ -279,7 +217,7 @@
 }
 
 #plot_1d_multigauss .sliderContainer.w1 {
-    width: 240px;
+    width: 220px;
     top: 210px;
     left: 0px;
 }
@@ -295,6 +233,65 @@
 }
 
 
+
+/* Iris plot */
+
+.plotConstellation#plotIris {
+    height: 600px;
+}
+
+.plotContainer#plotIris_data {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 75px;
+}
+.plotContainer#plotIris_noise {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
+}
+.plotContainer#plotIris_noisy {
+    width: 250px;
+    height: 250px;
+    top: 25px;
+    left: 475px;
+    /*display: none;*/
+}
+.plotContainer#plotIris_denoise {
+    width: 300px;
+    height: 300px;
+    top: 300px;
+    left: 250px;
+}
+.plotContainer#plotIris_denoised {
+    width: 300px;
+    height: 300px;
+    top: 300px;
+    left: 250px;
+    /*display: none;*/
+}
+#plotIris_selectStdDevContainer {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    left: 75px;
+    /*border: 1px black solid;*/
+}
+#plotIris_selectStdDevContainer > span {
+    /*width: 60px;*/
+    /*flex: none;*/
+}
+#plotIris_selectStdDevContainer > .slider {
+    margin-left: 1em;
+    min-width: 50px;
+}
+
+
+
 /* Slider design (generated with http://danielstern.ca/range.css) */
 input[type=range].slider {
   -webkit-appearance: none;
@@ -305,26 +302,26 @@ input[type=range].slider:focus {
 }
 input[type=range].slider::-webkit-slider-runnable-track {
   width: 100%;
-  height: 4px;
+  height: 12px;
   cursor: pointer;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5), 0px 0px 1px rgba(13, 13, 13, 0.5);
-  background: #993399;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5), 0px 0px 1px rgba(13, 13, 13, 0.2);
+  background: #eef;
   border-radius: 4px;
   border: 1px solid #000000;
 }
 input[type=range].slider::-webkit-slider-thumb {
-  box-shadow: 1.5px 1.5px 2px rgba(0, 0, 0, 0.5), 0px 0px 1.5px rgba(13, 13, 13, 0.5);
+  box-shadow: 1.5px 1.5px 2px rgba(0, 0, 0, 0.5), 0px 0px 1.5px rgba(13, 13, 13, 0.2);
   border: 1px solid #000000;
-  height: 16px;
+  height: 20px;
   width: 12px;
   border-radius: 4px;
-  background: #0000ff;
+  background: #77f;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -7px;
+  margin-top: -9px;
 }
 input[type=range].slider:focus::-webkit-slider-runnable-track {
-  background: #bf40bf;
+  background: #eef;
 }
 input[type=range].slider::-moz-range-track {
   width: 100%;

@@ -30,6 +30,7 @@ export default function init(containerId, plotDatas) {
     sliderControl
         .on('mousedown', function () {
             d3.event.preventDefault()
+            d3.event.stopPropagation()
             sliderControl.on('mousemove', function() {
                 const event = d3.event
                 if (event.buttons & 1) {
@@ -41,12 +42,14 @@ export default function init(containerId, plotDatas) {
             })
             window.onmouseup = event => {
                 event.preventDefault()
+                event.stopPropagation()
                 slider.node().dispatchEvent(new Event('change'))
                 window.onmouseup = undefined
             }
         })
         .on('touchmove', function() {
             d3.event.preventDefault()
+            d3.event.stopPropagation()
             const touch = d3.touches(this)[0] // Take first touch
             const xNormalised = touch[0] / this.offsetWidth
             slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
@@ -54,6 +57,7 @@ export default function init(containerId, plotDatas) {
         })
         .on('touchend', function () {
             d3.event.preventDefault()
+            d3.event.stopPropagation()
             slider.node().dispatchEvent(new Event('change'))
         });
 

@@ -44,35 +44,9 @@
     </script>
 
 <h1>1d gaussian</h1>
-    <div id="plot_1d_gaussian" class="plotConstellation">
-        <div id="plot_1d_gaussian_data" class="plotContainer data"></div>
-        <!-- <div id="plot_1d_gaussian_noise" class="plotContainer noise"></div> -->
-        <div id="plot_1d_gaussian_noisy" class="plotContainer noisy"></div>
-        <div id="plot_1d_gaussian_denoise" class="plotContainer denoise"></div>
-        <div id="plot_1d_gaussian_denoised" class="plotContainer denoised"></div>
-        <div id="plot_1d_gaussian_selectStdDevContainer">
-            <span class="sliderText">
-                variance:
-            </span>
-            <input id="plot_1d_gaussian_selectStdDev" name="stdDev"
-                type="range" class="slider"
-                value="1.0" min="0.2" max="2.0" step="0.2"
-                oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateAll();"
-            />
-            </div>
-            <div id="plot_1d_gaussian_selectNoiseContainer">
-                <span class="sliderText">
-                    noise quantity
-                </span>
-                <input id="plot_1d_gaussian_selectNoise" name="noise"
-                    type="range" class="slider"
-                    value="1.0" min="0.2" max="1.0" step="0.2"
-                    oninput="if (hasCurrentValueChanged(this)) plot1dGaussian.updateAfterData();"
-                />
-            </div>
-    </div>
+    <div id="plot_1d_gaussian" class="plotConstellation"></div>
     <script>
-        plot1dGaussian.updateAll();
+        plot1dGaussian('#plot_1d_gaussian');
     </script>
 
 <h1>1d other distributions</h1>
