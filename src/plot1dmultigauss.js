@@ -2,7 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
-import addSlider from './slider'
+import { addSlider, addSliderController } from './slider'
 
 const sq = x => Math.pow(x, 2)
 
@@ -39,36 +39,11 @@ export default function init(containerId, plotDatas) {
     })
 
     // Dragging on data plot also controls the slider
-    const sliderControl = container.select('.data')
-    sliderControl
-        .on('mousedown', function () {
-            d3.event.preventDefault()
-            sliderControl.on('mousemove', function() {
-                const event = d3.event
-                if (event.buttons & 1) {
-                    event.preventDefault()
-                    const xNormalised = d3.mouse(this)[0] / this.offsetWidth
-                    slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
-                    slider.node().dispatchEvent(new Event('input'))
-                }
-            })
-            window.onmouseup = event => {
-                event.preventDefault()
-                slider.node().dispatchEvent(new Event('change'))
-                window.onmouseup = undefined
-            }
-        })
-        .on('touchmove', function() {
-            d3.event.preventDefault()
-            const touch = d3.touches(this)[0] // Take first touch
-            const xNormalised = touch[0] / this.offsetWidth
-            slider.node().value = slider.attr('max') * xNormalised //Math.abs(xNormalised*2-1)
-            slider.node().dispatchEvent(new Event('input'))
-        })
-        .on('touchend', function () {
-            d3.event.preventDefault()
-            slider.node().dispatchEvent(new Event('change'))
-        })
+    addSliderController({
+        controller: container.select('.data'),
+        slider,
+    })
+
 
     const getSettings = () => {
         const w1 = +container.select('.slider.w1').node().value

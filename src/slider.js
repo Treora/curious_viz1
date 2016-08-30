@@ -1,5 +1,5 @@
 
-export default function addSlider({
+export function addSlider({
     container,
     name='',
     label='',
@@ -29,4 +29,52 @@ export default function addSlider({
     slider.node().value = value
 
     return slider
+}
+
+
+export function addSliderController({
+    controller,
+    slider,
+    direction='horizontal',
+}) {
+
+    const coordsToValue = function ([x, y]) {
+        const xNormalised = x / controller.node().offsetWidth
+        return slider.attr('min')
+            + (slider.attr('max')-slider.attr('min')) * xNormalised
+    }
+
+    controller
+        .on('mousedown', function () {
+            d3.event.preventDefault()
+            d3.event.stopPropagation()
+            controller.on('mousemove', function() {
+                const event = d3.event
+                if (event.buttons & 1) {
+                    event.preventDefault()
+                    slider.node().value = coordsToValue(d3.mouse(this))
+                    slider.node().dispatchEvent(new Event('input'))
+                }
+            })
+            // The mouse-up could happen outside the controller, so we listen
+            // on the whole window for this event.
+            window.onmouseup = event => {
+                event.preventDefault()
+                event.stopPropagation()
+                slider.node().dispatchEvent(new Event('change'))
+                window.onmouseup = undefined
+            }
+        })
+        .on('touchmove', function() {
+            d3.event.preventDefault()
+            d3.event.stopPropagation()
+            const touch = d3.touches(this)[0] // Take first touch
+            slider.node().value = coordsToValue(touch)
+            slider.node().dispatchEvent(new Event('input'))
+        })
+        .on('touchend', function () {
+            d3.event.preventDefault()
+            d3.event.stopPropagation()
+            slider.node().dispatchEvent(new Event('change'))
+        });
 }

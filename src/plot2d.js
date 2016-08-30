@@ -6,7 +6,7 @@ import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
-import addSlider from './slider'
+import { addSlider, addSliderController } from './slider'
 
 export default function init(containerId) {
     const container = d3.select(containerId)
@@ -26,6 +26,12 @@ export default function init(containerId) {
         value: 0.3,
         oninput,
         onchange,
+    })
+
+    // Dragging on data plot also controls the slider
+    addSliderController({
+        controller: container.select('.data'),
+        slider,
     })
 
     const getSettings = () => ({
