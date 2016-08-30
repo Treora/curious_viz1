@@ -94,7 +94,7 @@ export default function init(containerId) {
         updateData()
         updateAfterData()
     }
-    
+
 
     function updateData() {
         let { dataMean, dataStdDev } = getSettings()
