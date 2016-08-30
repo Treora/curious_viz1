@@ -8,6 +8,13 @@ const sq = x => Math.pow(x, 2)
 
 export default function init(containerId) {
     const container = d3.select(containerId)
+
+    const arrowRight = container.append('svg')
+        .attr('class', 'arrowRight')
+      .append('use')
+        .attr('xlink:xlink:href', '#arrowRight')
+
+
     const subplots = ['data', 'noisy', 'denoise', 'denoised']
     for (let i in subplots) {
         container.append('div')
