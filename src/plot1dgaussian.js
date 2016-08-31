@@ -9,12 +9,6 @@ const sq = x => Math.pow(x, 2)
 export default function init(containerId) {
     const container = d3.select(containerId)
 
-    const arrowRight = container.append('svg')
-        .attr('class', 'arrowRight')
-      .append('use')
-        .attr('xlink:xlink:href', '#arrowRight')
-
-
     const subplots = ['data', 'noisy', 'denoise', 'denoised']
     for (let i in subplots) {
         container.append('div')
@@ -23,7 +17,7 @@ export default function init(containerId) {
     const slider = addSlider({
         container,
         name: 'stdDev',
-        label: 'data&nbsp;variance',
+        label: 'variance:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
@@ -31,7 +25,7 @@ export default function init(containerId) {
     const slider1 = addSlider({
         container,
         name: 'noiseStdDev',
-        label: 'noise&nbsp;quantity',
+        label: 'noise&nbsp;quantity:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         oninput: function () { if (hasCurrentValueChanged(this)) updateAfterData() },
@@ -45,7 +39,7 @@ export default function init(containerId) {
 
     const sharedPlotConfig = {
         xDomain: [-4, 4],
-        yDomain: [0, 1.2],
+        yDomain: [0, 1.25],
         drawSamples: false,
         lineOpacity: 1,
     }
