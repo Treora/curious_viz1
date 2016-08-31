@@ -98,18 +98,6 @@ export default function init(containerId) {
                 xLabelImage: images['x_1'],
                 yLabelImage: images['x_2'],
             }))
-
-            container.select('.noisy')
-                .datum([])
-                .call(scatterPlot({
-                    ...sharedPlotConfig,
-                    xLabelImage: null,
-                    yLabelImage: null,
-                }))
-                .call(scatterPlot({
-                    ...sharedPlotConfig,
-                    id: 1,
-                }))
     }
 
     function updateAfterData() {
@@ -125,16 +113,16 @@ export default function init(containerId) {
             x: d.x + sampleNoise(),
             y: d.y + sampleNoise(),
         }))
-
-        container.select('.noisy')
-            .datum(compareData(originalData, noisyData))
-            .call(scatterPlot({
-                id: 1,
-                ...sharedPlotConfig,
-                symbol: arrowSymbol({
-                    opacity: 0.3,
-                }),
-            }))
+        //
+        // container.select('.noisy')
+        //     .datum(compareData(originalData, noisyData))
+        //     .call(scatterPlot({
+        //         id: 1,
+        //         ...sharedPlotConfig,
+        //         symbol: arrowSymbol({
+        //             opacity: 0.3,
+        //         }),
+        //     }))
 
         // Denoise the noisy data using optimal denoising function.
         const denoisedData = noisyData.map(noisySample => ({
