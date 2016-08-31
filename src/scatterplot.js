@@ -13,6 +13,7 @@ export default function scatterPlot(config) {
         xDomain, yDomain,
         approxTickCount=3,
         xLabel, yLabel,
+        xLabelImage, yLabelImage,
     } = config
 
     const xScale = d3.scaleLinear()
@@ -112,8 +113,9 @@ export default function scatterPlot(config) {
 
 
             // Set axes' labels
+            const xCenter = xScale.range()[0]+(xScale.range()[1]-xScale.range()[0])/2
+            const yCenter = yScale.range()[0]+(yScale.range()[1]-yScale.range()[0])/2
             if (xLabel !== undefined) {
-                const xCenter = xScale.range()[0]+(xScale.range()[1]-xScale.range()[0])/2
                 selectEnter(plotGroup.select('.xAxis'), '.label')
                   .append('text')
                     .attr('class', 'label')
@@ -124,7 +126,6 @@ export default function scatterPlot(config) {
                     .text(xLabel)
             }
             if (yLabel !== undefined) {
-                const yCenter = yScale.range()[0]+(yScale.range()[1]-yScale.range()[0])/2
                 selectEnter(plotGroup.select('.yAxis'), '.label')
                   .append('text')
                     .attr('class', 'label')
@@ -137,6 +138,35 @@ export default function scatterPlot(config) {
                     .text(yLabel)
             }
 
+            if (xLabelImage !== undefined) {
+                selectEnter(plotGroup.select('.xAxis'), '.labelImage')
+                  .append('image')
+                    .attr('class', 'labelImage')
+                plotGroup.select('.xAxis > .labelImage')
+                  .transition()
+                    .duration(0)
+                    .delay(updateDuration)
+                    .attr('transform', `translate(${xCenter}, ${margin.bottom-xLabelImage.height})`
+                        + `translate(${-xLabelImage.width/2}, 0)`)
+                    .attr('xlink:xlink:href', xLabelImage.uri)
+                    .attr('width', xLabelImage.width)
+                    .attr('height', xLabelImage.height)
+            }
+            if (yLabelImage !== undefined) {
+                selectEnter(plotGroup.select('.yAxis'), '.labelImage')
+                  .append('image')
+                    .attr('class', 'labelImage')
+                plotGroup.select('.yAxis > .labelImage')
+                  .transition()
+                    .duration(0)
+                    .delay(updateDuration)
+                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                        + `rotate(-90)`
+                        + `translate(${-yLabelImage.width/2}, 0)`)
+                    .attr('xlink:xlink:href', yLabelImage.uri)
+                    .attr('width', yLabelImage.width)
+                    .attr('height', yLabelImage.height)
+            }
 
             // Finally, draw the symbols.
             let points = plotGroup.selectAll('.point').data(data, d => d.id)

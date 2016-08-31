@@ -3,6 +3,7 @@ import gaussian from 'gaussian'
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController } from './slider'
+import images from './images'
 
 const sq = x => Math.pow(x, 2)
 
@@ -38,13 +39,13 @@ export default function init(containerId, plotDatas) {
     const sharedPlotConfig = {
         // xDomain: [-4, 4],
         yDomain: [0, 0.8],
-        xLabel: 'x1',
-        yLabel: 'x2',
     }
 
     const plotOriginalDistribution = functionPlot({
         ...sharedPlotConfig,
         updateDuration: 0,
+        xLabelImage: images['x'],
+        yLabelImage: images['p(x)'],
     })
 
     function updateAll() {
@@ -69,6 +70,8 @@ export default function init(containerId, plotDatas) {
         const plotCorruptedDistribution = functionPlot({
             ...sharedPlotConfig,
             yDomain: plotOriginalDistribution.yScale.domain(),
+            xLabelImage: images['\\tilde x'],
+            yLabelImage: images['p(\\tilde x)'],
         })
 
         container.select('.noisy')
@@ -91,8 +94,8 @@ export default function init(containerId, plotDatas) {
                 id: 0,
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotOriginalDistribution.xScale.domain(),
-                xLabel: 'corrupted x',
-                yLabel: 'denoised x',
+                xLabelImage: images['\\tilde x'],
+                yLabelImage: images['g(\\tilde x)'],
         }))
 
     }

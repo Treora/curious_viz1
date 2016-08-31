@@ -7,6 +7,7 @@ import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
 import { addSlider, addSliderController } from './slider'
+import images from './images'
 
 export default function init(containerId) {
     const container = d3.select(containerId)
@@ -75,16 +76,7 @@ export default function init(containerId) {
     const sharedPlotConfig = {
         keepAspectRatio: true,
         xDomain, yDomain,
-        xLabel: 'x1',
-        yLabel: 'x2',
     }
-
-    const drawArrows = scatterPlot({
-        ...sharedPlotConfig,
-        symbol: arrowSymbol({
-            opacity: 0.6,
-        }),
-    })
 
     let originalData
 
@@ -104,8 +96,21 @@ export default function init(containerId) {
                 ...sharedPlotConfig,
                 symbol: pointSymbol({
                     opacity: 0.3
-                })
+                }),
+                xLabelImage: images['x_1'],
+                yLabelImage: images['x_2'],
             }))
+
+            container.select('.noisy')
+                .datum(originalData)
+                .call(scatterPlot({
+                    ...sharedPlotConfig,
+                    symbol: pointSymbol({
+                        opacity: 0.3
+                    }),
+                    xLabelImage: images['x_1'],
+                    yLabelImage: images['x_2'],
+                }))
     }
 
     function updateAfterData() {
@@ -132,14 +137,6 @@ export default function init(containerId) {
             ...optimalDenoise({noisySample, originalData, noiseDistribution}),
         }))
 
-        container.select('.noisy')
-            .datum(originalData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: pointSymbol({
-                    opacity: 0.3
-                })
-            }))
     setTimeout(()=>
         container.select('.noisy')
             .datum(noisyData)
@@ -148,13 +145,22 @@ export default function init(containerId) {
                 symbol: pointSymbol({
                     opacity: 0.3
                 }),
+                xLabelImage: images['\\tilde x_1'],
+                yLabelImage: images['\\tilde x_2'],
                 updateDuration: 1500,
             }))
     , 500)
 
         container.select('.denoise')
             .datum(compareData(noisyData, denoisedData))
-            .call(drawArrows)
+            .call(scatterPlot({
+                ...sharedPlotConfig,
+                symbol: arrowSymbol({
+                    opacity: 0.6,
+                }),
+                xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
+                yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
+            }))
 
         container.select('.denoised')
             .datum(noisyData)
@@ -162,7 +168,9 @@ export default function init(containerId) {
                 ...sharedPlotConfig,
                 symbol: pointSymbol({
                     opacity: 0.2
-                })
+                }),
+                xLabelImage: images['\\hat x_1'],
+                yLabelImage: images['\\hat x_2'],
             }))
     setTimeout(()=>
         container.select('.denoised')
