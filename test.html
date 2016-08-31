@@ -28,16 +28,6 @@
             <path d="m79.094 11.5 15.341-11.515"/>
             <path d="m79.094 -11.9 15.341 11.515"/>
         </g>
-        <!-- <g id="arrowDown" stroke="#000" style="fill:none;" transform="translate(730, 180)" stroke-linecap="round" stroke-width="10">
-            <path d="m 11.679947,4.6706041 c 51.4911,25.1725899 58.4895,107.0768959 -6.6119997,127.5776959" />
-            <path d="m 13.786947,115.1626 -8.7189997,17.0857"/>
-            <path d="m 24.075727,136.1908 -18.8407429,-3.6012"/>
-        </g> -->
-        <!-- <g id="arrowLeft" stroke="#000" style="fill:none;" transform="translate(440,420) scale(-1, 1)" stroke-linecap="round" stroke-width="10">
-            <path d="m-10 0h104.435" />
-            <path d="m79.094 11.5 15.341-11.515"/>
-            <path d="m79.094 -11.9 15.341 11.515"/>
-        </g> -->
         <g id="arrowLeft" stroke="#000" style="fill:none;" transform="translate(310,270)" stroke-linecap="round" stroke-width="10">
             <path d="m 251.4037,4.67289 c -75.909,93.06886 -172.7695,119.16572 -246.3325,116.84539" />
             <path d="m 20.4121,109.62317 -15.3408996,11.51526"/>
@@ -47,14 +37,23 @@
 </svg>
 
 <h1>2d plot</h1>
-    <div id="plot_2d" class="plotConstellation">
+    <div id="plot_2d" class="plotConstellation largeLayout">
+        <svg width="100%" height="100%">
+            <use xlink:href="#arrowRight" />
+            <use y=20 xlink:href="#arrowLeft" />
+            <text class="arrowLabel" x=350 y=130>Corrupt</text>
+            <text class="arrowLabel" x=405 y=335>Denoise</text>
+            <rect fill="#fff" width="280" height="250" x="405" y="345" stroke-width="2px" stroke="black" />
+            <text class="plotHeader" x=150 y=30>Data set</text>
+            <text class="plotHeader small" x=120 y=360>Data after denoising</text>
+        </svg>
     </div>
     <script>
         plot2d('#plot_2d');
     </script>
 
 <h1>1d gaussian</h1>
-    <div id="plot_1d_gaussian" class="plotConstellation">
+    <div id="plot_1d_gaussian" class="plotConstellation largeLayout">
         <svg width="100%" height="100%">
             <use xlink:href="#arrowRight" />
             <use xlink:href="#arrowLeft" />
@@ -62,7 +61,7 @@
             <text class="arrowLabel" x=400 y=320>Denoise</text>
             <rect fill="#fff" width="280" height="220" x="400" y="330" stroke-width="2px" stroke="black" />
             <text class="plotHeader" x=100 y=30>Data distribution</text>
-            <text class="plotHeader small" x=80 y=310>Distribution after denoising</text>
+            <text class="plotHeader small" x=80 y=340>Distribution after denoising</text>
         </svg>
     </div>
     <script>

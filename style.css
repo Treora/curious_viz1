@@ -57,54 +57,35 @@ svg .plotHeader.small {
     height: 600px;
 }
 
-#plot_2d .data {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 75px;
+#plot_2d .plotContainer {
+    width: 240px;
+    height: 240px;
 }
-#plot_2d .noise {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 475px;
+
+#plot_2d .plotContainer.data {
+    top: 60px;
+    left: 65px;
 }
-#plot_2d .noisy {
-    width: 250px;
-    height: 250px;
-    top: 25px;
-    left: 475px;
-    /*display: none;*/
+#plot_2d .plotContainer.noisy {
+    top: 60px;
+    left: 485px;
 }
-#plot_2d .denoise {
-    width: 300px;
-    height: 300px;
-    top: 300px;
-    left: 250px;
+#plot_2d .plotContainer.denoise {
+    top: 350px;
+    left: 410px;
 }
-#plot_2d .denoised {
-    width: 300px;
-    height: 300px;
-    top: 300px;
-    left: 250px;
-    /*display: none;*/
+#plot_2d .plotContainer.denoised {
+    top: 360px;
+    left: 65px;
 }
-#plot_2d .sliderContainer {
+
+#plot_2d .sliderContainer.stdDev {
     display: flex;
     align-items: center;
     position: absolute;
-    width: 250px;
-    top: 0px;
-    left: 75px;
-    /*border: 1px black solid;*/
-}
-#plot_2d_selectStdDevContainer > span {
-    /*width: 60px;*/
-    /*flex: none;*/
-}
-#plot_2d_selectStdDevContainer > .slider {
-    margin-left: 1em;
-    min-width: 50px;
+    width: 200px;
+    top: 40px;
+    left: 100px;
 }
 
 
@@ -116,30 +97,24 @@ svg .plotHeader.small {
 }
 
 #plot_1d_gaussian .plotContainer {
+    width: 240px;
+    height: 200px;
 }
 
 #plot_1d_gaussian .plotContainer.data {
-    width: 240px;
-    height: 200px;
     top: 60px;
     left: 55px;
 }
 #plot_1d_gaussian .plotContainer.noisy {
-    width: 240px;
-    height: 200px;
     top: 60px;
     left: 485px;
 }
 #plot_1d_gaussian .plotContainer.denoise {
-    width: 240px;
-    height: 200px;
     top: 340px;
     left: 410px;
 }
 #plot_1d_gaussian .plotContainer.denoised {
-    width: 240px;
-    height: 200px;
-    top: 310px;
+    top: 340px;
     left: 55px;
 }
 

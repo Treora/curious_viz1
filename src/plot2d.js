@@ -10,7 +10,7 @@ import { addSlider, addSliderController } from './slider'
 
 export default function init(containerId) {
     const container = d3.select(containerId)
-    const subplots = ['data', 'noise', 'noisy', 'denoise', 'denoised']
+    const subplots = ['data', 'noisy', 'denoise', 'denoised']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
@@ -21,7 +21,7 @@ export default function init(containerId) {
     const slider = addSlider({
         container,
         name: 'stdDev',
-        label: 'data&nbsp;variance:',
+        label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
         value: 0.3,
         oninput,
@@ -121,10 +121,10 @@ export default function init(containerId) {
             x: d.x + sampleNoise(),
             y: d.y + sampleNoise(),
         }))
-
-        container.select('.noise')
-            .datum(compareData(originalData, noisyData))
-            .call(drawArrows)
+        //
+        // container.select('.noise')
+        //     .datum(compareData(originalData, noisyData))
+        //     .call(drawArrows)
 
         // Denoise the noisy data using optimal denoising function.
         const denoisedData = noisyData.map(noisySample => ({
