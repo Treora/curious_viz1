@@ -21,7 +21,7 @@ export default function init(containerId) {
         label: 'variance:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
-        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+        onInput: updateAll,
     })
     const slider1 = addSlider({
         container,
@@ -29,7 +29,7 @@ export default function init(containerId) {
         label: 'noise&nbsp;quantity:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
-        oninput: function () { if (hasCurrentValueChanged(this)) updateAfterData() },
+        onInput: updateAfterData,
     })
 
     // Dragging on data plot also controls the slider

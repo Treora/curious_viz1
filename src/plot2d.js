@@ -17,16 +17,14 @@ export default function init(containerId) {
             .attr('class', 'plotContainer ' + subplots[i])
     }
 
-    function oninput() { if (hasCurrentValueChanged(this)) updateData() }
-    function onchange() { if (hasChosenValueChanged(this)) updateAfterData() }
     const slider = addSlider({
         container,
         name: 'stdDev',
         label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
         value: 0.3,
-        oninput,
-        onchange,
+        onInput: updateData,
+        onChange: updateAfterData,
     })
 
     // Dragging on data plot also controls the slider
@@ -102,14 +100,15 @@ export default function init(containerId) {
             }))
 
             container.select('.noisy')
-                .datum(originalData)
+                .datum([])
                 .call(scatterPlot({
                     ...sharedPlotConfig,
-                    symbol: pointSymbol({
-                        opacity: 0.3
-                    }),
-                    xLabelImage: images['x_1'],
-                    yLabelImage: images['x_2'],
+                    xLabelImage: null,
+                    yLabelImage: null,
+                }))
+                .call(scatterPlot({
+                    ...sharedPlotConfig,
+                    id: 1,
                 }))
     }
 
@@ -126,16 +125,35 @@ export default function init(containerId) {
             x: d.x + sampleNoise(),
             y: d.y + sampleNoise(),
         }))
-        //
-        // container.select('.noise')
-        //     .datum(compareData(originalData, noisyData))
-        //     .call(drawArrows)
+
+        container.select('.noisy')
+            .datum(compareData(originalData, noisyData))
+            .call(scatterPlot({
+                id: 1,
+                ...sharedPlotConfig,
+                symbol: arrowSymbol({
+                    opacity: 0.3,
+                }),
+            }))
 
         // Denoise the noisy data using optimal denoising function.
         const denoisedData = noisyData.map(noisySample => ({
             ...noisySample,
             ...optimalDenoise({noisySample, originalData, noiseDistribution}),
         }))
+
+
+        container.select('.noisy')
+            .datum(originalData)
+            .call(scatterPlot({
+                ...sharedPlotConfig,
+                updateDuration: 0,
+                symbol: pointSymbol({
+                    opacity: 0.3
+                }),
+                xLabelImage: images['x_1'],
+                yLabelImage: images['x_2'],
+            }))
 
     setTimeout(()=>
         container.select('.noisy')

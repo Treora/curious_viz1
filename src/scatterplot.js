@@ -14,6 +14,7 @@ export default function scatterPlot(config) {
         approxTickCount=3,
         xLabel, yLabel,
         xLabelImage, yLabelImage,
+        id=0,
     } = config
 
     const xScale = d3.scaleLinear()
@@ -139,6 +140,10 @@ export default function scatterPlot(config) {
             }
 
             if (xLabelImage !== undefined) {
+                if (xLabelImage === null) {
+                    plotGroup.select('.xAxis > .labelImage').remove()
+                }
+                else {
                 selectEnter(plotGroup.select('.xAxis'), '.labelImage')
                   .append('image')
                     .attr('class', 'labelImage')
@@ -151,25 +156,31 @@ export default function scatterPlot(config) {
                     .attr('xlink:xlink:href', xLabelImage.uri)
                     .attr('width', xLabelImage.width)
                     .attr('height', xLabelImage.height)
+                }
             }
             if (yLabelImage !== undefined) {
-                selectEnter(plotGroup.select('.yAxis'), '.labelImage')
-                  .append('image')
-                    .attr('class', 'labelImage')
-                plotGroup.select('.yAxis > .labelImage')
-                  .transition()
-                    .duration(0)
-                    .delay(updateDuration)
-                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
-                        + `rotate(-90)`
-                        + `translate(${-yLabelImage.width/2}, 0)`)
-                    .attr('xlink:xlink:href', yLabelImage.uri)
-                    .attr('width', yLabelImage.width)
-                    .attr('height', yLabelImage.height)
+                if (yLabelImage === null) {
+                    plotGroup.select('.yAxis > .labelImage').remove()
+                }
+                else {
+                    selectEnter(plotGroup.select('.yAxis'), '.labelImage')
+                      .append('image')
+                        .attr('class', 'labelImage')
+                    plotGroup.select('.yAxis > .labelImage')
+                      .transition()
+                        .duration(0)
+                        .delay(updateDuration)
+                        .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                            + `rotate(-90)`
+                            + `translate(${-yLabelImage.width/2}, 0)`)
+                        .attr('xlink:xlink:href', yLabelImage.uri)
+                        .attr('width', yLabelImage.width)
+                        .attr('height', yLabelImage.height)
+                }
             }
 
             // Finally, draw the symbols.
-            let points = plotGroup.selectAll('.point').data(data, d => d.id)
+            let points = plotGroup.selectAll('.point.id'+id).data(data, d => d.id)
             const setPosition = points => points.attr('transform',
                 d => `translate(${xScale(d.x)}, ${yScale(d.y)})`
             )
@@ -181,7 +192,7 @@ export default function scatterPlot(config) {
                 .call(setPosition)
             // Enter: draw symbols for newly added data points.
             points.enter().append('g')
-                .attr('class', 'point')
+                .attr('class', 'point id'+id)
                 .call(setPosition)
                 .call(symbol.draw, {xScale, yScale, updateDuration})
                 // .on('mouseover', function (d) {

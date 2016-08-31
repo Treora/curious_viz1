@@ -21,7 +21,7 @@ export default function init(containerId, plotDatas) {
         label: 'mix&nbsp;ratio:',
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
-        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+        onInput: updateAll,
     })
     addSlider({
         container,
@@ -29,7 +29,7 @@ export default function init(containerId, plotDatas) {
         label: 's2:',
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
-        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+        onInput: updateAll,
     })
     addSlider({
         container,
@@ -37,7 +37,7 @@ export default function init(containerId, plotDatas) {
         label: 's1:',
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
-        oninput: function () { if (hasCurrentValueChanged(this)) updateAll() },
+        onInput: updateAll,
     })
 
     // Dragging on data plot also controls the slider

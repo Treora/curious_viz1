@@ -6,18 +6,6 @@
     <script src="d3.v4.js"></script>
     <script src="main.js"></script>
     <script src="plotdata.js"></script>
-    <script>
-            function hasCurrentValueChanged(input) {
-                var changed = input.getAttribute('data-lastValue') !== input.value;
-                input.setAttribute('data-lastValue', input.value);
-                return changed;
-            }
-            function hasChosenValueChanged(input) {
-                var changed = input.getAttribute('data-lastChosenValue') !== input.value;
-                input.setAttribute('data-lastChosenValue', input.value);
-                return changed;
-            }
-    </script>
 </head>
 <body>
 

@@ -1,3 +1,20 @@
+function hasCurrentValueChanged(input) {
+    var changed = input.getAttribute('data-lastValue') !== input.value;
+    input.setAttribute('data-lastValue', input.value);
+    if (changed)
+        input.setAttribute('data-sliderHasMoved', 'true');
+    return changed;
+}
+function hasChosenValueChanged(input) {
+    var changed = input.getAttribute('data-lastChosenValue') !== input.value;
+    input.setAttribute('data-lastChosenValue', input.value);
+    return changed;
+}
+function hasSliderMovedAtAll(input) {
+    var moved = input.getAttribute('data-sliderHasMoved');
+    input.setAttribute('data-sliderHasMoved', 'false');
+    return moved==='true';
+}
 
 export function addSlider({
     container,
@@ -5,9 +22,21 @@ export function addSlider({
     label='',
     min, max, step,
     value,
-    oninput,
-    onchange,
+    onInput = ()=>{},
+    onChange = ()=>{},
+    onActualChange = ()=>{},
 }) {
+    function oninput() {
+        if (hasCurrentValueChanged(this))
+            onInput()
+    }
+    function onchange() {
+        if (hasSliderMovedAtAll(this)) {
+            onChange()
+            if (hasChosenValueChanged(this))
+                onActualChange()
+        }
+    }
 
     const sliderContainer = container.append('div')
         .attr('class', 'sliderContainer ' + name)
