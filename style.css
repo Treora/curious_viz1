@@ -16,6 +16,20 @@
     position: absolute;
 }
 
+.plotConstellation rect.plotBox {
+    fill: #fff;
+    stroke-width: 1px;
+    stroke: #000;
+}
+.plotConstellation rect.denoiseBox {
+    stroke-width: 4px;
+}
+
+.backgroundWave {
+    fill: #def;
+    stroke: none;
+}
+
 .plotContainer .line {
     stroke-width: 2px;
 }
@@ -110,11 +124,11 @@ svg .plotHeader.small {
     left: 485px;
 }
 #plot_1d_gaussian .plotContainer.denoise {
-    top: 340px;
-    left: 410px;
+    top: 355px;
+    left: 425px;
 }
 #plot_1d_gaussian .plotContainer.denoised {
-    top: 340px;
+    top: 360px;
     left: 55px;
 }
 
@@ -132,9 +146,9 @@ svg .plotHeader.small {
     flex-direction: column;
     align-items: center;
     position: absolute;
-    top: 170px;
-    left: 335px;
-    width: 120px;
+    top: 140px;
+    left: 345px;
+    width: 100px;
 }
 
 #plot_1d_gaussian .sliderContainer.noiseStdDev .sliderText {
