@@ -149,8 +149,8 @@ export default function scatterPlot(config) {
                     .attr('class', 'labelImage')
                 plotGroup.select('.xAxis > .labelImage')
                   .transition()
-                    .duration(0)
                     .delay(updateDuration)
+                    .duration(0)
                     .attr('transform', `translate(${xCenter}, ${margin.bottom-xLabelImage.height})`
                         + `translate(${-xLabelImage.width/2}, 0)`)
                     .attr('xlink:xlink:href', xLabelImage.uri)
@@ -168,8 +168,8 @@ export default function scatterPlot(config) {
                         .attr('class', 'labelImage')
                     plotGroup.select('.yAxis > .labelImage')
                       .transition()
-                        .duration(0)
                         .delay(updateDuration)
+                        .duration(0)
                         .attr('transform', `translate(${-margin.left}, ${yCenter})`
                             + `rotate(-90)`
                             + `translate(${-yLabelImage.width/2}, 0)`)
@@ -195,13 +195,9 @@ export default function scatterPlot(config) {
                 .attr('class', 'point id'+id)
                 .call(setPosition)
                 .call(symbol.draw, {xScale, yScale, updateDuration})
-                // .on('mouseover', function (d) {
-                // TODO highlight?
-                // })
             // Exit: remove symbols of removed data points.
             points.exit()
-                .call(symbol.remove)
-
+              .call(symbol.remove || (selection => {selection.remove()}))
         })
     }
     //

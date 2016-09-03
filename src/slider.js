@@ -24,17 +24,17 @@ export function addSlider({
     value,
     onInput = ()=>{},
     onChange = ()=>{},
-    onActualChange = ()=>{},
+    onChoice = ()=>{},
 }) {
     function oninput() {
         if (hasCurrentValueChanged(this))
             onInput()
     }
-    function onchange() {
+    function onRelease() {
         if (hasSliderMovedAtAll(this)) {
-            onChange()
+            onChoice()
             if (hasChosenValueChanged(this))
-                onActualChange()
+                onChange()
         }
     }
 
@@ -51,8 +51,11 @@ export function addSlider({
         .attr('step', step)
         .attr('value', value)
         .on('input', oninput)
-        .on('change', onchange)
-        .on('keyup', onchange)
+        .on('change', onRelease)
+        .on('keyup', onRelease)
+        .on('mouseup', onRelease)
+        .on('touchend', onRelease)
+        .on('blur', onRelease)
 
     // Setting attr('value') appears to not update the visual slider position.
     slider.node().value = value

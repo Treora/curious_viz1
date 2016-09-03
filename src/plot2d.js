@@ -24,7 +24,7 @@ export default function init(containerId) {
         min: 0.2, max: 1.0, step: 0.2,
         value: 0.3,
         onInput: updateData,
-        onChange: updateAfterData,
+        onChoice: updateAfterData,
     })
 
     // Dragging on data plot also controls the slider
@@ -74,14 +74,65 @@ export default function init(containerId) {
     const sharedPlotConfig = {
         keepAspectRatio: true,
         xDomain, yDomain,
+        symbol: pointSymbol({
+            opacity: 0.5,
+            color: '#33f',
+            exitDuration: 0,
+        }),
     }
 
-    let originalData
+    const plotOriginalData = scatterPlot({
+        ...sharedPlotConfig,
+        xLabelImage: images['x_1'],
+        yLabelImage: images['x_2'],
+    })
+
+    const plotFaintArrows = scatterPlot({
+        ...sharedPlotConfig,
+        id: 1,
+        symbol: arrowSymbol({
+            opacity: 0.3,
+        }),
+    })
+    const plotFaintArrowsQuickExit = scatterPlot({
+        ...sharedPlotConfig,
+        id: 1,
+        symbol: arrowSymbol({
+            opacity: 0.3,
+            exitDuration: 0,
+        }),
+    })
+
+    const plotNoisyData = scatterPlot({
+        ...sharedPlotConfig,
+        updateDuration: 1000,
+        xLabelImage: images['\\tilde x_1'],
+        yLabelImage: images['\\tilde x_2'],
+    })
+
+    const plotDenoiseArrows = scatterPlot({
+        ...sharedPlotConfig,
+        symbol: arrowSymbol({
+            opacity: 0.5,
+            exitDuration: 0,
+        }),
+        xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
+        yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
+    })
+
+    const plotDenoisedData = scatterPlot({
+        ...sharedPlotConfig,
+        updateDuration: 1000,
+        xLabelImage: images['\\hat x_1'],
+        yLabelImage: images['\\hat x_2'],
+    })
 
     function updateAll() {
         updateData()
         updateAfterData()
     }
+
+    let originalData
 
     function updateData() {
         let { dataStdDev } = getSettings()
@@ -90,14 +141,29 @@ export default function init(containerId) {
 
         container.select('.data')
             .datum(originalData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: pointSymbol({
-                    opacity: 0.3
-                }),
-                xLabelImage: images['x_1'],
-                yLabelImage: images['x_2'],
-            }))
+            .call(plotOriginalData)
+
+
+        // Use transitions with the same name to make them cancel each other.
+        d3.transition('plot2dAnimation')
+            .duration(0)
+            .on('start', () => {
+                container.select('.noisy')
+                    .datum([])
+                    .call(plotNoisyData)
+                container.select('.noisy')
+                    .datum([])
+                    .call(plotFaintArrowsQuickExit)
+                container.select('.denoise')
+                    .datum([])
+                    .call(plotDenoiseArrows)
+                container.select('.denoised')
+                    .datum([])
+                    .call(plotFaintArrowsQuickExit)
+                container.select('.denoised')
+                    .datum([])
+                    .call(plotDenoisedData)
+            })
     }
 
     function updateAfterData() {
@@ -120,78 +186,67 @@ export default function init(containerId) {
             ...optimalDenoise({noisySample, originalData, noiseDistribution}),
         }))
 
-
-        container.select('.noisy')
-            .datum(originalData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                updateDuration: 0,
-                symbol: pointSymbol({
-                    opacity: 0.3
-                }),
-                xLabelImage: images['x_1'],
-                yLabelImage: images['x_2'],
-            }))
-
-    setTimeout(()=>
-        container.select('.noisy')
-            .datum(noisyData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: pointSymbol({
-                    opacity: 0.3
-                }),
-                xLabelImage: images['\\tilde x_1'],
-                yLabelImage: images['\\tilde x_2'],
-                updateDuration: 1500,
-            }))
-    , 500)
-    // 
-    // setTimeout(()=>
-    //     container.select('.noisy')
-    //         .datum(compareData(originalData, noisyData))
-    //         .call(scatterPlot({
-    //             id: 1,
-    //             ...sharedPlotConfig,
-    //             symbol: arrowSymbol({
-    //                 opacity: 0.3,
-    //             }),
-    //         }))
-    // , 500)
-
-        container.select('.denoise')
-            .datum(compareData(noisyData, denoisedData))
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: arrowSymbol({
-                    opacity: 0.6,
-                }),
-                xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
-                yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
-            }))
-
-        container.select('.denoised')
-            .datum(noisyData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: pointSymbol({
-                    opacity: 0.2
-                }),
-                xLabelImage: images['\\hat x_1'],
-                yLabelImage: images['\\hat x_2'],
-            }))
-    setTimeout(()=>
-        container.select('.denoised')
-            .datum(denoisedData)
-            .call(scatterPlot({
-                ...sharedPlotConfig,
-                symbol: pointSymbol({
-                    opacity: 0.2
-                }),
-                updateDuration: 1000,
-            }))
-    , 2000)
-
+        d3.transition('plot2dAnimation')
+            .duration(1000)
+            .on('start', () => {
+                container.select('.noisy')
+                    .datum(originalData)
+                    .call(plotOriginalData)
+            })
+            .on('end', () => {
+                container.select('.noisy')
+                    .datum(compareData(originalData, noisyData))
+                    .call(plotFaintArrows)
+            })
+          .transition()
+            .duration(500)
+            .on('end', () => {
+                container.select('.noisy')
+                    .datum(noisyData)
+                    .call(plotNoisyData)
+            })
+          .transition()
+            .duration(1000)
+            .on('end', () => {
+                container.select('.noisy')
+                    .datum([])
+                    .call(plotFaintArrows)
+            })
+          .transition()
+            .duration(500)
+            .on('end', () => {
+                container.select('.denoise')
+                    .datum(compareData(noisyData, denoisedData))
+                    .call(plotDenoiseArrows)
+            })
+          .transition()
+            .duration(1000)
+            .on('end', () => {
+                container.select('.denoised')
+                    .datum(noisyData)
+                    .call(plotNoisyData)
+            })
+          .transition()
+            .duration(1000)
+            .on('end', () => {
+                container.select('.denoised')
+                    .datum(compareData(noisyData, denoisedData))
+                    .call(plotFaintArrows)
+            })
+          .transition()
+            .duration(500)
+            .on('end', () => {
+                container.select('.denoised')
+                    .datum(denoisedData)
+                    .call(plotDenoisedData)
+            })
+          .transition()
+            .duration(1000)
+            .on('end', () => {
+                container.select('.denoised')
+                    .datum([])
+                    .call(plotFaintArrows)
+            })
     }
 
     updateAll()

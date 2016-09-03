@@ -12,6 +12,7 @@ export default function defineSymbol(symbolProps) {
 }
 
 function drawSymbol(selection, {
+    enterDuration=500,
     updateDuration=500,
     arrowHeadlength=3,
     color='black',
@@ -23,28 +24,11 @@ function drawSymbol(selection, {
     const angle = d => Math.atan2(d.y, d.x) * 180/Math.PI
     const norm = d => Math.sqrt(Math.pow(d.x,2) + Math.pow(d.y,2))
 
-    // If not there yet, add a group 'symbol' for the arrow, let it fade in, and
-    // add a path that will be the arrow.
-    const symbol = selectEnter(selection, '.symbol')
-      .append('g')
-        .attr('class', 'symbol')
-        .attr('opacity', Math.min(0.1, opacity))
-    symbol
-      .transition()
-        .duration(updateDuration)
-        .attr('opacity', opacity)
-    selectEnter(symbol, '.arrowPath')
-      .append('path')
-        .attr('class', 'arrowPath')
-        .attr('fill', 'none')
-        .attr('stroke-linecap', 'round')
-        .attr('stroke-linejoin', 'round')
-
-    // Update the arrow's shape and position
-    selection.select('.arrowPath')
-        .attr('stroke-width', strokeWidth)
-        .attr('stroke', color)
-        .each(function computeArrowPath(d) {
+    function computeArrowPath(duration) {
+        // This is not pretty, but I would not know how to get both the data
+        // and own arguments (or a transition-selection) passed to this
+        // callback in selection.each()/.call().
+        return function (d) {
             selection = d3.select(this)
             const endPoint = {x: d.x+d.dx, y: d.y+d.dy}
             const dSvg = toSvgCoords(d)
@@ -54,21 +38,46 @@ function drawSymbol(selection, {
             const h = Math.min(arrowHeadlength, length/3) // limit head/shaft ratio
             selection
               .transition()
-                .duration(updateDuration)
+                .duration(duration)
                 .attr('transform', `rotate(${angle(arrowSvg)})`)
                 .attr('d', `m 0 0 l ${length} 0 l -${h} -${h} m ${h} ${h} l -${h} ${h}`)
                 // TODO use path+marker instead
-        })
+        }
+    }
 
-    // Set the tooltip title, if any.
-    selection.select('.symbol').append('title').text(d=>d.title)
+    // Update the arrow's shape and position
+    selection.select('.symbol > .arrowPath')
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke', color)
+        .each(computeArrowPath(updateDuration))
+
+    // If not there yet, add a group 'symbol' for the arrow, let it fade in, and
+    // add a path that will be the arrow.
+    const symbol = selectEnter(selection, '.symbol')
+      .append('g')
+        .attr('class', 'symbol')
+        .attr('opacity', Math.min(0.1, opacity))
+    symbol
+      .transition()
+        .duration(enterDuration)
+        .attr('opacity', opacity)
+    selectEnter(symbol, '.arrowPath')
+      .append('path')
+        .attr('class', 'arrowPath')
+        .attr('fill', 'none')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke', color)
+        .each(computeArrowPath(0))
+
 }
 
-function removeSymbol(selection, {exitDuration}) {
-    selection.select('.symbol')
+function removeSymbol(selection, {exitDuration=500}) {
+    selection
       .transition()
         .duration(exitDuration)
-        .attr('transform', 'scale(0)')
-        .style('fill-opacity', 0)
         .remove()
+      .select('.symbol')
+        .style('opacity', 0)
 }

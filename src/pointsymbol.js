@@ -37,9 +37,10 @@ function drawSymbol(selection, {
 }
 
 function removeSymbol(selection, {exitDuration=500}) {
-    selection.select('.symbol')
+    selection
       .transition()
         .duration(exitDuration)
-        .attr('r', 0)
         .remove()
+      .select('.symbol')
+        .attr('r', 0)
 }
