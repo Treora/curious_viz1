@@ -2,7 +2,7 @@ import _ from 'lodash'
 import gaussian from 'gaussian'
 import linspace from 'linspace'
 
-import { extendDomainBy } from './utils'
+import { extendDomainBy, sq } from './utils'
 import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
@@ -10,16 +10,44 @@ import generateBananaData from './gaussianbananas'
 import { addSlider, addSliderController } from './slider'
 import images from './images'
 
-const sq = x => Math.pow(x, 2)
+function optimalDenoise({noisySample, originalData, noiseDistribution}) {
+    // The probability, for each datum, that corrupting it produces noisySample.
+    const pNoise = originalData.map(datum => (
+        noiseDistribution.pdf(noisySample.x - datum.x)
+      * noiseDistribution.pdf(noisySample.y - datum.y)
+    ))
+    // The optimal denoised value is the weighted average of the data points,
+    // weighted with the probability of each being the origin of the corrupted
+    // sample.
+    const numX = _.mean(originalData.map((datum, i) => datum.x*pNoise[i]))
+    const numY = _.mean(originalData.map((datum, i) => datum.y*pNoise[i]))
+    const pNoisySample = _.mean(pNoise)
+    return {x: numX/pNoisySample, y: numY/pNoisySample, pNoisySample}
+}
+
+// Substract coordinates for drawing arrows from sourceData to targetData
+function compareData(sourceData, targetData) {
+    return sourceData.map((d, i) => ({
+        x: d.x,
+        y: d.y,
+        dx: targetData[i].x - d.x,
+        dy: targetData[i].y - d.y,
+        pNoisySample: targetData[i].pNoisySample,
+    }))
+}
+
 
 export default function init(containerId) {
     const container = d3.select(containerId)
+
+    // Create four plots
     const subplots = ['data', 'noisy', 'denoise', 'denoised']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
 
+    // Add the slider input
     const slider = addSlider({
         container,
         name: 'stdDev',
@@ -43,39 +71,11 @@ export default function init(containerId) {
         noiseStdDev: 1.0,
     })
 
-
-    function optimalDenoise({noisySample, originalData, noiseDistribution}) {
-        const pNoise = originalData.map(datum => (
-            noiseDistribution.pdf(noisySample.x - datum.x)
-          * noiseDistribution.pdf(noisySample.y - datum.y)
-        ))
-        const numX = _.mean(originalData.map((datum, i) => datum.x*pNoise[i]))
-        const numY = _.mean(originalData.map((datum, i) => datum.y*pNoise[i]))
-        const pNoisySample = _.mean(pNoise)
-        return {x: numX/pNoisySample, y: numY/pNoisySample, pNoisySample}
-    }
-
-    // Substract coordinates for drawing arrows from sourceData to targetData
-    function compareData(sourceData, targetData) {
-        return sourceData.map((d, i) => ({
-            x: d.x,
-            y: d.y,
-            dx: targetData[i].x - d.x,
-            dy: targetData[i].y - d.y,
-            pNoisySample: targetData[i].pNoisySample,
-        }))
-    }
-
-
     // Set the data domain so all plots have exactly the same size and scale.
-    // Set the domain to the original data plus one stddev of noise
-    // const xDomain = extendDomainBy(d3.extent(originalData, d=>d.x), noiseStdDev)
-    // const yDomain = extendDomainBy(d3.extent(originalData, d=>d.y), noiseStdDev)
-    // ...or whatever, let's just hard-code the domain to keep axes static.
     const xDomain = [0, 12]
     const yDomain = [0, 12]
 
-    // Configure the flower and arrow plots.
+    // Configure the plots.
     const sharedPlotConfig = {
         keepAspectRatio: true,
         xDomain, yDomain,
@@ -92,14 +92,15 @@ export default function init(containerId) {
         yLabelImage: images['x_2'],
     })
 
-    const plotFaintArrows = scatterPlot({
+    const plotTransitionArrows = scatterPlot({
         ...sharedPlotConfig,
         id: 1,
         symbol: arrowSymbol({
             opacity: 0.3,
         }),
     })
-    const plotFaintArrowsQuickExit = scatterPlot({
+    // Ugly workaround to have zero exitDuration when clearing the plots.
+    const plotTransitionArrowsQuickExit = scatterPlot({
         ...sharedPlotConfig,
         id: 1,
         symbol: arrowSymbol({
@@ -140,6 +141,7 @@ export default function init(containerId) {
         updateAfterData()
     }
 
+    // To remember the data between calls to updateData and updateAfterData.
     let originalData
 
     function updateData() {
@@ -147,12 +149,13 @@ export default function init(containerId) {
 
         originalData = generateBananaData({stdDev: dataStdDev})
 
+        // Update the data
         container.select('.data')
             .datum(originalData)
             .call(plotOriginalData)
 
-
-        // Use transitions with the same name to make them cancel each other.
+        // Clear all the other plots.
+        // Use a named transition to make it cancel the animation (if playing).
         d3.transition('plot2dAnimation')
             .duration(0)
             .on('start', () => {
@@ -161,13 +164,13 @@ export default function init(containerId) {
                     .call(plotNoisyData)
                 container.select('.noisy')
                     .datum([])
-                    .call(plotFaintArrowsQuickExit)
+                    .call(plotTransitionArrowsQuickExit)
                 container.select('.denoise')
                     .datum([])
                     .call(plotDenoiseArrows)
                 container.select('.denoised')
                     .datum([])
-                    .call(plotFaintArrowsQuickExit)
+                    .call(plotTransitionArrowsQuickExit)
                 container.select('.denoised')
                     .datum([])
                     .call(plotDenoisedData)
@@ -177,7 +180,7 @@ export default function init(containerId) {
     function updateAfterData() {
         let { noiseStdDev } = getSettings()
 
-        const noiseVariance = Math.pow(noiseStdDev, 2);
+        const noiseVariance = sq(noiseStdDev);
         const noiseDistribution = gaussian(0, noiseVariance)
         const sampleNoise = () => noiseDistribution.ppf(Math.random())
 
@@ -218,7 +221,7 @@ export default function init(containerId) {
             .on('end', () => {
                 container.select('.noisy')
                     .datum(compareData(originalData, noisyData))
-                    .call(plotFaintArrows)
+                    .call(plotTransitionArrows)
             })
           .transition()
             .duration(500)
@@ -232,7 +235,7 @@ export default function init(containerId) {
             .on('end', () => {
                 container.select('.noisy')
                     .datum([])
-                    .call(plotFaintArrows)
+                    .call(plotTransitionArrows)
             })
           .transition()
             .duration(500)
@@ -253,7 +256,7 @@ export default function init(containerId) {
             .on('end', () => {
                 container.select('.denoised')
                     .datum(compareData(noisyData, denoisedData))
-                    .call(plotFaintArrows)
+                    .call(plotTransitionArrows)
             })
           .transition()
             .duration(500)
@@ -267,7 +270,7 @@ export default function init(containerId) {
             .on('end', () => {
                 container.select('.denoised')
                     .datum([])
-                    .call(plotFaintArrows)
+                    .call(plotTransitionArrows)
             })
     }
 

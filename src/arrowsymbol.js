@@ -1,5 +1,4 @@
-import { selectEnter } from './utils'
-
+import { selectEnter, sq } from './utils'
 
 export default function defineSymbol(symbolProps) {
     return {
@@ -22,13 +21,13 @@ function drawSymbol(selection, {
 }) {
     const toSvgCoords = d => ({x: xScale(d.x), y: yScale(d.y)})
     const angle = d => Math.atan2(d.y, d.x) * 180/Math.PI
-    const norm = d => Math.sqrt(Math.pow(d.x,2) + Math.pow(d.y,2))
+    const norm = d => Math.sqrt(sq(d.x) + sq(d.y))
 
     function computeArrowPath(duration) {
         // This is not pretty, but I would not know how to get both the data
         // and own arguments (or a transition-selection) passed to this
-        // callback in selection.each()/.call().
-        return function (d) {
+        // callback in selection.each()/call(). Therefore we wrap this function.
+        return function computeArrowPath(d) {
             selection = d3.select(this)
             const endPoint = {x: d.x+d.dx, y: d.y+d.dy}
             const dSvg = toSvgCoords(d)

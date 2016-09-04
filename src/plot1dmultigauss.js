@@ -4,9 +4,7 @@ import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController } from './slider'
 import images from './images'
-
-
-const sq = x => Math.pow(x, 2)
+import { sq } from './utils'
 
 export default function init(containerId, plotDatas) {
     const subplots = ['data', 'noisy', 'denoise']

@@ -20,3 +20,5 @@ export function extendDomainByFactor(domain, factor) {
         domain[1] + span/2 * (factor-1)
     ]
 }
+
+export const sq = x => Math.pow(x, 2)
