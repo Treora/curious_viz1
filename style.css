@@ -46,9 +46,10 @@
     width: 100%;
 }
 
-.sliderText {
+.sliderLabelText, .sliderLabelImage {
     margin-right: 0.5em;
 }
+
 
 
 svg .arrowLabel {

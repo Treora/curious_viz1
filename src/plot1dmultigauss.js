@@ -26,7 +26,7 @@ export default function init(containerId, plotDatas) {
     addSlider({
         container,
         name: 'sigma_1',
-        label: 's2:',
+        labelImage: images['\\sigma_1'],
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
         onInput: updateAll,
@@ -34,7 +34,7 @@ export default function init(containerId, plotDatas) {
     addSlider({
         container,
         name: 'sigma_2',
-        label: 's1:',
+        labelImage: images['\\sigma_2'],
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
         onInput: updateAll,

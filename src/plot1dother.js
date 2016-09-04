@@ -17,7 +17,7 @@ export default function init(containerId, plotDatas) {
     const slider = addSlider({
         container,
         name: 'stdDev',
-        label: 'data&nbsp;variance',
+        label: 'data&nbsp;variance:',
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
         onInput: updateAll,

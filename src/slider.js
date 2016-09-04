@@ -19,7 +19,8 @@ function hasSliderMovedAtAll(input) {
 export function addSlider({
     container,
     name='',
-    label='',
+    label,
+    labelImage,
     min, max, step,
     value,
     onInput = ()=>{},
@@ -40,9 +41,18 @@ export function addSlider({
 
     const sliderContainer = container.append('div')
         .attr('class', 'sliderContainer ' + name)
-    sliderContainer.append('span')
-        .attr('class', 'sliderText')
-        .html(label)
+    if (label !== undefined) {
+        sliderContainer.append('span')
+            .attr('class', 'sliderLabelText')
+            .html(label)
+    }
+    if (labelImage !== undefined) {
+        sliderContainer.append('img')
+            .attr('class', 'sliderLabelImage')
+            .attr('width', labelImage.width)
+            .attr('height', labelImage.height)
+            .attr('src', labelImage.uri)
+    }
     const slider = sliderContainer.append('input')
         .attr('class', 'slider ' + name)
         .attr('type', 'range')
