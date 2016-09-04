@@ -46,7 +46,7 @@ export default function init(containerId, plotDatas) {
 
 
     const getSettings = () => {
-        const w1 = +container.select('.slider.w1').node().value
+        const w1 = plotDatas.length-1 - +container.select('.slider.w1').node().value
         const sigma_1 = +container.select('.slider.sigma_1').node().value
         const sigma_2 = +container.select('.slider.sigma_2').node().value
 
@@ -56,13 +56,12 @@ export default function init(containerId, plotDatas) {
     }
 
     const sharedPlotConfig = {
-        // xDomain: [-4, 4],
         yDomain: [0, 0.8],
     }
 
     function updateAll() {
-        updateData();
-        updateAfterData();
+        updateData()
+        updateAfterData()
     }
 
     function updateData() {

@@ -228,12 +228,12 @@ svg .plotHeader.small {
     top: 210px;
     left: 0px;
 }
-#plot_1d_multigauss .sliderContainer.sigma_2 {
+#plot_1d_multigauss .sliderContainer.sigma_1 {
     width: 110px;
     top: 240px;
     left: 0px;
 }
-#plot_1d_multigauss .sliderContainer.sigma_1 {
+#plot_1d_multigauss .sliderContainer.sigma_2 {
     width: 110px;
     top: 240px;
     left: 130px;
