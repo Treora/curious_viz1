@@ -1,13 +1,16 @@
 import _ from 'lodash'
 import gaussian from 'gaussian'
-import { extendDomainBy } from './utils'
+import linspace from 'linspace'
 
+import { extendDomainBy } from './utils'
 import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
 import { addSlider, addSliderController } from './slider'
 import images from './images'
+
+const sq = x => Math.pow(x, 2)
 
 export default function init(containerId) {
     const container = d3.select(containerId)
@@ -48,16 +51,18 @@ export default function init(containerId) {
         ))
         const numX = _.mean(originalData.map((datum, i) => datum.x*pNoise[i]))
         const numY = _.mean(originalData.map((datum, i) => datum.y*pNoise[i]))
-        const den = _.mean(pNoise)
-        return {x: numX/den, y: numY/den}
+        const pNoisySample = _.mean(pNoise)
+        return {x: numX/pNoisySample, y: numY/pNoisySample, pNoisySample}
     }
 
     // Substract coordinates for drawing arrows from sourceData to targetData
     function compareData(sourceData, targetData) {
         return sourceData.map((d, i) => ({
-            ...d,
+            x: d.x,
+            y: d.y,
             dx: targetData[i].x - d.x,
             dy: targetData[i].y - d.y,
+            pNoisySample: targetData[i].pNoisySample,
         }))
     }
 
@@ -113,7 +118,10 @@ export default function init(containerId) {
     const plotDenoiseArrows = scatterPlot({
         ...sharedPlotConfig,
         symbol: arrowSymbol({
-            opacity: 0.5,
+            // Faint arrows from highly improbable (corrupted) points
+            opacity: d => Math.min(0.5, 10*Math.sqrt(d.pNoisySample)),
+            // Alternatively, simply faint long arrows
+            // opacity: d => 0.5*Math.min(1, 1/(sq(d.dx)+sq(d.dy))),
             exitDuration: 0,
         }),
         xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
@@ -186,6 +194,20 @@ export default function init(containerId) {
             ...optimalDenoise({noisySample, originalData, noiseDistribution}),
         }))
 
+        // Calculate denoising function's vector field
+        const vectorFieldSize = 16
+        const gridPoints = _.flatten(
+            linspace(...xDomain, vectorFieldSize).map(
+                x => linspace(...yDomain, vectorFieldSize).map(
+                    y => ({x, y, id: 'x'+x+'y'+y})
+                )
+            )
+        )
+        const denoisedGridPoints = gridPoints.map(gridPoint => ({
+            ...gridPoint,
+            ...optimalDenoise({noisySample: gridPoint, originalData, noiseDistribution}),
+        }))
+
         d3.transition('plot2dAnimation')
             .duration(1000)
             .on('start', () => {
@@ -216,7 +238,7 @@ export default function init(containerId) {
             .duration(500)
             .on('end', () => {
                 container.select('.denoise')
-                    .datum(compareData(noisyData, denoisedData))
+                    .datum(compareData(gridPoints, denoisedGridPoints))
                     .call(plotDenoiseArrows)
             })
           .transition()

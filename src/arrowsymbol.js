@@ -56,7 +56,7 @@ function drawSymbol(selection, {
     const symbol = selectEnter(selection, '.symbol')
       .append('g')
         .attr('class', 'symbol')
-        .attr('opacity', Math.min(0.1, opacity))
+        .attr('opacity', d3.min(0.1, opacity))
     symbol
       .transition()
         .duration(enterDuration)
