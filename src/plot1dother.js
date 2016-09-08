@@ -17,9 +17,10 @@ export default function init(containerId, plotDatas) {
     const slider = addSlider({
         container,
         name: 'stdDev',
-        label: 'data&nbsp;variance:',
+        label: '&sigma;<sub>x</sub>:',
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
+        tooltip: true,
         tooltipText: sliderValue => plotDatas[sliderValue]['sigma'],
         onInput: updateAll,
     })

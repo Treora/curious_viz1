@@ -25,6 +25,7 @@ export function addSlider({
     labelImage,
     min, max, step,
     value,
+    tooltip,
     tooltipText = value => value,
     onInput = ()=>{},
     onChange = ()=>{},
@@ -33,7 +34,8 @@ export function addSlider({
     function oninput() {
         if (hasCurrentValueChanged(this)) {
             onInput()
-            showTooltip(this)
+            if (tooltip)
+                showTooltip(this)
         }
     }
     function onRelease() {

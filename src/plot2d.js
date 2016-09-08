@@ -56,6 +56,7 @@ export default function init(containerId) {
         value: 0.3,
         onInput: updateData,
         onChoice: updateAfterData,
+	tooltip: false,
     })
 
     // Dragging on data plot also controls the slider

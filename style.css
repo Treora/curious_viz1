@@ -145,9 +145,9 @@ svg .plotHeader.small {
     display: flex;
     align-items: center;
     position: absolute;
-    width: 200px;
+    width: 160px;
     top: 40px;
-    left: 100px;
+    left: 110px;
 }
 
 #plot_1d_gaussian .sliderContainer.noiseStdDev {
@@ -195,9 +195,10 @@ svg .plotHeader.small {
 }
 
 .plot1dOther .sliderContainer {
-    width: 240px;
+    width: 160px;
     position: absolute;
     top: 210px;
+    left: 40px;
     display: flex;
     align-items: center;
 }

@@ -18,18 +18,20 @@ export default function init(containerId) {
     const slider = addSlider({
         container,
         name: 'stdDev',
-        label: 'variance:',
+        label: '&sigma;<sub>x</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         onInput: updateAll,
+        tooltip: true,
     })
     const slider1 = addSlider({
         container,
         name: 'noiseStdDev',
-        label: 'noise&nbsp;quantity:',
+        label: 'noise&nbsp;&sigma;<sub>n</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         onInput: updateAfterData,
+        tooltip: true,
     })
 
     // Dragging on data plot also controls the slider
