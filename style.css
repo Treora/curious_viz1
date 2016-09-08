@@ -50,6 +50,14 @@
     margin-right: 0.5em;
 }
 
+.sliderTooltip {
+    background: white;
+    border: 1px grey solid;
+    border-radius: 4px;
+    padding: 2px 5px 0px 5px;
+
+}
+
 
 
 svg .arrowLabel {

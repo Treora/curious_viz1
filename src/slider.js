@@ -1,3 +1,5 @@
+import { selectEnter } from './utils'
+
 function hasCurrentValueChanged(input) {
     var changed = input.getAttribute('data-lastValue') !== input.value;
     input.setAttribute('data-lastValue', input.value);
@@ -23,13 +25,16 @@ export function addSlider({
     labelImage,
     min, max, step,
     value,
+    tooltipText = value => value,
     onInput = ()=>{},
     onChange = ()=>{},
     onChoice = ()=>{},
 }) {
     function oninput() {
-        if (hasCurrentValueChanged(this))
+        if (hasCurrentValueChanged(this)) {
             onInput()
+            showTooltip(this)
+        }
     }
     function onRelease() {
         if (hasSliderMovedAtAll(this)) {
@@ -69,6 +74,39 @@ export function addSlider({
 
     // Setting attr('value') appears to not update the visual slider position.
     slider.node().value = value
+
+    function showTooltip(sliderElement) {
+        const tooltipHeight = 20
+	const sliderKnobWidth = 16 // Guessing here, sorry.
+        const el = sliderElement
+
+        // Add element for the tooltip
+        const tooltipEnter = selectEnter(sliderContainer, '.sliderTooltip')
+        tooltipEnter.append('span')
+            .attr('class', 'sliderTooltip')
+            .style('position', 'absolute')
+            .style('text-align', 'center')
+            .style('height', tooltipHeight + 'px')
+        const tooltip = sliderContainer.select('.sliderTooltip')
+        const left = el.offsetLeft + sliderKnobWidth/2 + (+el.value-min)/(max-min) * (el.clientWidth-sliderKnobWidth)
+        const top = el.offsetTop - tooltipHeight
+        tooltip
+          .transition()
+            .on('start', function () {
+                tooltip.style('display', 'inline-block')
+                .style('top', top + 'px')
+                .style('left', left + 'px')
+                .style('opacity', 1)
+                .html(tooltipText(el.value))
+            })
+          .transition()
+            .delay(2000)
+            .duration(500)
+            .style('opacity', 0)
+            .on('end', () => {
+                tooltip.style('display', 'none')
+            })
+    }
 
     return slider
 }

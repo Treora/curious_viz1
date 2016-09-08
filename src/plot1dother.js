@@ -20,6 +20,7 @@ export default function init(containerId, plotDatas) {
         label: 'data&nbsp;variance:',
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
+        tooltipText: sliderValue => plotDatas[sliderValue]['sigma'],
         onInput: updateAll,
     })
 

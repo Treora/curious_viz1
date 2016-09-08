@@ -19,6 +19,7 @@ export default function init(containerId, plotDatas) {
         label: 'mix&nbsp;ratio:',
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
+        tooltipText: sliderValue => (1-getSettings().plotData['w1']).toFixed(1) + '&nbsp:&nbsp' + getSettings().plotData['w1'],
         onInput: updateAll,
     })
     addSlider({
@@ -27,6 +28,7 @@ export default function init(containerId, plotDatas) {
         labelImage: images['\\sigma_1'],
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
+        tooltipText: sliderValue => getSettings().plotData['sigma_1'],
         onInput: updateAll,
     })
     addSlider({
@@ -35,6 +37,7 @@ export default function init(containerId, plotDatas) {
         labelImage: images['\\sigma_2'],
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
+        tooltipText: sliderValue => getSettings().plotData['sigma_2'],
         onInput: updateAll,
     })
 
