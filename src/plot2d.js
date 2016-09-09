@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import randomSeed from 'random-seed'
 import gaussian from 'gaussian'
 import linspace from 'linspace'
 
@@ -9,6 +10,8 @@ import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
 import { addSlider, addSliderController } from './slider'
 import images from './images'
+
+const rand = randomSeed.create()
 
 function optimalDenoise({noisySample, originalData, noiseDistribution}) {
     // The probability, for each datum, that corrupting it produces noisySample.
@@ -186,9 +189,10 @@ export default function init(containerId) {
     function updateAfterData() {
         let { noiseStdDev } = getSettings()
 
+        rand.seed(4321)
         const noiseVariance = sq(noiseStdDev);
         const noiseDistribution = gaussian(0, noiseVariance)
-        const sampleNoise = () => noiseDistribution.ppf(Math.random())
+        const sampleNoise = () => noiseDistribution.ppf(rand.random())
 
         // Apply gaussian noise to the data points.
         const noisyData = originalData.map(d => ({
