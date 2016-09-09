@@ -27,13 +27,18 @@ function optimalDenoise({noisySample, originalData, noiseDistribution}) {
 
 // Substract coordinates for drawing arrows from sourceData to targetData
 function compareData(sourceData, targetData) {
-    return sourceData.map((d, i) => ({
+    return sourceData.map((d, i) => {
+      const target = (targetData[i].id === d.id)
+        ? targetData[i] // quick heuristic: test item at same index
+        : _.find(targetData, t => (t.id === d.id))
+      return {
+        id: d.id,
         x: d.x,
         y: d.y,
-        dx: targetData[i].x - d.x,
-        dy: targetData[i].y - d.y,
+        dx: target.x - d.x,
+        dy: target.y - d.y,
         pNoisySample: targetData[i].pNoisySample,
-    }))
+    }})
 }
 
 
