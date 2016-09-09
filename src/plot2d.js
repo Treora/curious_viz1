@@ -62,9 +62,8 @@ export default function init(containerId) {
         label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
         value: 0.3,
-        onInput: updateData,
-        onChoice: updateAfterData,
-	tooltip: false,
+        onInput: updateAll,
+        tooltip: false,
     })
 
     // Dragging on data plot also controls the slider
@@ -93,6 +92,7 @@ export default function init(containerId) {
             color: '#33f',
             exitDuration: 0,
         }),
+        updateDuration: 300,
     }
 
     const plotOriginalData = scatterPlot({
@@ -101,26 +101,8 @@ export default function init(containerId) {
         yLabelImage: images['x_2'],
     })
 
-    const plotTransitionArrows = scatterPlot({
-        ...sharedPlotConfig,
-        id: 1,
-        symbol: arrowSymbol({
-            opacity: 0.3,
-        }),
-    })
-    // Ugly workaround to have zero exitDuration when clearing the plots.
-    const plotTransitionArrowsQuickExit = scatterPlot({
-        ...sharedPlotConfig,
-        id: 1,
-        symbol: arrowSymbol({
-            opacity: 0.3,
-            exitDuration: 0,
-        }),
-    })
-
     const plotNoisyData = scatterPlot({
         ...sharedPlotConfig,
-        updateDuration: 1000,
         xLabelImage: images['\\tilde x_1'],
         yLabelImage: images['\\tilde x_2'],
     })
@@ -132,7 +114,6 @@ export default function init(containerId) {
             opacity: d => Math.min(0.5, 10*Math.sqrt(d.pNoisySample)),
             // Alternatively, simply faint long arrows
             // opacity: d => 0.5*Math.min(1, 1/(sq(d.dx)+sq(d.dy))),
-            exitDuration: 0,
         }),
         xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
         yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
@@ -140,7 +121,6 @@ export default function init(containerId) {
 
     const plotDenoisedData = scatterPlot({
         ...sharedPlotConfig,
-        updateDuration: 1000,
         xLabelImage: images['\\hat x_1'],
         yLabelImage: images['\\hat x_2'],
     })
@@ -162,28 +142,6 @@ export default function init(containerId) {
         container.select('.data')
             .datum(originalData)
             .call(plotOriginalData)
-
-        // Clear all the other plots.
-        // Use a named transition to make it cancel the animation (if playing).
-        d3.transition('plot2dAnimation')
-            .duration(0)
-            .on('start', () => {
-                container.select('.noisy')
-                    .datum([])
-                    .call(plotNoisyData)
-                container.select('.noisy')
-                    .datum([])
-                    .call(plotTransitionArrowsQuickExit)
-                container.select('.denoise')
-                    .datum([])
-                    .call(plotDenoiseArrows)
-                container.select('.denoised')
-                    .datum([])
-                    .call(plotTransitionArrowsQuickExit)
-                container.select('.denoised')
-                    .datum([])
-                    .call(plotDenoisedData)
-            })
     }
 
     function updateAfterData() {
@@ -221,67 +179,17 @@ export default function init(containerId) {
             ...optimalDenoise({noisySample: gridPoint, originalData, noiseDistribution}),
         }))
 
-        d3.transition('plot2dAnimation')
-            .duration(1000)
-            .on('start', () => {
-                container.select('.noisy')
-                    .datum(originalData)
-                    .call(plotOriginalData)
-            })
-            .on('end', () => {
-                container.select('.noisy')
-                    .datum(compareData(originalData, noisyData))
-                    .call(plotTransitionArrows)
-            })
-          .transition()
-            .duration(500)
-            .on('end', () => {
-                container.select('.noisy')
-                    .datum(noisyData)
-                    .call(plotNoisyData)
-            })
-          .transition()
-            .duration(1000)
-            .on('end', () => {
-                container.select('.noisy')
-                    .datum([])
-                    .call(plotTransitionArrows)
-            })
-          .transition()
-            .duration(500)
-            .on('end', () => {
-                container.select('.denoise')
-                    .datum(compareData(gridPoints, denoisedGridPoints))
-                    .call(plotDenoiseArrows)
-            })
-          .transition()
-            .duration(1000)
-            .on('end', () => {
-                container.select('.denoised')
-                    .datum(noisyData)
-                    .call(plotNoisyData)
-            })
-          .transition()
-            .duration(1000)
-            .on('end', () => {
-                container.select('.denoised')
-                    .datum(compareData(noisyData, denoisedData))
-                    .call(plotTransitionArrows)
-            })
-          .transition()
-            .duration(500)
-            .on('end', () => {
-                container.select('.denoised')
-                    .datum(denoisedData)
-                    .call(plotDenoisedData)
-            })
-          .transition()
-            .duration(1000)
-            .on('end', () => {
-                container.select('.denoised')
-                    .datum([])
-                    .call(plotTransitionArrows)
-            })
+        container.select('.noisy')
+            .datum(noisyData)
+            .call(plotNoisyData)
+
+        container.select('.denoise')
+            .datum(compareData(gridPoints, denoisedGridPoints))
+            .call(plotDenoiseArrows)
+
+        container.select('.denoised')
+            .datum(denoisedData)
+            .call(plotDenoisedData)
     }
 
     updateAll()
