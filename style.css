@@ -23,6 +23,7 @@
 }
 .plotConstellation rect.denoiseBox {
     stroke-width: 4px;
+    stroke: #333;
 }
 
 .backgroundWave {
@@ -95,11 +96,7 @@ svg .plotHeader.small {
 }
 #plot_2d .plotContainer.denoise {
     top: 350px;
-    left: 410px;
-}
-#plot_2d .plotContainer.denoised {
-    top: 360px;
-    left: 65px;
+    left: 280px;
 }
 
 #plot_2d .sliderContainer.stdDev {
@@ -133,12 +130,8 @@ svg .plotHeader.small {
     left: 485px;
 }
 #plot_1d_gaussian .plotContainer.denoise {
-    top: 355px;
-    left: 425px;
-}
-#plot_1d_gaussian .plotContainer.denoised {
-    top: 360px;
-    left: 55px;
+    top: 350px;
+    left: 280px;
 }
 
 #plot_1d_gaussian .sliderContainer.stdDev {

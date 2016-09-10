@@ -159,12 +159,6 @@ export default function init(containerId) {
             y: d.y + sampleNoise(),
         }))
 
-        // Denoise the noisy data using optimal denoising function.
-        const denoisedData = noisyData.map(noisySample => ({
-            ...noisySample,
-            ...optimalDenoise({noisySample, originalData, noiseDistribution}),
-        }))
-
         // Calculate denoising function's vector field
         const vectorFieldSize = 16
         const gridPoints = _.flatten(
@@ -187,9 +181,6 @@ export default function init(containerId) {
             .datum(compareData(gridPoints, denoisedGridPoints))
             .call(plotDenoiseArrows)
 
-        container.select('.denoised')
-            .datum(denoisedData)
-            .call(plotDenoisedData)
     }
 
     updateAll()
