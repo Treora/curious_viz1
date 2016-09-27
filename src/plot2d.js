@@ -45,7 +45,7 @@ function compareData(sourceData, targetData) {
 }
 
 
-export default function init(containerId) {
+export default function init(containerId, {sliderInitialValue}) {
     const container = d3.select(containerId)
 
     // Create four plots
@@ -61,7 +61,7 @@ export default function init(containerId) {
         name: 'stdDev',
         label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
-        value: 0.3,
+        value: sliderInitialValue || 0.4,
         onInput: updateAll,
         tooltip: false,
     })
