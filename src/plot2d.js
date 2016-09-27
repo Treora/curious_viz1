@@ -2,6 +2,7 @@ import _ from 'lodash'
 import randomSeed from 'random-seed'
 import gaussian from 'gaussian'
 import linspace from 'linspace'
+import jsonStableStringify from 'json-stable-stringify'
 
 import { extendDomainBy, sq } from './utils'
 import scatterPlot from './scatterplot'
@@ -44,6 +45,43 @@ function compareData(sourceData, targetData) {
     }})
 }
 
+// Computes the data for the plots
+function computeAll({dataStdDev, noiseStdDev, xDomain, yDomain}) {
+    const originalData = generateBananaData({stdDev: dataStdDev})
+
+    rand.seed(4321)
+    const noiseVariance = sq(noiseStdDev);
+    const noiseDistribution = gaussian(0, noiseVariance)
+    const sampleNoise = () => noiseDistribution.ppf(rand.random())
+
+    // Apply gaussian noise to the data points.
+    const noisyData = originalData.map(d => ({
+        ...d,
+        x: d.x + sampleNoise(),
+        y: d.y + sampleNoise(),
+    }))
+
+    // Calculate denoising function's vector field
+    const vectorFieldSize = 12
+    const gridPoints = _.flatten(
+        linspace(...xDomain, vectorFieldSize).map(
+            x => linspace(...yDomain, vectorFieldSize).map(
+                y => ({x, y, id: 'x'+x+'y'+y})
+            )
+        )
+    )
+    const denoisedGridPoints = gridPoints.map(gridPoint => ({
+        ...gridPoint,
+        ...optimalDenoise({noisySample: gridPoint, originalData, noiseDistribution}),
+    }))
+    const denoiseField = compareData(gridPoints, denoisedGridPoints)
+
+    return {originalData, noisyData, denoiseField}
+}
+
+// Wrap a cache around computeAll, to prevent recomputing things.
+const getOrComputeAll = _.memoize(computeAll, (...args) => jsonStableStringify(args))
+
 
 export default function init(containerId, {sliderInitialValue}) {
     const container = d3.select(containerId)
@@ -73,8 +111,6 @@ export default function init(containerId, {sliderInitialValue}) {
     })
 
     const getSettings = () => ({
-        dataMean: 0,
-        noiseMean: 0,
         dataStdDev: getSliderValue(slider),
         noiseStdDev: 1.0,
     })
@@ -126,59 +162,21 @@ export default function init(containerId, {sliderInitialValue}) {
     })
 
     function updateAll() {
-        updateData()
-        updateAfterData()
-    }
+        let { originalData, noisyData, denoiseField } = getOrComputeAll({
+            ...getSettings(),
+            xDomain, yDomain,
+        })
 
-    // To remember the data between calls to updateData and updateAfterData.
-    let originalData
-
-    function updateData() {
-        let { dataStdDev } = getSettings()
-
-        originalData = generateBananaData({stdDev: dataStdDev})
-
-        // Update the data
         container.select('.data')
             .datum(originalData)
             .call(plotOriginalData)
-    }
-
-    function updateAfterData() {
-        let { noiseStdDev } = getSettings()
-
-        rand.seed(4321)
-        const noiseVariance = sq(noiseStdDev);
-        const noiseDistribution = gaussian(0, noiseVariance)
-        const sampleNoise = () => noiseDistribution.ppf(rand.random())
-
-        // Apply gaussian noise to the data points.
-        const noisyData = originalData.map(d => ({
-            ...d,
-            x: d.x + sampleNoise(),
-            y: d.y + sampleNoise(),
-        }))
-
-        // Calculate denoising function's vector field
-        const vectorFieldSize = 16
-        const gridPoints = _.flatten(
-            linspace(...xDomain, vectorFieldSize).map(
-                x => linspace(...yDomain, vectorFieldSize).map(
-                    y => ({x, y, id: 'x'+x+'y'+y})
-                )
-            )
-        )
-        const denoisedGridPoints = gridPoints.map(gridPoint => ({
-            ...gridPoint,
-            ...optimalDenoise({noisySample: gridPoint, originalData, noiseDistribution}),
-        }))
 
         container.select('.noisy')
             .datum(noisyData)
             .call(plotNoisyData)
 
         container.select('.denoise')
-            .datum(compareData(gridPoints, denoisedGridPoints))
+            .datum(denoiseField)
             .call(plotDenoiseArrows)
 
     }
