@@ -2,7 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
-import { addSlider, addSliderController } from './slider'
+import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
 
 const sq = x => Math.pow(x, 2)
@@ -32,9 +32,8 @@ export default function init(containerId, plotDatas) {
     })
 
     const getSettings = () => {
-        const sliderInput = container.select('.slider').node()
         return {
-            plotNumber: +sliderInput.value,
+            plotNumber: getSliderValue(slider),
         }
     }
 

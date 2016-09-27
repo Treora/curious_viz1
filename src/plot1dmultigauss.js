@@ -2,7 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
-import { addSlider, addSliderController } from './slider'
+import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
 import { sq } from './utils'
 
@@ -13,7 +13,7 @@ export default function init(containerId, plotDatas) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const slider = addSlider({
+    const sliderW1 = addSlider({
         container,
         name: 'w1',
         label: 'mix&nbsp;ratio:',
@@ -23,7 +23,7 @@ export default function init(containerId, plotDatas) {
         tooltipText: sliderValue => (1-getSettings().plotData['w1']).toFixed(1) + '&nbsp:&nbsp' + getSettings().plotData['w1'],
         onInput: updateAll,
     })
-    addSlider({
+    const sliderSigma1 = addSlider({
         container,
         name: 'sigma_1',
         labelImage: images['\\sigma_1'],
@@ -33,7 +33,7 @@ export default function init(containerId, plotDatas) {
         tooltipText: sliderValue => getSettings().plotData['sigma_1'],
         onInput: updateAll,
     })
-    addSlider({
+    const sliderSigma2 = addSlider({
         container,
         name: 'sigma_2',
         labelImage: images['\\sigma_2'],
@@ -47,14 +47,14 @@ export default function init(containerId, plotDatas) {
     // Dragging on data plot also controls the slider
     addSliderController({
         controller: container.select('.data'),
-        slider,
+        slider: sliderW1,
     })
 
 
     const getSettings = () => {
-        const w1 = plotDatas.length-1 - +container.select('.slider.w1').node().value
-        const sigma_1 = +container.select('.slider.sigma_1').node().value
-        const sigma_2 = +container.select('.slider.sigma_2').node().value
+        const w1 = plotDatas.length-1 - getSliderValue(sliderW1)
+        const sigma_1 = getSliderValue(sliderSigma1)
+        const sigma_2 = getSliderValue(sliderSigma2)
 
         return {
             plotData: plotDatas[w1][sigma_1][sigma_2]

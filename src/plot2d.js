@@ -8,7 +8,7 @@ import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
-import { addSlider, addSliderController } from './slider'
+import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
 
 const rand = randomSeed.create()
@@ -75,7 +75,7 @@ export default function init(containerId, {sliderInitialValue}) {
     const getSettings = () => ({
         dataMean: 0,
         noiseMean: 0,
-        dataStdDev: +container.select('.slider.stdDev').node().value,
+        dataStdDev: getSliderValue(slider),
         noiseStdDev: 1.0,
     })
 
