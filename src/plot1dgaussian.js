@@ -19,7 +19,7 @@ export default function init(containerId) {
         container,
         name: 'dataMean',
         label: '&mu;<sub>x</sub>:',
-        min: -1, max: 1, step: 0.5,
+        min: -2, max: 2, step: 1,
         value: 0.0,
         onInput: updateAll,
         tooltip: true,
