@@ -96,6 +96,7 @@ export default function init(containerId, plotDatas) {
             .datum({x: plotData.x, y: plotData.noisy})
             .call(plotCorruptedDistribution)
 
+        // Draw diagonal dashed line (identity function)
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.x})
             .call(functionPlot({
@@ -106,6 +107,7 @@ export default function init(containerId, plotDatas) {
                 lineStyle: '--',
             }))
 
+        // Draw g1 linear extrapolation, dotted
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.g1})
             .call(functionPlot({
@@ -116,6 +118,7 @@ export default function init(containerId, plotDatas) {
                 lineStyle: ':',
             }))
 
+        // Draw g2 linear extrapolation, dotted
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.g2})
             .call(functionPlot({
@@ -126,6 +129,7 @@ export default function init(containerId, plotDatas) {
                 lineStyle: ':',
             }))
 
+        // Draw optimal denoising function
         container.select('.denoise')
             .datum({x: plotData.x, y: plotData.denoise})
             .call(functionPlot({

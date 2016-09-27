@@ -15,21 +15,21 @@ export default function init(containerId) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const sliderDataMean = addSlider({
-        container,
-        name: 'dataMean',
-        label: '&mu;<sub>x</sub>:',
-        min: -2, max: 2, step: 1,
-        value: 0.0,
-        onInput: updateAll,
-        tooltip: true,
-    })
     const sliderStdDev = addSlider({
         container,
         name: 'stdDev',
         label: '&sigma;<sub>x</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
+        onInput: updateAll,
+        tooltip: true,
+    })
+    const sliderDataMean = addSlider({
+        container,
+        name: 'dataMean',
+        label: '&mu;<sub>x</sub>:',
+        min: -2, max: 2, step: 1,
+        value: 0.0,
         onInput: updateAll,
         tooltip: true,
     })
@@ -46,7 +46,11 @@ export default function init(containerId) {
     // Dragging on data plot also controls the slider
     addSliderController({
         controller: container.select('.data'),
-        slider: sliderDataMean,
+        slider: sliderStdDev,
+    })
+    addSliderController({
+        controller: container.select('.noisy'),
+        slider: sliderNoiseStdDev,
     })
 
     const sharedPlotConfig = {
