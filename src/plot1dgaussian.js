@@ -2,7 +2,7 @@ import gaussian from 'gaussian'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
-import { addSlider, addSliderController } from './slider'
+import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
 
 const sq = x => Math.pow(x, 2)
@@ -15,7 +15,16 @@ export default function init(containerId) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
-    const slider = addSlider({
+    const sliderDataMean = addSlider({
+        container,
+        name: 'dataMean',
+        label: '&mu;<sub>x</sub>:',
+        min: -1, max: 1, step: 0.5,
+        value: 0.0,
+        onInput: updateAll,
+        tooltip: true,
+    })
+    const sliderStdDev = addSlider({
         container,
         name: 'stdDev',
         label: '&sigma;<sub>x</sub>:',
@@ -24,7 +33,7 @@ export default function init(containerId) {
         onInput: updateAll,
         tooltip: true,
     })
-    const slider1 = addSlider({
+    const sliderNoiseStdDev = addSlider({
         container,
         name: 'noiseStdDev',
         label: '&sigma;<sub>n</sub>:',
@@ -37,7 +46,7 @@ export default function init(containerId) {
     // Dragging on data plot also controls the slider
     addSliderController({
         controller: container.select('.data'),
-        slider,
+        slider: sliderDataMean,
     })
 
     const sharedPlotConfig = {
@@ -48,12 +57,10 @@ export default function init(containerId) {
     }
 
     const getSettings = () => {
-        const stdDevInput = container.select('.slider.stdDev').node()
-        const noiseInput = container.select('.slider.noiseStdDev').node()
         return {
-            dataMean: 0,
-            dataStdDev: +stdDevInput.value || +stdDevInput.defaultValue,
-            noiseStdDev: +noiseInput.value || +noiseInput.defaultValue,
+            dataStdDev: getSliderValue(sliderStdDev),
+            dataMean: getSliderValue(sliderDataMean),
+            noiseStdDev: getSliderValue(sliderNoiseStdDev),
         }
     }
 
@@ -61,7 +68,6 @@ export default function init(containerId) {
         updateData()
         updateAfterData()
     }
-
 
     function updateData() {
         let { dataMean, dataStdDev } = getSettings()

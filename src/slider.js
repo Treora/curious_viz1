@@ -79,7 +79,7 @@ export function addSlider({
 
     function showTooltip(sliderElement) {
         const tooltipHeight = 20
-	const sliderKnobWidth = 16 // Guessing here, sorry.
+        const sliderKnobWidth = 16 // Guessing here, sorry.
         const el = sliderElement
 
         // Add element for the tooltip
@@ -111,6 +111,15 @@ export function addSlider({
     }
 
     return slider
+}
+
+
+export function getSliderValue(slider) {
+    const value = slider.node().value
+    if (value !== undefined && value !== '')
+        return +value
+    else
+        return +slider.node().defaultValue
 }
 
 
