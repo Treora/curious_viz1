@@ -5,7 +5,7 @@ import functionPlot from './functionplot'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
 
-const sq = x => Math.pow(x, 2)
+import { sq } from './utils'
 
 export default function init(containerId) {
     const container = d3.select(containerId)

@@ -1,4 +1,5 @@
 import gaussian from 'gaussian'
+import linspace from 'linspace'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
@@ -20,7 +21,7 @@ export default function init(containerId, plotDatas) {
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
         tooltip: true,
-        tooltipText: sliderValue => (1-getSettings().plotData['w1']).toFixed(1) + '&nbsp:&nbsp' + getSettings().plotData['w1'],
+        tooltipText: sliderValue => (1-getPlotData()['w1']).toFixed(1) + '&nbsp:&nbsp' + getPlotData()['w1'],
         onInput: updateAll,
     })
     const sliderSigma1 = addSlider({
@@ -30,7 +31,7 @@ export default function init(containerId, plotDatas) {
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
         tooltip: true,
-        tooltipText: sliderValue => getSettings().plotData['sigma_1'],
+        tooltipText: sliderValue => getPlotData()['sigma_1'],
         onInput: updateAll,
     })
     const sliderSigma2 = addSlider({
@@ -40,7 +41,7 @@ export default function init(containerId, plotDatas) {
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
         tooltip: true,
-        tooltipText: sliderValue => getSettings().plotData['sigma_2'],
+        tooltipText: sliderValue => getPlotData()['sigma_2'],
         onInput: updateAll,
     })
 
@@ -50,15 +51,15 @@ export default function init(containerId, plotDatas) {
         slider: sliderW1,
     })
 
+    const getSettings = () => ({
+        w1: plotDatas.length-1 - getSliderValue(sliderW1),
+        sigma_1: getSliderValue(sliderSigma1),
+        sigma_2: getSliderValue(sliderSigma2),
+    })
 
-    const getSettings = () => {
-        const w1 = plotDatas.length-1 - getSliderValue(sliderW1)
-        const sigma_1 = getSliderValue(sliderSigma1)
-        const sigma_2 = getSliderValue(sliderSigma2)
-
-        return {
-            plotData: plotDatas[w1][sigma_1][sigma_2]
-        }
+    const getPlotData = () => {
+        let { w1, sigma_1, sigma_2 } = getSettings()
+        return plotDatas[w1][sigma_1][sigma_2]
     }
 
     const sharedPlotConfig = {
@@ -66,25 +67,17 @@ export default function init(containerId, plotDatas) {
     }
 
     function updateAll() {
-        updateData()
-        updateAfterData()
-    }
-
-    function updateData() {
-        let { plotData } = getSettings()
+        const plotData = getPlotData()
+        const x = (plotData.x !== undefined) ? plotData.x
+            : linspace(...plotData.xDomain, plotData.data.length)
 
         container.select('.data')
-            .datum({x: plotData.x, y: plotData.data})
+            .datum({x, y: plotData.data})
             .call(functionPlot({
                 ...sharedPlotConfig,
                 xLabelImage: images['x'],
                 yLabelImage: images['p(x)'],
             }))
-
-    }
-
-    function updateAfterData() {
-        let { plotData } = getSettings()
 
         const plotCorruptedDistribution = functionPlot({
             ...sharedPlotConfig,
@@ -93,12 +86,12 @@ export default function init(containerId, plotDatas) {
         })
 
         container.select('.noisy')
-            .datum({x: plotData.x, y: plotData.noisy})
+            .datum({x, y: plotData.noisy})
             .call(plotCorruptedDistribution)
 
         // Draw diagonal dashed line (identity function)
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.x})
+            .datum({x, y: x})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotCorruptedDistribution.xScale.domain(),
@@ -109,7 +102,7 @@ export default function init(containerId, plotDatas) {
 
         // Draw g1 linear extrapolation, dotted
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.g1})
+            .datum({x, y: plotData.g1})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotCorruptedDistribution.xScale.domain(),
@@ -120,7 +113,7 @@ export default function init(containerId, plotDatas) {
 
         // Draw g2 linear extrapolation, dotted
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.g2})
+            .datum({x, y: plotData.g2})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotCorruptedDistribution.xScale.domain(),
@@ -131,7 +124,7 @@ export default function init(containerId, plotDatas) {
 
         // Draw optimal denoising function
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.denoise})
+            .datum({x, y: plotData.denoise})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
                 yDomain: plotCorruptedDistribution.xScale.domain(),

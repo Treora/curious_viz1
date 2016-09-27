@@ -1,11 +1,11 @@
 import gaussian from 'gaussian'
+import linspace from 'linspace'
 
 import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
-
-const sq = x => Math.pow(x, 2)
+import { sq } from './utils'
 
 export default function init(containerId, plotDatas) {
     const container = d3.select(containerId)
@@ -38,7 +38,6 @@ export default function init(containerId, plotDatas) {
     }
 
     const sharedPlotConfig = {
-        // xDomain: [-4, 4],
         yDomain: [0, 0.8],
     }
 
@@ -49,38 +48,32 @@ export default function init(containerId, plotDatas) {
         yLabelImage: images['p(x)'],
     })
 
-    function updateAll() {
-        updateData();
-        updateAfterData();
-    }
+    const plotCorruptedDistribution = functionPlot({
+        ...sharedPlotConfig,
+        yDomain: plotOriginalDistribution.yScale.domain(),
+        xLabelImage: images['\\tilde x'],
+        yLabelImage: images['p(\\tilde x)'],
+    })
 
-    function updateData() {
+
+    function updateAll() {
         let { plotNumber } = getSettings()
+
         const plotData = plotDatas[plotNumber]
+        const x = (plotData.x !== undefined) ? plotData.x
+            : linspace(...plotData.xDomain, plotData.data.length)
 
         container.select('.data')
-            .datum({x: plotData.x, y: plotData.data})
+            .datum({x, y: plotData.data})
             .call(plotOriginalDistribution)
 
-    }
-
-    function updateAfterData() {
-        let { plotNumber } = getSettings()
-        const plotData = plotDatas[plotNumber]
-
-        const plotCorruptedDistribution = functionPlot({
-            ...sharedPlotConfig,
-            yDomain: plotOriginalDistribution.yScale.domain(),
-            xLabelImage: images['\\tilde x'],
-            yLabelImage: images['p(\\tilde x)'],
-        })
-
         container.select('.noisy')
-            .datum({x: plotData.x, y: plotData.noisy})
+            .datum({x, y: plotData.noisy})
             .call(plotCorruptedDistribution)
 
+        // Plot diagonal dashed line
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.x})
+            .datum({x, y: x})
             .call(functionPlot({
                 id: 1,
                 xDomain: plotCorruptedDistribution.xScale.domain(),
@@ -90,7 +83,7 @@ export default function init(containerId, plotDatas) {
         }))
 
         container.select('.denoise')
-            .datum({x: plotData.x, y: plotData.denoise})
+            .datum({x, y: plotData.denoise})
             .call(functionPlot({
                 id: 0,
                 xDomain: plotCorruptedDistribution.xScale.domain(),
