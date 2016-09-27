@@ -35,6 +35,15 @@
 
 .plotContainer .line {
     stroke-width: 2px;
+    stroke: blue;
+}
+
+.plotContainer .symbol {
+    fill: blue;
+}
+
+.plotContainer .arrowPath {
+    stroke: black;
 }
 
 .plotContainer .xAxis, .yAxis {
