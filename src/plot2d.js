@@ -49,7 +49,7 @@ export default function init(containerId) {
     const container = d3.select(containerId)
 
     // Create four plots
-    const subplots = ['data', 'noisy', 'denoise', 'denoised']
+    const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
