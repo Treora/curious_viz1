@@ -10,7 +10,7 @@ const sq = x => Math.pow(x, 2)
 export default function init(containerId) {
     const container = d3.select(containerId)
 
-    const subplots = ['data', 'noisy', 'denoise', 'denoised']
+    const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
             .attr('class', 'plotContainer ' + subplots[i])
@@ -27,7 +27,7 @@ export default function init(containerId) {
     const slider1 = addSlider({
         container,
         name: 'noiseStdDev',
-        label: 'noise&nbsp;&sigma;<sub>n</sub>:',
+        label: '&sigma;<sub>n</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         onInput: updateAfterData,
@@ -77,26 +77,6 @@ export default function init(containerId) {
     }
 
     function updateAfterData() {
-        updateNoise()
-        updateAfterNoise()
-    }
-
-    function updateNoise() {
-        let { noiseStdDev } = getSettings()
-
-        const noiseDistribution = gaussian(0, sq(noiseStdDev))
-
-        // d3.select('#plot_1d_gaussian_noise')
-        //     .datum(noiseDistribution)
-        //     .call(distributionPlot({
-        //         ...sharedPlotConfig,
-        //         xLabel: 'n',
-        //         yLabel: 'p(n)',
-        //         // yDomain: [0, 1/2/Math.sqrt(noiseStdDev)], // scale for constant height
-        //     }))
-    }
-
-    function updateAfterNoise() {
         let { dataMean, dataStdDev, noiseStdDev } = getSettings()
 
         const corruptedStdDev = Math.sqrt(sq(dataStdDev) + sq(noiseStdDev))
@@ -105,35 +85,22 @@ export default function init(containerId) {
         const v = sq(dataStdDev) / sq(corruptedStdDev)
         const denoiseFunction = noisyValue => v * noisyValue + (1-v) * dataMean
 
-        const denoisedStdDev = corruptedStdDev * v
-        const denoisedDistribution = gaussian(dataMean, sq(denoisedStdDev))
-
         const plotCorruptedDistribution = distributionPlot({
             ...sharedPlotConfig,
             xLabelImage: images['\\tilde x'],
             yLabelImage: images['p(\\tilde x)'],
         })
 
-        const plotDenoisedDistribution = distributionPlot({
-            ...sharedPlotConfig,
-            xLabelImage: images['\\hat x'],
-            yLabelImage: images['p(\\hat x)'],
-        })
-
         container.select('.noisy')
             .datum(corruptedDistribution)
             .call(plotCorruptedDistribution)
-
-        container.select('.denoised')
-            .datum(denoisedDistribution)
-            .call(plotDenoisedDistribution)
 
         container.select('.denoise')
             .datum(() => x=>x)
             .call(functionPlot({
                 id: 1,
                 xDomain: plotCorruptedDistribution.xScale.domain(),
-                yDomain: plotDenoisedDistribution.xScale.domain(),
+                yDomain: plotCorruptedDistribution.xScale.domain(),
                 lineOpacity: 0.2,
                 lineStyle: '--',
         }))
@@ -142,7 +109,7 @@ export default function init(containerId) {
             .call(functionPlot({
                 id: 0,
                 xDomain: plotCorruptedDistribution.xScale.domain(),
-                yDomain: plotDenoisedDistribution.xScale.domain(),
+                yDomain: plotCorruptedDistribution.xScale.domain(),
                 xLabelImage: images['\\tilde x'],
                 yLabelImage: images['g(\\tilde x)'],
         }))
