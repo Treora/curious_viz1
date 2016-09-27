@@ -131,36 +131,6 @@ export default function init(containerId, {sliderInitialValue}) {
         updateDuration: 300,
     }
 
-    const plotOriginalData = scatterPlot({
-        ...sharedPlotConfig,
-        xLabelImage: images['x_1'],
-        yLabelImage: images['x_2'],
-    })
-
-    const plotNoisyData = scatterPlot({
-        ...sharedPlotConfig,
-        xLabelImage: images['\\tilde x_1'],
-        yLabelImage: images['\\tilde x_2'],
-    })
-
-    const plotDenoiseArrows = scatterPlot({
-        ...sharedPlotConfig,
-        symbol: arrowSymbol({
-            // Faint arrows from highly improbable (corrupted) points
-            opacity: d => Math.min(0.5, 10*Math.sqrt(d.pNoisySample)),
-            // Alternatively, simply faint long arrows
-            // opacity: d => 0.5*Math.min(1, 1/(sq(d.dx)+sq(d.dy))),
-        }),
-        xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
-        yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
-    })
-
-    const plotDenoisedData = scatterPlot({
-        ...sharedPlotConfig,
-        xLabelImage: images['\\hat x_1'],
-        yLabelImage: images['\\hat x_2'],
-    })
-
     function updateAll() {
         let { originalData, noisyData, denoiseField } = getOrComputeAll({
             ...getSettings(),
@@ -169,15 +139,33 @@ export default function init(containerId, {sliderInitialValue}) {
 
         container.select('.data')
             .datum(originalData)
-            .call(plotOriginalData)
+            .call(scatterPlot({
+                ...sharedPlotConfig,
+                xLabelImage: images['x_1'],
+                yLabelImage: images['x_2'],
+            }))
 
         container.select('.noisy')
             .datum(noisyData)
-            .call(plotNoisyData)
+            .call(scatterPlot({
+                ...sharedPlotConfig,
+                xLabelImage: images['\\tilde x_1'],
+                yLabelImage: images['\\tilde x_2'],
+            }))
 
         container.select('.denoise')
             .datum(denoiseField)
-            .call(plotDenoiseArrows)
+            .call(scatterPlot({
+                ...sharedPlotConfig,
+                symbol: arrowSymbol({
+                    // Faint arrows from highly improbable (corrupted) points
+                    opacity: d => Math.min(0.5, 10*Math.sqrt(d.pNoisySample)),
+                    // Alternatively, simply faint long arrows
+                    // opacity: d => 0.5*Math.min(1, 1/(sq(d.dx)+sq(d.dy))),
+                }),
+                xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
+                yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
+            }))
 
     }
 
