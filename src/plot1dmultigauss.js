@@ -1,11 +1,8 @@
-import gaussian from 'gaussian'
 import linspace from 'linspace'
 
-import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
-import { sq } from './utils'
 
 export default function init(containerId, plotDatas) {
     const subplots = ['data', 'noisy', 'denoise']

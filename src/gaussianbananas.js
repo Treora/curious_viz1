@@ -1,8 +1,6 @@
 import randomSeed from 'random-seed'
 import gaussian from 'gaussian'
 
-const nSamples = 100
-
 const rand = randomSeed.create()
 
 export default function generateDataset({nSamples=100, stdDev=1.0, seed=123}) {

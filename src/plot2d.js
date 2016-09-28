@@ -4,7 +4,7 @@ import gaussian from 'gaussian'
 import linspace from 'linspace'
 import jsonStableStringify from 'json-stable-stringify'
 
-import { extendDomainBy, sq } from './utils'
+import { sq } from './utils'
 import scatterPlot from './scatterplot'
 import arrowSymbol from './arrowsymbol'
 import pointSymbol from './pointsymbol'
