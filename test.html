@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="plots.css" type="text/css">
-    <script src="d3.v4.min.js"></script>
+    <script src="d3.v4.min.js"></script>  <!-- Could also be drawn from https://d3js.org/d3.v4.min.js -->
     <script src="plots.min.js"></script>
     <script src="plotdata.min.js"></script>
 </head>
@@ -12,6 +12,7 @@
 <h1>2d plot</h1>
     <div id="plot_2d" class="plotConstellation"></div>
     <script>
+        // Valid slider values: 0.2, 0.4, 0.6, 0.8, 1.0
         plot2d('#plot_2d', {sliderInitialValue: 0.4});
     </script>
 
