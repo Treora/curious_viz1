@@ -9,10 +9,12 @@ export default function init(containerId, plotDatas) {
     const container = d3.select(containerId)
     for (let i in subplots) {
         container.append('div')
+            .attr('class', 'plotIncSliders ' + subplots[i])
+          .append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
     const sliderW1 = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'w1',
         label: 'mix&nbsp;ratio:',
         min: 0, max: plotDatas.length-1,
@@ -22,7 +24,7 @@ export default function init(containerId, plotDatas) {
         onInput: updateAll,
     })
     const sliderSigma1 = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'sigma_1',
         labelImage: images['\\sigma_1'],
         min: 0, max: plotDatas[0].length-1,
@@ -32,7 +34,7 @@ export default function init(containerId, plotDatas) {
         onInput: updateAll,
     })
     const sliderSigma2 = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'sigma_2',
         labelImage: images['\\sigma_2'],
         min: 0, max: plotDatas[0][0].length-1,
@@ -44,7 +46,7 @@ export default function init(containerId, plotDatas) {
 
     // Dragging on data plot also controls the slider
     addSliderController({
-        controller: container.select('.data'),
+        controller: container.select('.plotContainer.data'),
         slider: sliderW1,
     })
 
@@ -68,7 +70,7 @@ export default function init(containerId, plotDatas) {
         const x = (plotData.x !== undefined) ? plotData.x
             : linspace(...plotData.xDomain, plotData.data.length)
 
-        container.select('.data')
+        container.select('.plotContainer.data')
             .datum({x, y: plotData.data})
             .call(functionPlot({
                 ...sharedPlotConfig,
@@ -82,12 +84,12 @@ export default function init(containerId, plotDatas) {
             yLabelImage: images['p(\\tilde x)'],
         })
 
-        container.select('.noisy')
+        container.select('.plotContainer.noisy')
             .datum({x, y: plotData.noisy})
             .call(plotCorruptedDistribution)
 
         // Draw diagonal dashed line (identity function)
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: x})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
@@ -98,7 +100,7 @@ export default function init(containerId, plotDatas) {
             }))
 
         // Draw g1 linear extrapolation, dotted
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: plotData.g1})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
@@ -109,7 +111,7 @@ export default function init(containerId, plotDatas) {
             }))
 
         // Draw g2 linear extrapolation, dotted
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: plotData.g2})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),
@@ -120,7 +122,7 @@ export default function init(containerId, plotDatas) {
             }))
 
         // Draw optimal denoising function
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: plotData.denoise})
             .call(functionPlot({
                 xDomain: plotCorruptedDistribution.xScale.domain(),

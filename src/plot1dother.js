@@ -9,10 +9,12 @@ export default function init(containerId, plotDatas) {
     const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
+            .attr('class', 'plotIncSliders ' + subplots[i])
+          .append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
     const slider = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
         label: '&sigma;<sub>x</sub>:',
         min: 0, max: plotDatas.length-1,
@@ -24,7 +26,7 @@ export default function init(containerId, plotDatas) {
 
     // Dragging on data plot also controls the slider
     addSliderController({
-        controller: container.select('.data'),
+        controller: container.select('.plotContainer.data'),
         slider,
     })
 
@@ -60,16 +62,16 @@ export default function init(containerId, plotDatas) {
         const x = (plotData.x !== undefined) ? plotData.x
             : linspace(...plotData.xDomain, plotData.data.length)
 
-        container.select('.data')
+        container.select('.plotContainer.data')
             .datum({x, y: plotData.data})
             .call(plotOriginalDistribution)
 
-        container.select('.noisy')
+        container.select('.plotContainer.noisy')
             .datum({x, y: plotData.noisy})
             .call(plotCorruptedDistribution)
 
         // Plot diagonal dashed line
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: x})
             .call(functionPlot({
                 id: 1,
@@ -79,7 +81,7 @@ export default function init(containerId, plotDatas) {
                 lineStyle: '--',
         }))
 
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum({x, y: plotData.denoise})
             .call(functionPlot({
                 id: 0,

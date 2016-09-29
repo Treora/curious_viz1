@@ -13,10 +13,12 @@ export default function init(containerId) {
     const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
+            .attr('class', 'plotIncSliders ' + subplots[i])
+          .append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
     const sliderStdDev = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
         label: '&sigma;<sub>x</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
@@ -25,7 +27,7 @@ export default function init(containerId) {
         tooltip: true,
     })
     const sliderDataMean = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'dataMean',
         label: '&mu;<sub>x</sub>:',
         min: -2, max: 2, step: 1,
@@ -34,7 +36,7 @@ export default function init(containerId) {
         tooltip: true,
     })
     const sliderNoiseStdDev = addSlider({
-        container,
+        container: container.select('.plotIncSliders.noisy'),
         name: 'noiseStdDev',
         label: '&sigma;<sub>n</sub>:',
         min: 0.2, max: 1.8, step: 0.4,
@@ -45,11 +47,11 @@ export default function init(containerId) {
 
     // Dragging on data plot also controls the slider
     addSliderController({
-        controller: container.select('.data'),
+        controller: container.select('.plotContainer.data'),
         slider: sliderStdDev,
     })
     addSliderController({
-        controller: container.select('.noisy'),
+        controller: container.select('.plotContainer.noisy'),
         slider: sliderNoiseStdDev,
     })
 
@@ -77,7 +79,7 @@ export default function init(containerId) {
         let { dataMean, dataStdDev } = getSettings()
 
         const dataDistribution = gaussian(dataMean, sq(dataStdDev))
-        container.select('.data')
+        container.select('.plotContainer.data')
             .datum(dataDistribution)
             .call(distributionPlot({
                 ...sharedPlotConfig,
@@ -101,11 +103,11 @@ export default function init(containerId) {
             yLabelImage: images['p(\\tilde x)'],
         })
 
-        container.select('.noisy')
+        container.select('.plotContainer.noisy')
             .datum(corruptedDistribution)
             .call(plotCorruptedDistribution)
 
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum(() => x=>x)
             .call(functionPlot({
                 id: 1,
@@ -114,7 +116,7 @@ export default function init(containerId) {
                 lineOpacity: 0.2,
                 lineStyle: '--',
         }))
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum(() => denoiseFunction)
             .call(functionPlot({
                 id: 0,

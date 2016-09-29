@@ -90,12 +90,14 @@ export default function init(containerId, {sliderInitialValue}) {
     const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         container.append('div')
+            .attr('class', 'plotIncSliders ' + subplots[i])
+          .append('div')
             .attr('class', 'plotContainer ' + subplots[i])
     }
 
     // Add the slider input
     const slider = addSlider({
-        container,
+        container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
         label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
@@ -106,7 +108,7 @@ export default function init(containerId, {sliderInitialValue}) {
 
     // Dragging on data plot also controls the slider
     addSliderController({
-        controller: container.select('.data'),
+        controller: container.select('.plotContainer.data'),
         slider,
     })
 
@@ -137,7 +139,7 @@ export default function init(containerId, {sliderInitialValue}) {
             xDomain, yDomain,
         })
 
-        container.select('.data')
+        container.select('.plotContainer.data')
             .datum(originalData)
             .call(scatterPlot({
                 ...sharedPlotConfig,
@@ -145,7 +147,7 @@ export default function init(containerId, {sliderInitialValue}) {
                 yLabelImage: images['x_2'],
             }))
 
-        container.select('.noisy')
+        container.select('.plotContainer.noisy')
             .datum(noisyData)
             .call(scatterPlot({
                 ...sharedPlotConfig,
@@ -153,7 +155,7 @@ export default function init(containerId, {sliderInitialValue}) {
                 yLabelImage: images['\\tilde x_2'],
             }))
 
-        container.select('.denoise')
+        container.select('.plotContainer.denoise')
             .datum(denoiseField)
             .call(scatterPlot({
                 ...sharedPlotConfig,
