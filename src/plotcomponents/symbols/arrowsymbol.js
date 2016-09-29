@@ -1,4 +1,4 @@
-import { selectEnter, sq } from './utils'
+import { selectEnter, sq } from '../../common/utils'
 
 export default function defineSymbol(symbolProps) {
     return {

@@ -1,12 +1,12 @@
 import gaussian from 'gaussian'
 
-import distributionPlot from './distributionplot'
-import functionPlot from './functionplot'
-import { addSlider, addSliderController, getSliderValue } from './slider'
-import images from './images'
-import { createSubplots } from './subplots'
+import distributionPlot from '../plotcomponents/distributionplot'
+import functionPlot from '../plotcomponents/functionplot'
+import { addSlider, addSliderController, getSliderValue } from '../common/slider'
+import images from '../common/images'
+import { createSubplots } from '../common/subplots'
 
-import { sq } from './utils'
+import { sq } from '../common/utils'
 
 export default function init(containerId, options={}) {
     const container = d3.select(containerId)

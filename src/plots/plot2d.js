@@ -4,14 +4,14 @@ import gaussian from 'gaussian'
 import linspace from 'linspace'
 import jsonStableStringify from 'json-stable-stringify'
 
-import { sq } from './utils'
-import scatterPlot from './scatterplot'
-import arrowSymbol from './arrowsymbol'
-import pointSymbol from './pointsymbol'
-import generateBananaData from './gaussianbananas'
-import { addSlider, addSliderController, getSliderValue } from './slider'
-import images from './images'
-import { createSubplots } from './subplots'
+import { sq } from '../common/utils'
+import scatterPlot from '../plotcomponents/scatterplot'
+import arrowSymbol from '../plotcomponents/symbols/arrowsymbol'
+import pointSymbol from '../plotcomponents/symbols/pointsymbol'
+import generateBananaData from '../datasets/gaussianbananas'
+import { addSlider, addSliderController, getSliderValue } from '../common/slider'
+import images from '../common/images'
+import { createSubplots } from '../common/subplots'
 
 const rand = randomSeed.create()
 

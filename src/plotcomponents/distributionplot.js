@@ -1,9 +1,10 @@
 import _ from 'lodash'
 import linspace from 'linspace'
 
-import { selectEnter, extendDomainByFactor } from './utils'
+import pointSymbol from './symbols/pointsymbol'
+import { selectEnter, extendDomainByFactor } from '../common/utils'
 
-export default function functionPlot(config) {
+export default function distributionPlot(config) {
     let {
         width, height,
         margin={top: 10, right: 10, bottom: 35, left: 45},
@@ -12,12 +13,16 @@ export default function functionPlot(config) {
         xLabel, yLabel,
         xLabelImage, yLabelImage,
         approxTickCount=3,
+        random=Math.random,
+
         lineColor='blue',
-        lineOpacity=1,
-        lineStyle='solid',
+        lineOpacity=0.3,
         nLinePoints=100,
-        yDomainDetectionExtendFactor=1.5,
-        id=0,
+
+        drawSamples=true,
+        symbol=pointSymbol({symbolRadius: 2}),
+        nSamples=100,
+
     } = config
 
     const xScale = d3.scaleLinear()
@@ -27,15 +32,16 @@ export default function functionPlot(config) {
     const yAxis = d3.axisLeft(yScale)
 
     function plot(selection) {
-        selection.each(function (funcOrData) { // 'each' = for each chart
+        selection.each(function (distribution) { // 'each' = for each chart
             const container = d3.select(this)
 
             // Add SVG element if needed and set its size
             const svgWidth = (width !== undefined) ? width : '100%'
             const svgHeight = (height !== undefined) ? height : '100%'
-            selectEnter(container, '.functionPlotSvg')
+            selectEnter(container, '.distributionPlotSvg')
               .append('svg')
-                .attr('class', 'functionPlotSvg')
+                .attr('class', 'distributionPlotSvg')
+                .call((symbol && symbol.init) || _.noop)
             const svg = container.select('svg')
             svg.attr('height', svgHeight)
             svg.attr('width', svgWidth)
@@ -53,59 +59,48 @@ export default function functionPlot(config) {
             xScale.range([0, plotWidth])
             yScale.range([plotHeight, 0]) // flip axis, higher y is up.
 
-            // Determine the data to draw
-            let linePoints
-            if (typeof funcOrData === 'function') {
-                if (xDomain === undefined) {
-                    xScale.domain([0,10])
-                } else {
-                    xScale.domain(xDomain)
-                }
-                linePoints = linspace(...xScale.domain(), nLinePoints)
-                    .map(point => ({x: point, y: funcOrData(point)}))
-            }
-            else {
-                if (xDomain === undefined) {
-                    xScale.domain(d3.extent(funcOrData.x))
-                } else {
-                    xScale.domain(xDomain)
-                }
-                linePoints = _.zipWith(funcOrData.x, funcOrData.y, (x, y) => ({x, y}))
+            // Take samples from the distribution
+            const samples = _.sortBy(Array.from({length: nSamples}).map(() =>
+                distribution.ppf
+                    ? distribution.ppf(random())
+                    : distribution.sample()
+            ))
+
+            // Determine the domain to plot from taken samples
+            if (xDomain === undefined) {
+                const domain = extendDomainByFactor(d3.extent(samples), 2)
+                xScale.domain(domain).nice()
+            } else {
+                xScale.domain(xDomain)
             }
 
-            // Determine the vertical domain (= the function's range)
-            if (yDomain === undefined
-                || (yDomain[0]===undefined && yDomain[1]===undefined)
-            ) {
-                const domain = extendDomainByFactor(
-                    d3.extent(linePoints, d => d.y),
-                    yDomainDetectionExtendFactor
-                )
-                yScale.domain(domain).nice()
+            // Try to cover the whole domain adequately: compute pdf at regular
+            // intervals as well as at the samples
+            const linePoints = _.sortBy(_.concat(
+                linspace(...xScale.domain(), nLinePoints),
+                samples.filter(sample => _.inRange(sample, ...xScale.domain())),
+            ))
+
+            // Determine the vertical domain (= the pdf's range)
+            if (yDomain === undefined) {
+                const domain = d3.extent(linePoints, d => distribution.pdf(d))
+                yScale.domain([0, domain[1]*1.5])//.nice()
             } else {
-                // If either min or max is undefined, determine it from the data
-                let minY = yDomain[0], maxY = yDomain[1]
-                if (maxY===undefined) {
-                    maxY = yDomain[0] + (d3.max(linePoints, d => d.y)-yDomain[0]) * yDomainDetectionExtendFactor
-                }
-                if (minY===undefined) {
-                    minY = yDomain[1] + (d3.min(linePoints, d => d.y)-yDomain[1]) * yDomainDetectionExtendFactor
-                }
-                yScale.domain([minY, maxY])
+                yScale.domain(yDomain)
             }
 
             // Add a group for the whole plot if not there yet
-            const plotGroupEnter = selectEnter(svg, '.functionPlotGroup')
+            const plotGroupEnter = selectEnter(svg, '.distributionPlotGroup')
               .append('g')
-                .attr('class', 'functionPlotGroup')
+                .attr('class', 'distributionPlotGroup')
             plotGroupEnter.append('g').attr('class', 'xAxis')
                 .attr('transform', `translate(0, ${yScale.range()[0]})`)
             plotGroupEnter.append('g').attr('class', 'yAxis')
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
 
             // Move the whole plot to create margins around it
-            const plotGroup = svg.select('.functionPlotGroup')
-                .attr('transform', `translate(${margin.left+2}, ${margin.top})`)
+            const plotGroup = svg.select('.distributionPlotGroup')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
             // Draw the axes
             xAxis
@@ -124,6 +119,7 @@ export default function functionPlot(config) {
                 .duration(updateDuration)
                 .attr('transform', `translate(0, ${xScale.range()[0]})`)
                 .call(yAxis)
+
 
             // Set axes' labels
             const xCenter = xScale.range()[0]+(xScale.range()[1]-xScale.range()[0])/2
@@ -146,7 +142,7 @@ export default function functionPlot(config) {
                     .style("dominant-baseline", "hanging")
                     .style('fill', '#000')
                 plotGroup.select('.yAxis > .label')
-                    .attr('transform', `translate(${-margin.left}, ${yCenter})`
+                    .attr('transform', `translate(${-margin.left+2}, ${yCenter})`
                         + `rotate(-90)`)
                     .text(yLabel)
             }
@@ -175,40 +171,58 @@ export default function functionPlot(config) {
                     .attr('height', yLabelImage.height)
             }
 
+            // Draw the samples
+            if (drawSamples) {
+                const points = plotGroup.selectAll('.point').data(samples)
+                const setPosition = points => points.attr('transform',
+                    d => `translate(${xScale(d)}, ${yScale(distribution.pdf(d))})`
+                )
+                // Update: moving existing points to their right location.
+                points
+                  .call(symbol.draw, {xScale, yScale, updateDuration})
+                  .transition()
+                    .duration(updateDuration)
+                    .call(setPosition)
+                // Enter: draw symbols for newly added data points.
+                points.enter().append('g')
+                    .attr('class', 'point')
+                    .call(setPosition)
+                    .call(symbol.draw, {xScale, yScale, updateDuration})
+                // Exit: remove symbols of removed data points.
+                points.exit()
+                    .call(symbol.remove)
+            }
+
             // Draw the line
-            const dasharrayValue =
-                (lineStyle === ':')
-                ? '1,10'
-                : (lineStyle === '--')
-                    ? '10,10'
-                    : undefined
-            const linecapValue = (lineStyle === ':') ? 'round' : undefined
-            const line = d3.line()
-                .x(d => xScale(d.x))
-                .y(d => yScale(d.y))
-                .defined(d => isFinite(d.y))
-                .curve(d3.curveMonotoneX)
-            selectEnter(plotGroup, '.line.id'+id)
-              .append('path')
-                .attr('class', 'line id'+id)
-                .attr('fill', 'none')
-                .attr('stroke', lineColor)
-                .attr('opacity', lineOpacity)
-            plotGroup.select('.line.id'+id)
-                .datum(linePoints)
-              .transition()
-                .duration(updateDuration)
-                .attr('stroke', lineColor)
-                .attr('opacity', lineOpacity)
-                .attr('stroke-dasharray', dasharrayValue)
-                .attr('stroke-linecap', linecapValue)
-                .attr('d', line)
+            if (lineOpacity > 0) {
+                const line = d3.line()
+                    .x(d => xScale(d))
+                    .y(d => yScale(distribution.pdf(d)))
+                    .curve(d3.curveMonotoneX)
+                selectEnter(plotGroup, '.line')
+                  .append('path')
+                    .attr('class', 'line')
+                    .attr('fill', 'none')
+                    .attr('stroke', lineColor)
+                    .attr('opacity', lineOpacity)
+                plotGroup.select('.line')
+                    .datum(linePoints)
+                  .transition()
+                    .duration(updateDuration)
+                    .attr('stroke', lineColor)
+                    .attr('opacity', lineOpacity)
+                    .attr('d', line)
+            }
+            else {
+                plotGroup.select('.line')
+                    .remove()
+            }
 
         })
     }
 
     // XXX: The settings of [xy]Scale change on every call of plot. Watch out
-    // when using the same functionPlot() instance for multiple plots.
+    // when using the same distributionPlot() instance for multiple plots.
     plot.xScale = xScale
     plot.yScale = yScale
 

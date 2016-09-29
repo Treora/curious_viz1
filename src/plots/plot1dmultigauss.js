@@ -1,9 +1,9 @@
 import linspace from 'linspace'
 
-import functionPlot from './functionplot'
-import { addSlider, addSliderController, getSliderValue } from './slider'
-import images from './images'
-import { createSubplots } from './subplots'
+import functionPlot from '../plotcomponents/functionplot'
+import { addSlider, addSliderController, getSliderValue } from '../common/slider'
+import images from '../common/images'
+import { createSubplots } from '../common/subplots'
 
 export default function init(containerId, plotDatas, options={}) {
     const container = d3.select(containerId)

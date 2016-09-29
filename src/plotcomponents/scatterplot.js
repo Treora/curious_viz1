@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-import pointSymbol from './pointsymbol'
-import { selectEnter } from './utils'
+import pointSymbol from './symbols/pointsymbol'
+import { selectEnter } from '../common/utils'
 
 export default function scatterPlot(config) {
     let {
