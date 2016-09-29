@@ -45,5 +45,3 @@ export default function generateDataset({nSamples=100, stdDev=1.0, seed=123}) {
 
     return dataset
 }
-
-export default generateDataset

@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import linspace from 'linspace'
 
 import { selectEnter, extendDomainByFactor } from './utils'
