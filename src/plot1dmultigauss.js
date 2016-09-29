@@ -26,7 +26,7 @@ export default function init(containerId, plotDatas) {
     const sliderSigma1 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'sigma_1',
-        labelImage: images['\\sigma_1'],
+        label: '&sigma;<sub>1</sub>:',
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
         tooltip: true,
@@ -36,7 +36,7 @@ export default function init(containerId, plotDatas) {
     const sliderSigma2 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'sigma_2',
-        labelImage: images['\\sigma_2'],
+        label: '&sigma;<sub>2</sub>:',
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
         tooltip: true,
