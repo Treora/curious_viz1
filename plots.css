@@ -21,7 +21,7 @@
 }
 
 .sliderContainer {
-    flex: 1 100%;
+    flex: 0 70%;
 }
 
 .plotContainer {
@@ -62,6 +62,7 @@
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
+    margin-top: 5px;
 }
 
 .sliderLabelText, .sliderLabelImage {
@@ -86,11 +87,12 @@
 
 /* More square plots */
 #plot_2d .plotContainer {
-    height: 200px;
+    height: 190px;
 }
 
 /* Extra space because of longer slider label */
 #plot_2d .sliderContainer.stdDev {
+    flex: 1 100%;
 }
 
 
@@ -101,7 +103,7 @@
     flex-grow: 2;
 }
 #plot_1d_multigauss .sliderContainer.w1 {
-    flex-grow: 2;
+    flex: 2 100%;
 }
 #plot_1d_multigauss .sliderContainer.sigma_1, .sliderContainer.sigma_2 {
     flex-grow: 1;

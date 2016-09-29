@@ -149,7 +149,7 @@ export default function functionPlot(config) {
                         + `rotate(-90)`)
                     .text(yLabel)
             }
-            
+
             if (xLabelImage !== undefined) {
                 selectEnter(plotGroup.select('.xAxis'), '.labelImage')
                   .append('image')

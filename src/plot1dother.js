@@ -49,7 +49,6 @@ export default function init(containerId, plotDatas) {
 
     const plotCorruptedDistribution = functionPlot({
         ...sharedPlotConfig,
-        yDomain: plotOriginalDistribution.yScale.domain(),
         xLabelImage: images['\\tilde x'],
         yLabelImage: images['p(\\tilde x)'],
     })
