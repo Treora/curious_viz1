@@ -14,7 +14,7 @@ export default function defineSymbol(symbolProps) {
 function drawSymbol(selection, {
     enterDuration=500,
     updateDuration=500,
-    symbolRadius=4,
+    symbolRadius=3,
     opacity=0.5,
     color='blue',
 }) {

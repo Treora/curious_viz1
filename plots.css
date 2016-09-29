@@ -9,8 +9,8 @@
 /*** Plot layout ***/
 
 .plotConstellation {
-    margin: auto; /* to center horizontally */
-    max-width: 700px;
+    margin: auto;
+    max-width: 580px; /* Change this when resizing */
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
@@ -20,12 +20,10 @@
 
 .plotIncSliders {
     display: flex;
-    width: 200px;
+    width: 180px; /* Change this when resizing */
     flex-flow: row wrap;
     justify-content: center;
     margin-top: 20px;
-    /*border: 1px solid lightgrey;*/
-    /*border-radius: 5px;*/
 }
 
 .sliderContainer {
@@ -33,13 +31,41 @@
 }
 
 .plotContainer {
-    /* set order:2 to put the sliders above the plot (then set
-     * align-items: flex-end; in .plotConstellation above to align the plots)
-     */
-    /*order: 2;*/
     flex: 1 100%;
-    height: 170px;
+    height: 150px; /* Change this when resizing */
 }
+
+
+/*** 2D plot ***/
+
+/* More squarish plots */
+#plot_2d .plotContainer {
+    height: 170px; /* Change this when resizing */
+}
+
+/* Extra space because of longer slider label */
+#plot_2d .sliderContainer.stdDev {
+    flex: 1 100%;
+}
+
+
+/*** Multigauss plot ***/
+
+/* Put the two sigma sliders besides each other */
+#plot_1d_multigauss .plotContainer.data {
+    flex-grow: 2;
+}
+#plot_1d_multigauss .sliderContainer.w1 {
+    flex: 2 100%;
+}
+#plot_1d_multigauss .sliderContainer.sigma_1, .sliderContainer.sigma_2 {
+    flex-grow: 1;
+    flex-basis: 0px;
+}
+#plot_1d_multigauss .sliderContainer.sigma_2 {
+    margin-left: 0.5em;
+}
+
 
 /*** Plot contents ***/
 
@@ -88,37 +114,6 @@
     border-radius: 4px;
     padding: 2px 5px 0px 5px;
     z-index: 10;
-}
-
-
-/*** 2D plot ***/
-
-/* More square plots */
-#plot_2d .plotContainer {
-    height: 190px;
-}
-
-/* Extra space because of longer slider label */
-#plot_2d .sliderContainer.stdDev {
-    flex: 1 100%;
-}
-
-
-/*** Multigauss plot ***/
-
-/* Put the two sigma sliders besides each other */
-#plot_1d_multigauss .plotContainer.data {
-    flex-grow: 2;
-}
-#plot_1d_multigauss .sliderContainer.w1 {
-    flex: 2 100%;
-}
-#plot_1d_multigauss .sliderContainer.sigma_1, .sliderContainer.sigma_2 {
-    flex-grow: 1;
-    flex-basis: 0px;
-}
-#plot_1d_multigauss .sliderContainer.sigma_2 {
-    margin-left: 0.5em;
 }
 
 
