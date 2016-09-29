@@ -1,3 +1,11 @@
+/*** Plot headers ***/
+
+.plotHeader {
+    text-align: center;
+    margin-bottom: 5px;
+    flex: 1 auto;
+}
+
 /*** Plot layout ***/
 
 .plotConstellation {

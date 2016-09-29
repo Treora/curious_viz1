@@ -11,6 +11,7 @@ import pointSymbol from './pointsymbol'
 import generateBananaData from './gaussianbananas'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
+import { createSubplots } from './subplots'
 
 const rand = randomSeed.create()
 
@@ -83,17 +84,10 @@ function computeAll({dataStdDev, noiseStdDev, xDomain, yDomain}) {
 const getOrComputeAll = _.memoize(computeAll, (...args) => jsonStableStringify(args))
 
 
-export default function init(containerId, {sliderInitialValue}) {
+export default function init(containerId, options={}) {
     const container = d3.select(containerId)
 
-    // Create four plots
-    const subplots = ['data', 'noisy', 'denoise']
-    for (let i in subplots) {
-        container.append('div')
-            .attr('class', 'plotIncSliders ' + subplots[i])
-          .append('div')
-            .attr('class', 'plotContainer ' + subplots[i])
-    }
+    createSubplots(container, options)
 
     // Add the slider input
     const slider = addSlider({
@@ -101,7 +95,7 @@ export default function init(containerId, {sliderInitialValue}) {
         name: 'stdDev',
         label: 'variance:',
         min: 0.2, max: 1.0, step: 0.2,
-        value: sliderInitialValue || 0.4,
+        value: options.sliderInitialValue || 0.4,
         onInput: updateAll,
         tooltip: false,
     })

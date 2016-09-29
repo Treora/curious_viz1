@@ -3,16 +3,13 @@ import linspace from 'linspace'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
+import { createSubplots } from './subplots'
 
-export default function init(containerId, plotDatas) {
-    const subplots = ['data', 'noisy', 'denoise']
+export default function init(containerId, plotDatas, options={}) {
     const container = d3.select(containerId)
-    for (let i in subplots) {
-        container.append('div')
-            .attr('class', 'plotIncSliders ' + subplots[i])
-          .append('div')
-            .attr('class', 'plotContainer ' + subplots[i])
-    }
+
+    createSubplots(container, options)
+
     const sliderW1 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'w1',

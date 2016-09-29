@@ -9,42 +9,47 @@
 </head>
 <body>
 
+<script>
+// Set titles for the plot (here all at once, or for each separately in the calls below)
+var plotHeaders=['original', 'corrupted', 'denoising'];
+</script>
+
 <h1>2d plot</h1>
     <div id="plot_2d" class="plotConstellation"></div>
     <script>
         // Valid slider values: 0.2, 0.4, 0.6, 0.8, 1.0
-        plot2d('#plot_2d', {sliderInitialValue: 0.4});
+        plot2d('#plot_2d', {sliderInitialValue: 0.4, headers: plotHeaders});
     </script>
 
 <h1>1d gaussian</h1>
     <div id="plot_1d_gaussian" class="plotConstellation"></div>
     <script>
-        plot1dGaussian('#plot_1d_gaussian');
+        plot1dGaussian('#plot_1d_gaussian', {headers: plotHeaders});
     </script>
 
 <h1>1d other distributions</h1>
 <h2>uniform</h2>
     <div id="plot_1d_uniform" class="plotConstellation"></div>
     <script>
-        plot1dOther('#plot_1d_uniform', plotDatas.uniform);
+        plot1dOther('#plot_1d_uniform', plotDatas.uniform, {headers: plotHeaders});
     </script>
 
 <h2>exponential</h2>
     <div id="plot_1d_exp" class="plotConstellation"></div>
     <script>
-        plot1dOther('#plot_1d_exp', plotDatas.exp);
+        plot1dOther('#plot_1d_exp', plotDatas.exp, {headers: plotHeaders});
     </script>
 
 <h2>laplace</h2>
     <div id="plot_1d_laplace" class="plotConstellation"></div>
     <script>
-        plot1dOther('#plot_1d_laplace', plotDatas.laplace);
+        plot1dOther('#plot_1d_laplace', plotDatas.laplace, {headers: plotHeaders});
     </script>
 
 <h1>1d multigaussian</h1>
     <div id="plot_1d_multigauss" class="plotConstellation"></div>
     <script>
-        plot1dMultigauss('#plot_1d_multigauss', plotDatas.multigauss);
+        plot1dMultigauss('#plot_1d_multigauss', plotDatas.multigauss, {headers: plotHeaders});
     </script>
 
 </body>

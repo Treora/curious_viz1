@@ -4,19 +4,15 @@ import distributionPlot from './distributionplot'
 import functionPlot from './functionplot'
 import { addSlider, addSliderController, getSliderValue } from './slider'
 import images from './images'
+import { createSubplots } from './subplots'
 
 import { sq } from './utils'
 
-export default function init(containerId) {
+export default function init(containerId, options={}) {
     const container = d3.select(containerId)
 
-    const subplots = ['data', 'noisy', 'denoise']
-    for (let i in subplots) {
-        container.append('div')
-            .attr('class', 'plotIncSliders ' + subplots[i])
-          .append('div')
-            .attr('class', 'plotContainer ' + subplots[i])
-    }
+    createSubplots(container, options)
+
     const sliderStdDev = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
