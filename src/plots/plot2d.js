@@ -87,6 +87,10 @@ const getOrComputeAll = _.memoize(computeAll, (...args) => jsonStableStringify(a
 
 export default function init(containerId, options={}) {
     const container = d3.select(containerId)
+    if (container.empty()) {
+        console.log(`No element found with id=${containerId}. Skipping this plot.`)
+        return
+    }
 
     createSubplots(container, options)
 
