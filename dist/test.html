@@ -5,53 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="plots.css" type="text/css">
     <script src="d3.v4.min.js"></script>  <!-- Could also be drawn from https://d3js.org/d3.v4.min.js -->
-    <script src="plots.min.js"></script>
-    <script src="plotdata.min.js"></script>
 </head>
 <body>
 
 <script>
-// Set titles for the plot (here all at once, or for each separately in the calls below)
-var plotHeaders=['original', 'corrupted', 'denoising'];
+// Overwrite titles for the plots
+var plotHeaders=['original', 'corrupted', 'denoising function'];
 </script>
 
 <h1>2d plot</h1>
     <div id="plot_2d" class="plotConstellation"></div>
-    <script>
-        // Valid slider values: 0.2, 0.4, 0.6, 0.8, 1.0
-        plot2d('#plot_2d', {sliderInitialValue: 0.4, headers: plotHeaders});
-    </script>
 
 <h1>1d gaussian</h1>
     <div id="plot_1d_gaussian" class="plotConstellation"></div>
-    <script>
-        plot1dGaussian('#plot_1d_gaussian', {headers: plotHeaders});
-    </script>
 
 <h1>1d other distributions</h1>
 <h2>uniform</h2>
     <div id="plot_1d_uniform" class="plotConstellation"></div>
-    <script>
-        plot1dOther('#plot_1d_uniform', plotDatas.uniform, {headers: plotHeaders});
-    </script>
 
 <h2>exponential</h2>
     <div id="plot_1d_exp" class="plotConstellation"></div>
-    <script>
-        plot1dOther('#plot_1d_exp', plotDatas.exp, {headers: plotHeaders});
-    </script>
 
 <h2>laplace</h2>
     <div id="plot_1d_laplace" class="plotConstellation"></div>
-    <script>
-        plot1dOther('#plot_1d_laplace', plotDatas.laplace, {headers: plotHeaders});
-    </script>
 
 <h1>1d multigaussian</h1>
-    <div id="plot_1d_multigauss" class="plotConstellation"></div>
-    <script>
-        plot1dMultigauss('#plot_1d_multigauss', plotDatas.multigauss, {headers: plotHeaders});
-    </script>
+<div id="plot_1d_multigauss" class="plotConstellation"></div>
 
+<script src="plots.js" async defer></script>
 </body>
 </html>

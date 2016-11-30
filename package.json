@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "build": "browserify src/setglobals.js -o dist/plots.js",
-    "build-minify": "npm run build && uglifyjs -m -c warnings=false -o dist/plots.min.js dist/plots.js && uglifyjs -m -c warnings=false -o dist/plotdata.min.js plotdata/plotdata.js",
-    "watch": "watchify src/setglobals.js -o dist/plots.js -v",
+    "build": "browserify src/main.js -o dist/plots.js",
+    "build-minify": "npm run build && uglifyjs -m -c warnings=false -o dist/plots.js dist/plots.js",
+    "watch": "watchify src/main.js -o dist/plots.js -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Gerben",
