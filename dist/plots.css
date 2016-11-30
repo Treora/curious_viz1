@@ -4,6 +4,10 @@
     text-align: center;
     margin-bottom: 5px;
     flex: 1 auto;
+    font-size: 16px;
+    font-family: sans-serif;
+    font-weight: bold;
+    hyphens: none;
 }
 
 /*** Plot layout ***/
@@ -100,19 +104,27 @@
 }
 
 .sliderLabelText, .sliderLabelImage {
+    font-size: 16px;
+    font-family: sans-serif;
+    hyphens: none;
     flex: 0 auto;
     padding-right: 0.5em;
 }
 
 .slider {
     flex: 1 auto;
+    background: none !important;
+    border: none !important;
 }
 
 .sliderTooltip {
+    font-size: 16px;
+    font-family: sans-serif;
     background: white;
     border: 1px grey solid;
     border-radius: 4px;
-    padding: 2px 5px 0px 5px;
+    padding: 0px 5px 0px 5px;
+    margin: 0;
     z-index: 10;
 }
 
