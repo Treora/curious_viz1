@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import * as d3 from 'd3'
 
 import pointSymbol from './symbols/pointsymbol'
 import { selectEnter } from '../common/utils'

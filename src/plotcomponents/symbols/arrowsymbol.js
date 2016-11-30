@@ -1,3 +1,5 @@
+import * as d3 from 'd3'
+
 import { selectEnter, sq } from '../../common/utils'
 
 export default function defineSymbol(symbolProps) {

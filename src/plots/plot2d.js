@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import * as d3 from 'd3'
 import randomSeed from 'random-seed'
 import gaussian from 'gaussian'
 import linspace from 'linspace'

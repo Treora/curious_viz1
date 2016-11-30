@@ -1,3 +1,5 @@
+import * as d3 from 'd3'
+
 /* The equivalent of selectAll()...enter() but for select().
  * Instead of this: selection.select('.dot').enter().append('circle').class('dot')
  * Write like this: selectEnter(selection, '.dot').append('circle').class('dot')

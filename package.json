@@ -11,6 +11,7 @@
   "author": "Gerben",
   "license": "CC0-1.0",
   "dependencies": {
+    "d3": "^4.4.0",
     "gaussian": "^1.1.0",
     "json-stable-stringify": "^1.0.1",
     "linspace": "^1.0.0",

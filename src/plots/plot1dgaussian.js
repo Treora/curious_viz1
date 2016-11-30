@@ -1,3 +1,5 @@
+import * as d3 from 'd3'
+
 import gaussian from 'gaussian'
 
 import distributionPlot from '../plotcomponents/distributionplot'
