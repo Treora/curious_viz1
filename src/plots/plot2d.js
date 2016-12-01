@@ -51,7 +51,7 @@ function compareData(sourceData, targetData) {
 function computeAll({dataStdDev, noiseStdDev, xDomain, yDomain}) {
     const originalData = generateBananaData({stdDev: dataStdDev})
 
-    rand.seed(4321)
+    rand.seed(42)
     const noiseVariance = sq(noiseStdDev);
     const noiseDistribution = gaussian(0, noiseVariance)
     const sampleNoise = () => noiseDistribution.ppf(rand.random())
@@ -88,18 +88,27 @@ const getOrComputeAll = _.memoize(computeAll, (...args) => jsonStableStringify(a
 export default function init(containerId, options={}) {
     const container = d3.select(containerId)
     if (container.empty()) {
-        console.log(`No element found with id=${containerId}. Skipping this plot.`)
+        console.log(`No element found with id ${containerId}. Skipping this plot.`)
         return
     }
 
-    createSubplots(container, options)
+    const imgTag = img => `<br><img src="${img.uri}" width="${img.width}" height="${img.height}" />`
+
+    createSubplots(container, {
+        headers: [
+            `Data distribution ${imgTag(images['p(x)'])}`,
+            `Corrupted distribution ${imgTag(images['p(\\tilde x)'])}`,
+            `Optimal denoising ${imgTag(images['\\tilde x \rightarrow g(\\tilde x)'])}`
+        ],
+        ...options
+    })
 
     // Add the slider input
     const slider = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
-        label: 'variance:',
-        min: 0.2, max: 1.0, step: 0.2,
+        label: 'data&nbsp;variance:',
+        min: 0.2, max: 0.8, step: 0.2,
         value: options.sliderInitialValue || 0.4,
         onInput: updateAll,
         tooltip: false,
@@ -113,7 +122,7 @@ export default function init(containerId, options={}) {
 
     const getSettings = () => ({
         dataStdDev: getSliderValue(slider),
-        noiseStdDev: 1.0,
+        noiseStdDev: 0.7,
     })
 
     // Set the data domain so all plots have exactly the same size and scale.
@@ -122,6 +131,8 @@ export default function init(containerId, options={}) {
 
     // Configure the plots.
     const sharedPlotConfig = {
+        margin: {top: 10, right: 10, bottom: 20, left: 20},
+        approxTickCount: 0,
         keepAspectRatio: true,
         xDomain, yDomain,
         symbol: pointSymbol({
@@ -150,8 +161,8 @@ export default function init(containerId, options={}) {
             .datum(noisyData)
             .call(scatterPlot({
                 ...sharedPlotConfig,
-                xLabelImage: images['\\tilde x_1'],
-                yLabelImage: images['\\tilde x_2'],
+                xLabelImage: images['x_1'],
+                yLabelImage: images['x_2'],
             }))
 
         container.select('.plotContainer.denoise')
@@ -160,12 +171,12 @@ export default function init(containerId, options={}) {
                 ...sharedPlotConfig,
                 symbol: arrowSymbol({
                     // Faint arrows from highly improbable (corrupted) points
-                    opacity: d => Math.min(0.5, 10*Math.sqrt(d.pNoisySample)),
+                    opacity: d => Math.min(0.5, 20*Math.sqrt(d.pNoisySample)),
                     // Alternatively, simply faint long arrows
                     // opacity: d => 0.5*Math.min(1, 1/(sq(d.dx)+sq(d.dy))),
                 }),
-                xLabelImage: images['\\tilde x_1 \\rightarrow \\hat x_1'],
-                yLabelImage: images['\\tilde x_2 \\rightarrow \\hat x_2'],
+                xLabelImage: images['x_1'],
+                yLabelImage: images['x_2'],
             }))
 
     }

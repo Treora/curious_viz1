@@ -13,7 +13,7 @@ import { sq } from '../common/utils'
 export default function init(containerId, options={}) {
     const container = d3.select(containerId)
     if (container.empty()) {
-        console.log(`No element found with id=${containerId}. Skipping this plot.`)
+        console.log(`No element found with id ${containerId}. Skipping this plot.`)
         return
     }
 
@@ -22,7 +22,7 @@ export default function init(containerId, options={}) {
     const sliderStdDev = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
-        label: '&sigma;<sub>x</sub>:',
+        labelImage: images['\\sigma'],
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         onInput: updateAll,
@@ -31,7 +31,7 @@ export default function init(containerId, options={}) {
     const sliderDataMean = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'dataMean',
-        label: '&mu;<sub>x</sub>:',
+        labelImage: images['\\mu'],
         min: -2, max: 2, step: 1,
         value: 0.0,
         onInput: updateAll,
@@ -40,7 +40,7 @@ export default function init(containerId, options={}) {
     const sliderNoiseStdDev = addSlider({
         container: container.select('.plotIncSliders.noisy'),
         name: 'noiseStdDev',
-        label: '&sigma;<sub>n</sub>:',
+        labelImage: images['\\sigma_n'],
         min: 0.2, max: 1.8, step: 0.4,
         value: 1.0,
         onInput: updateAfterData,

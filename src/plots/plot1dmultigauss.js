@@ -9,7 +9,7 @@ import { createSubplots } from '../common/subplots'
 export default function init(containerId, plotDatas, options={}) {
     const container = d3.select(containerId)
     if (container.empty()) {
-        console.log(`No element found with id=${containerId}. Skipping this plot.`)
+        console.log(`No element found with id ${containerId}. Skipping this plot.`)
         return
     }
 
@@ -18,7 +18,7 @@ export default function init(containerId, plotDatas, options={}) {
     const sliderW1 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'w1',
-        label: 'mix&nbsp;ratio:',
+        labelImage: images['w'],
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
         tooltip: true,
@@ -28,7 +28,7 @@ export default function init(containerId, plotDatas, options={}) {
     const sliderSigma1 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'sigma_1',
-        label: '&sigma;<sub>1</sub>:',
+        labelImage: images['\\sigma_1'],
         min: 0, max: plotDatas[0].length-1,
         value: Math.round((plotDatas[0].length-1)/2),
         tooltip: true,
@@ -38,7 +38,7 @@ export default function init(containerId, plotDatas, options={}) {
     const sliderSigma2 = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'sigma_2',
-        label: '&sigma;<sub>2</sub>:',
+        labelImage: images['\\sigma_2'],
         min: 0, max: plotDatas[0][0].length-1,
         value: Math.round((plotDatas[0][0].length-1)/2),
         tooltip: true,

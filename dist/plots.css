@@ -2,19 +2,20 @@
 
 .plotHeader {
     text-align: center;
-    margin-bottom: 5px;
     flex: 1 auto;
     font-size: 16px;
     font-family: sans-serif;
-    font-weight: bold;
     hyphens: none;
+    height: 18px;
 }
 
 /*** Plot layout ***/
 
-.plotConstellation {
-    margin: auto;
-    max-width: 580px; /* Change this when resizing */
+#plot_2d, #plot_1d_gaussian, #plot_1d_uniform, #plot_1d_exp, #plot_1d_laplace, #plot_1d_multigauss {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    max-width: 600px; /* Change this when resizing */
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
@@ -24,7 +25,7 @@
 
 .plotIncSliders {
     display: flex;
-    width: 180px; /* Change this when resizing */
+    width: 200px; /* Change this when resizing */
     flex-flow: row wrap;
     justify-content: center;
     margin-top: 20px;
@@ -44,7 +45,12 @@
 
 /* More squarish plots */
 #plot_2d .plotContainer {
-    height: 170px; /* Change this when resizing */
+    height: 200px; /* Change this when resizing */
+}
+
+/* Plot header has two lines */
+#plot_2d .plotHeader {
+    height: 36px;
 }
 
 /* Extra space because of longer slider label */
@@ -104,14 +110,17 @@
 }
 
 .sliderLabelText, .sliderLabelImage {
+    flex: 0 auto;
+}
+
+.sliderLabelText {
     font-size: 16px;
     font-family: sans-serif;
     hyphens: none;
-    flex: 0 auto;
-    padding-right: 0.5em;
 }
 
 .slider {
+    padding-left: 0.5em;
     flex: 1 auto;
     background: none !important;
     border: none !important;
@@ -133,7 +142,7 @@
 input[type=range].slider {
   -webkit-appearance: none;
   width: 100%;
-  margin: 4px 0;
+  margin: 0;
 }
 input[type=range].slider:focus {
   outline: none;

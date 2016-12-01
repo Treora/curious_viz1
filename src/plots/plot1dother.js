@@ -9,7 +9,7 @@ import { createSubplots } from '../common/subplots'
 export default function init(containerId, plotDatas, options={}) {
     const container = d3.select(containerId)
     if (container.empty()) {
-        console.log(`No element found with id=${containerId}. Skipping this plot.`)
+        console.log(`No element found with id ${containerId}. Skipping this plot.`)
         return
     }
 
@@ -18,7 +18,7 @@ export default function init(containerId, plotDatas, options={}) {
     const slider = addSlider({
         container: container.select('.plotIncSliders.data'),
         name: 'stdDev',
-        label: '&sigma;<sub>x</sub>:',
+        labelImage: images['\\sigma'],
         min: 0, max: plotDatas.length-1,
         value: Math.round((plotDatas.length-1)/2),
         tooltip: true,

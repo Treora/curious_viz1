@@ -1,5 +1,15 @@
 export function createSubplots(container, options={}) {
-    let { headers=['original', 'corrupted', 'denoising'] } = options
+    const defaultPlotHeaders = [
+        'Data distribution',
+        'Corrupted distribution',
+        'Optimal denoising'
+    ]
+    let { headers=defaultPlotHeaders } = options
+
+    // Delete container contents
+    container.html('')
+
+    // Add the three subplots
     const subplots = ['data', 'noisy', 'denoise']
     for (let i in subplots) {
         const plotIncSliders = container.append('div')
