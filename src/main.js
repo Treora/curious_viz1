@@ -9,15 +9,15 @@ import plot1dGaussian from './plots/plot1dgaussian'
 plot1dGaussian('#plot_1d_gaussian');
 
 
-import plot1dOther from './plots/plot1dother'
-
+import { default as plot1dOther, plot1dOthers } from './plots/plot1dother'
 import uniformData from '../plotdata/plotdata_uniform'
-plot1dOther('#plot_1d_uniform', uniformData);
-
 import expData from '../plotdata/plotdata_exp'
-plot1dOther('#plot_1d_exp', expData);
-
 import laplaceData from '../plotdata/plotdata_laplace'
+// Plot them together with selection buttons
+plot1dOthers('#plot_1d_others', [uniformData, expData, laplaceData]);
+// Or plot them separately
+plot1dOther('#plot_1d_uniform', uniformData);
+plot1dOther('#plot_1d_exp', expData);
 plot1dOther('#plot_1d_laplace', laplaceData);
 
 

@@ -11,7 +11,7 @@
 
 /*** Plot layout ***/
 
-#plot_2d, #plot_1d_gaussian, #plot_1d_uniform, #plot_1d_exp, #plot_1d_laplace, #plot_1d_multigauss {
+#plot_2d, #plot_1d_gaussian, #plot_1d_others > div, #plot_1d_uniform, #plot_1d_exp, #plot_1d_laplace, #plot_1d_multigauss {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 40px;
@@ -56,6 +56,41 @@
 /* Extra space because of longer slider label */
 #plot_2d .sliderContainer.stdDev {
     flex: 1 100%;
+}
+
+
+/*** Three-in-one plot ***/
+
+#plot_1d_others {
+    margin: auto;
+}
+
+/* Hide radio buttons */
+#plot_1d_others input[type='radio'] {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    position: absolute;
+}
+
+#plot_1d_others input[type='radio'] + label {
+    display: inline-block;
+    background-color: rgba(238, 238, 255, 0.5);
+    border: 1px grey solid;
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin-right: 4px;
+}
+/* Hover label */
+#plot_1d_others input[type='radio'] + label:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+/* Highlight selected label */
+#plot_1d_others input[type='radio']:checked + label {
+    background-color: rgba(255, 255, 255, 1.0);
+    border-color: black;
+    z-index: 1;
 }
 
 

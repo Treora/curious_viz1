@@ -6,6 +6,26 @@ import { addSlider, addSliderController, getSliderValue } from '../common/slider
 import images from '../common/images'
 import { createSubplots } from '../common/subplots'
 
+export function plot1dOthers(containerId, plotDatases, options={}) {
+    const container = d3.select(containerId)
+    if (container.empty()) {
+        console.log(`No element found with id ${containerId}. Skipping this plot.`)
+        return
+    }
+    const names = ['uniform', 'exponential', 'laplacian']
+    names.forEach((name, i) => {
+        container.append('input')
+            .attr('type', 'radio')
+            .attr('name', 'otherDistributionSelector')
+            .attr('id', `select_${name}`)
+            .on('click', () => init(subcontainer.node(), plotDatases[i], options))
+        container.append('label')
+            .attr('for', `select_${name}`)
+            .text(name)
+    })
+    const subcontainer = container.append('div')
+}
+
 export default function init(containerId, plotDatas, options={}) {
     const container = d3.select(containerId)
     if (container.empty()) {
